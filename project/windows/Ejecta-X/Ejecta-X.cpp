@@ -5,6 +5,8 @@
 #include "Ejecta-X.h"
 
 #define MAX_LOADSTRING 100
+#define SCREEN_WIDTH 320
+#define SCREEN_HEIGHT 480
 
 // 全局变量:
 HINSTANCE hInst;								// 当前实例
@@ -31,6 +33,9 @@ void SetupRC()
 	//glEnable(GL_DEPTH_TEST);// Enables Depth Testing
 	//glDepthFunc(GL_LEQUAL);// The Type Of Depth Testing To Do
 	//glHint(GL_PERSPECTIVE_CORRECTION_HINT, GL_NICEST);// Really Nice Perspective Calculations
+
+	const char *nativeString = ".";
+	EJApp::instance()->init(nativeString, SCREEN_WIDTH, SCREEN_HEIGHT);
 }
 
 void RenderScene(void)
@@ -51,6 +56,7 @@ void RenderScene(void)
 
 	// Flush drawing commands
 	SwapBuffers(g_hDC);
+	EJApp::instance()->run();
 }
 
 void ChangeSize(int w, int h)
@@ -65,6 +71,7 @@ void ChangeSize(int w, int h)
 
 	//glMatrixMode(GL_MODELVIEW);// Select The Modelview Matrix
 	//glLoadIdentity();
+	EJApp::instance()->setScreenSize(w, h);
 }
 
 int APIENTRY _tWinMain(HINSTANCE hInstance,
@@ -74,6 +81,7 @@ int APIENTRY _tWinMain(HINSTANCE hInstance,
 {
 	UNREFERENCED_PARAMETER(hPrevInstance);
 	UNREFERENCED_PARAMETER(lpCmdLine);
+	
 
  	// TODO: 在此放置代码。
 	MSG msg;
@@ -189,7 +197,7 @@ BOOL InitInstance(HINSTANCE hInstance, int nCmdShow)
    hInst = hInstance; // 将实例句柄存储在全局变量中
 
    g_hWnd = CreateWindow(szWindowClass, szTitle, WS_OVERLAPPEDWINDOW,
-      CW_USEDEFAULT, CW_USEDEFAULT, 320, 480, NULL, NULL, hInstance, NULL);
+      CW_USEDEFAULT, CW_USEDEFAULT, SCREEN_WIDTH, SCREEN_HEIGHT, NULL, NULL, hInstance, NULL);
 
    // now that we have a window, setup the pixel format descriptor
    g_hDC = GetDC(g_hWnd);
@@ -263,6 +271,7 @@ BOOL InitInstance(HINSTANCE hInstance, int nCmdShow)
 	   UpdateWindow(g_hWnd);
 	   SetForegroundWindow( g_hWnd );
 	   SetFocus( g_hWnd );
+	   SetupRC();
 	   g_ContinueRendering = true;
    }
 
@@ -299,6 +308,9 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 			break;
 		case IDM_EXIT:
 			//Cleanup OGL RC
+			
+			EJApp::finalize();
+
 			if(g_hRC) 
 			{
 				wglMakeCurrent(NULL, NULL);

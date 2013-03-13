@@ -3,6 +3,7 @@
 
 #ifdef _WINDOWS
 #include <windows.h>
+#include <tchar.h>
 #include <gl//gl.h>
 #include <gl/glext.h>
 #else

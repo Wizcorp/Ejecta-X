@@ -246,7 +246,7 @@ unsigned char* getFileData(const char* fileName, const char* pszMode, unsigned l
     
     FILE* f = fopen(fileName, pszMode);
     if (!f) {
-        NSLOG("Could not open file: %s\n", fileName);
+        //NSLOG("Could not open file: %s\n", fileName);
         return 0;
     }
     

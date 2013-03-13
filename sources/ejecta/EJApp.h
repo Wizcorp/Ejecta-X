@@ -7,6 +7,7 @@
 
 #ifdef _WINDOWS
 #include <windows.h>
+#include <tchar.h>
 #include <gl/glew.h>
 #include <gl/gl.h>
 #else

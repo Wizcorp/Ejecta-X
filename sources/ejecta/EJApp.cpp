@@ -163,7 +163,7 @@ void EJApp::init(const char* path, int w, int h)
 	width = w;
 
 	// Load the initial JavaScript source files
-	// loadScriptAtPath(NSStringMake(EJECTA_BOOT_JS));
+	//loadScriptAtPath(NSStringMake(EJECTA_BOOT_JS));
 	loadScriptAtPath(NSStringMake(EJECTA_MAIN_JS));
 }
 
