@@ -129,6 +129,7 @@ void EJCanvasContextScreen::prepare()
 	NSLOG("EJCanvasContextScreen prepare");
 	
 	EJCanvasContext::prepare();
+
 	glTranslatef(0, height, 0);
 	glScalef( 1, -1, 1 );
 }

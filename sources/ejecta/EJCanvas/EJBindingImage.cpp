@@ -2,7 +2,7 @@
 #include "../EJApp.h"
 
 
-EJBindingImage::EJBindingImage() : texture(0), path(0){
+EJBindingImage::EJBindingImage() : texture(0), path(0), loading(false) {
 }
 
 EJBindingImage::~EJBindingImage() {

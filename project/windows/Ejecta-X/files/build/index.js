@@ -264,7 +264,10 @@ var context =canvas.getContext("2d");
 pos_x = 0;
 pos_y = 0;
 
+console.log(1);
+
 Image.onload = function(){
+	console.log(3);
 	Image.onload = null;
 	beginPaint();
 };
@@ -278,4 +281,6 @@ function beginPaint(){
 	pos_y++;
 	context.drawImage(Image,pos_x, pos_y);
 	setTimeout(beginPaint, 100);
-}
+};
+
+console.log(2);

@@ -172,8 +172,10 @@ GLubyte * EJTexture::loadPixelsFromPath(NSString * path) {
 	// way to opt-out - thanks Apple, awesome idea.
 	// So, for PNG images we use the lodepng library instead.
 	
-	return (std::string(path->pathExtension()).find("png") == std::string::npos)?
-		loadPixelsWithCGImageFromPath(path):loadPixelsWithLodePNGFromPath(path);
+	//return (std::string(path->pathExtension()).find("png") == std::string::npos)?
+	//	loadPixelsWithCGImageFromPath(path):loadPixelsWithLodePNGFromPath(path);
+
+	return loadPixelsWithLodePNGFromPath(path);
 }
 
 GLubyte * EJTexture::loadPixelsWithCGImageFromPath(NSString * path) {

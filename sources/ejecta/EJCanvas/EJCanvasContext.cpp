@@ -189,11 +189,10 @@ void EJCanvasContext::prepare()
 	glOrtho(0, width, 0, height, -1, 1);
 #else
 	glOrthof(0, width, 0, height, -1, 1);
-#endif
-	
 	glMatrixMode(GL_MODELVIEW);
 	glLoadIdentity();
-
+#endif
+	
 	EJCompositeOperation op = state->globalCompositeOperation;
 	glBlendFunc( EJCompositeOperationFuncs[op].source, EJCompositeOperationFuncs[op].destination );
 	glDisable(GL_TEXTURE_2D);

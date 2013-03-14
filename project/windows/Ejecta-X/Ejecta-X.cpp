@@ -5,8 +5,8 @@
 #include "Ejecta-X.h"
 
 #define MAX_LOADSTRING 100
-#define SCREEN_WIDTH 320
-#define SCREEN_HEIGHT 480
+#define SCREEN_WIDTH 640
+#define SCREEN_HEIGHT 960
 
 // 全局变量:
 HINSTANCE hInst;								// 当前实例
@@ -36,6 +36,7 @@ void SetupRC()
 
 	const char *nativeString = ".";
 	EJApp::instance()->init(nativeString, SCREEN_WIDTH, SCREEN_HEIGHT);
+
 }
 
 void RenderScene(void)
@@ -45,32 +46,30 @@ void RenderScene(void)
 
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);// Clear Screen And Depth Buffer
 	glClearColor(0.0f, 0.0f, 1.0f, 0.5f);// Black Background
-	glLoadIdentity();// Reset The Current Modelview Matrix
 
-	//glColor3f(1.0, 0.0, 1.0);
 	//glBegin(GL_TRIANGLES);
 	//glVertex2f(0.5, 0.5);
 	//glVertex2f(0.0, 0.5);
 	//glVertex2f(0.5, 0.0);
 	//glEnd();
 
+	EJApp::instance()->run();
+
+
 	// Flush drawing commands
 	SwapBuffers(g_hDC);
-	EJApp::instance()->run();
 }
 
 void ChangeSize(int w, int h)
 {
 	//glViewport(0, 0, w, h);
-
 	//glMatrixMode(GL_PROJECTION);// Select The Projection Matrix
 	//glLoadIdentity();// Reset The Projection Matrix
-
 	//// Calculate The Aspect Ratio Of The Window
 	//glOrtho(-1.0, 1.0, -1.0, 1.0, -1.0, 1.0);
-
 	//glMatrixMode(GL_MODELVIEW);// Select The Modelview Matrix
 	//glLoadIdentity();
+
 	EJApp::instance()->setScreenSize(w, h);
 }
 
