@@ -2,7 +2,7 @@
 
 void _ej_class_finalize(JSObjectRef object) {
 	EJBindingBase* instance = (EJBindingBase*) JSObjectGetPrivate(object);
-	delete instance;
+	instance->autorelease();
 }
 
 char * NSDataFromString( NSString *str ) {

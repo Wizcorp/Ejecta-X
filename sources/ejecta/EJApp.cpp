@@ -163,7 +163,7 @@ void EJApp::init(const char* path, int w, int h)
 	width = w;
 
 	// Load the initial JavaScript source files
-	//loadScriptAtPath(NSStringMake(EJECTA_BOOT_JS));
+	loadScriptAtPath(NSStringMake(EJECTA_BOOT_JS));
 	loadScriptAtPath(NSStringMake(EJECTA_MAIN_JS));
 }
 
@@ -378,7 +378,7 @@ JSValueRef EJApp::createTimer(JSContextRef ctxp, size_t argc, const JSValueRef a
 	}
 	
 	JSObjectRef func = JSValueToObject(ctxp, argv[0], NULL);
-	float interval = (float)JSValueToNumber(ctxp, argv[1], NULL)/1000.0f;
+	float interval = (float)JSValueToNumber(ctxp, argv[1], NULL) * 1000.0f;
 	
 	// Make sure short intervals (< 18ms) run each frame
 	if( interval < 0.018 ) {

@@ -12,7 +12,7 @@
 
 EJVertex CanvasVertexBuffer[EJ_CANVAS_VERTEX_BUFFER_SIZE];
 
-EJCanvasContext::EJCanvasContext() : viewFrameBuffer(0), viewRenderBuffer(0), msaaFrameBuffer(0), msaaRenderBuffer(0), stencilBuffer(0)
+EJCanvasContext::EJCanvasContext() : viewFrameBuffer(0), viewRenderBuffer(0), msaaFrameBuffer(0), msaaRenderBuffer(0), stencilBuffer(0),vertexBufferIndex(0)
 {
 	NSLOG("EJCanvasContext");
 }
@@ -22,7 +22,7 @@ const char* EJCanvasContext::getClassName() {
 	return "EJCanvasContext";
 }
 
-EJCanvasContext::EJCanvasContext(short widthp, short heightp) : viewFrameBuffer(0), viewRenderBuffer(0), msaaFrameBuffer(0), msaaRenderBuffer(0), stencilBuffer(0)
+EJCanvasContext::EJCanvasContext(short widthp, short heightp) : viewFrameBuffer(0), viewRenderBuffer(0), msaaFrameBuffer(0), msaaRenderBuffer(0), stencilBuffer(0),vertexBufferIndex(0)
 {
 	NSLOG("EJCanvasContext : %d, %d", widthp, heightp);
 
@@ -225,7 +225,7 @@ void EJCanvasContext::setTexture(EJTexture * newTexture)
 	}
 	
 	currentTexture = newTexture;
-	currentTexture->bind();
+	if(currentTexture)currentTexture->bind();
 }
 
 void EJCanvasContext::pushTri(float x1, float y1, float x2, float y2, float x3, float y3, EJColorRGBA color, CGAffineTransform transform)
@@ -350,7 +350,7 @@ void EJCanvasContext::save()
 	stateIndex++;
 	state = &stateStack[stateIndex];
 	//[state->font retain];
-	state->clipPath->retain();
+	if(state->clipPath)state->clipPath->retain();
 }
 
 void EJCanvasContext::restore()
@@ -369,7 +369,7 @@ void EJCanvasContext::restore()
 	if( state->clipPath && state->clipPath != stateStack[stateIndex-1].clipPath ) {
 		resetClip();
 	}
-	state->clipPath->release();
+	if( state->clipPath )state->clipPath->release();
 	
 	// Load state from stack
 	stateIndex--;

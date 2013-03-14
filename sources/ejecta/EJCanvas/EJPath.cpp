@@ -499,7 +499,7 @@ void EJPath::drawLinesToContext(EJCanvasContext * context) {
 		miter11, miter12,			// Current miter vertices (left, right)
 		miter21, miter22,			// Next miter vertices (left, right)
 		currentEdge, currentExt,	// Current edge and its normal * width/2
-		nextEdge, nextExt;			// Next edge and its normal * width/2
+		nextEdge = { 0.0f, 0.0f }, nextExt = { 0.0f, 0.0f };			// Next edge and its normal * width/2
 	
 	for( path_t::iterator sp = paths.begin(); sp != paths.end(); ++sp ) {
 		BOOL subPathIsClosed = sp->isClosed;

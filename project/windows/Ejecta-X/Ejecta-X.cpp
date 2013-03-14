@@ -5,8 +5,8 @@
 #include "Ejecta-X.h"
 
 #define MAX_LOADSTRING 100
-#define SCREEN_WIDTH 640
-#define SCREEN_HEIGHT 960
+#define SCREEN_WIDTH 960
+#define SCREEN_HEIGHT 640
 
 // 全局变量:
 HINSTANCE hInst;								// 当前实例
@@ -44,8 +44,8 @@ void RenderScene(void)
 	if(!g_ContinueRendering)
 		return;
 
-	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);// Clear Screen And Depth Buffer
-	glClearColor(0.0f, 0.0f, 1.0f, 0.5f);// Black Background
+	//glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);// Clear Screen And Depth Buffer
+	//glClearColor(0.0f, 0.0f, 1.0f, 0.5f);// Black Background
 
 	//glBegin(GL_TRIANGLES);
 	//glVertex2f(0.5, 0.5);

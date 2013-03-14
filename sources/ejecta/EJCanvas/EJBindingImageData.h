@@ -4,7 +4,7 @@
 #include "../EJBindingBase.h"
 #include "EJImageData.h"
 
-class EJBindingImageData : EJBindingBase {
+class EJBindingImageData : public EJBindingBase {
 private:
 	JSObjectRef dataArray;
 public:

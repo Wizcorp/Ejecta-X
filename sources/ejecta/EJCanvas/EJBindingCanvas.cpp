@@ -464,7 +464,7 @@ EJ_BIND_FUNCTION(EJBindingCanvas, drawImage, ctx, argc, argv) {
  	// Create the JS object
  	EJBindingImageData* tempData = new EJBindingImageData();
  	JSClassRef imageDataClass = EJApp::instance()->getJSClassForClass((EJBindingBase*)tempData);
- 	delete tempData;
+ 	tempData->autorelease();
  	JSObjectRef obj = JSObjectMake( ctx, imageDataClass, NULL );
  	JSValueProtect(ctx, obj);
 
