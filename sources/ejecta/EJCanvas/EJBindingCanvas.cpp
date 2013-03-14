@@ -4,7 +4,7 @@
 
 bool EJBindingCanvas::firstCanvasInstance = true;
 
-EJBindingCanvas::EJBindingCanvas() : renderingContext(0) {
+EJBindingCanvas::EJBindingCanvas() : renderingContext(0), isScreenCanvas(false) {
 	
 	ejectaInstance = EJApp::instance();
 	scalingMode = kEJScalingModeFitWidth;
@@ -46,7 +46,7 @@ void EJBindingCanvas::init(JSContextRef ctx ,JSObjectRef obj, size_t argc, const
 	}
 }
 
-EJBindingCanvas::EJBindingCanvas(JSContextRef ctx ,JSObjectRef obj, size_t argc, const JSValueRef argv[]) : renderingContext(0) {
+EJBindingCanvas::EJBindingCanvas(JSContextRef ctx ,JSObjectRef obj, size_t argc, const JSValueRef argv[]) : renderingContext(0), isScreenCanvas(false) {
 	
 	ejectaInstance = EJApp::instance();
 	scalingMode = kEJScalingModeFitWidth;

@@ -26,8 +26,8 @@ void EJCanvasContextTexture::create()
 #endif
 	prepare();
 
-	glClearColor(0.0f, 0.0f, 1.0f, 0.5f);
-    glClear(GL_COLOR_BUFFER_BIT);
+	glClearColor(1.0f, 0.0f, 0.0f, 0.5f);
+	glClear(GL_COLOR_BUFFER_BIT);
 }
 
 EJCanvasContextTexture::EJCanvasContextTexture() 
@@ -86,6 +86,6 @@ void EJCanvasContextTexture::prepare() {
 
 	NSLOG("EJCanvasContextTexture prepare");
 	
-	EJCanvasContext::prepare();
+	//EJCanvasContext::prepare();
 	msaaNeedsResolving = msaaEnabled;
 }

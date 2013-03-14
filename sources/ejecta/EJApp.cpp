@@ -197,7 +197,7 @@ void EJApp::run(void)
 		
 	}
 
-	currentRenderingContext->flushBuffers();
+	if(currentRenderingContext)currentRenderingContext->flushBuffers();
 }
 
 void EJApp::pause(void)
