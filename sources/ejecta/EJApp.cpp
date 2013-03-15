@@ -179,7 +179,7 @@ void EJApp::setScreenSize(int w, int h)
 		
 	}
 
-	screenRenderingContext->prepare();
+	if(screenRenderingContext)screenRenderingContext->prepare();
 }
 
 void EJApp::run(void)

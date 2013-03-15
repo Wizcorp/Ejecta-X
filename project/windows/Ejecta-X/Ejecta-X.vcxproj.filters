@@ -28,6 +28,12 @@
     <Filter Include="ejecta\EJCocoa\support">
       <UniqueIdentifier>{f183ef8c-94eb-432d-a998-f77701d6e0db}</UniqueIdentifier>
     </Filter>
+    <Filter Include="ejecta\EJAudio">
+      <UniqueIdentifier>{76f38057-6fd4-454f-83a5-9356303b0afe}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ejecta\EJUtils">
+      <UniqueIdentifier>{5030f7d8-7f86-449f-a0b2-1ebbc5445fda}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <None Include="ReadMe.txt" />
@@ -168,6 +174,12 @@
     <ClInclude Include="..\..\..\sources\ejecta\EJCocoa\support\utlist.h">
       <Filter>ejecta\EJCocoa\support</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\..\sources\ejecta\EJAudio\EJBindingAudio.h">
+      <Filter>ejecta\EJAudio</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\sources\ejecta\EJUtils\EJBindingLocalStorage.h">
+      <Filter>ejecta\EJUtils</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="stdafx.cpp">
@@ -262,6 +274,12 @@
     </ClCompile>
     <ClCompile Include="..\..\..\sources\ejecta\EJApp.cpp">
       <Filter>ejecta</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\sources\ejecta\EJAudio\EJBindingAudio.cpp">
+      <Filter>ejecta\EJAudio</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\sources\ejecta\EJUtils\EJBindingLocalStorage.cpp">
+      <Filter>ejecta\EJUtils</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

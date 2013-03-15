@@ -87,6 +87,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\..\sources\ejecta\EJApp.h" />
+    <ClInclude Include="..\..\..\sources\ejecta\EJAudio\EJBindingAudio.h" />
     <ClInclude Include="..\..\..\sources\ejecta\EJBindingBase.h" />
     <ClInclude Include="..\..\..\sources\ejecta\EJBindingEjectaCore.h" />
     <ClInclude Include="..\..\..\sources\ejecta\EJBindingEventedBase.h" />
@@ -124,6 +125,7 @@
     <ClInclude Include="..\..\..\sources\ejecta\EJCocoa\support\utlist.h" />
     <ClInclude Include="..\..\..\sources\ejecta\EJConvert.h" />
     <ClInclude Include="..\..\..\sources\ejecta\EJTimer.h" />
+    <ClInclude Include="..\..\..\sources\ejecta\EJUtils\EJBindingLocalStorage.h" />
     <ClInclude Include="..\..\..\sources\ejecta\lodepng\lodepng.h" />
     <ClInclude Include="Ejecta-X.h" />
     <ClInclude Include="Resource.h" />
@@ -132,6 +134,9 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\..\sources\ejecta\EJApp.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">NotUsing</PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="..\..\..\sources\ejecta\EJAudio\EJBindingAudio.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">NotUsing</PrecompiledHeader>
     </ClCompile>
     <ClCompile Include="..\..\..\sources\ejecta\EJBindingBase.cpp">
@@ -213,6 +218,9 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">NotUsing</PrecompiledHeader>
     </ClCompile>
     <ClCompile Include="..\..\..\sources\ejecta\EJTimer.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">NotUsing</PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="..\..\..\sources\ejecta\EJUtils\EJBindingLocalStorage.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">NotUsing</PrecompiledHeader>
     </ClCompile>
     <ClCompile Include="..\..\..\sources\ejecta\lodepng\lodepng.cpp">
