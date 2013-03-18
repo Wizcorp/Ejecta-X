@@ -17,8 +17,7 @@ public class EjectaRenderer implements Renderer {
 		mainBundle = "/data/data/" + ctx.getPackageName();
         mContext = ctx;
         System.out.println(mainBundle);
-        Utils.copyDatFile(ctx, mainBundle+"/files/build/", "index.js");
-        Utils.copyDatFile(ctx, mainBundle+"/files/build/", "bg.png");
+        Utils.copyDatFiles(ctx, mainBundle+"/files/build/", "build");
         screen_width = width;
         screen_height = height;
 	}

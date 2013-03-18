@@ -69,7 +69,7 @@ EJTimer::EJTimer(JSObjectRef callbackp, float intervalp, BOOL repeatp)
 	struct timeval time;
 	//struct timezone tz;
 	gettimeofday(&time, NULL);
-	target = time.tv_sec + time.tv_usec / 1000000.0  + interval;
+	target = time.tv_sec * 1000000.0 + time.tv_usec  + interval;
 #endif
 
 	callback = callbackp;
@@ -96,7 +96,7 @@ void EJTimer::check()
 	struct timeval time;
 	//struct timezone tz;
 	gettimeofday(&time, NULL);
-	double currentTime = time.tv_sec + time.tv_usec / 1000000.0  + interval;
+	double currentTime = time.tv_sec * 1000000.0 + time.tv_usec + interval;
 #endif
 
 	if( active && target <= currentTime) {

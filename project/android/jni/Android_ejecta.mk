@@ -52,6 +52,7 @@ LOCAL_SRC_FILES := \
                     ../../../sources/ejecta/EJBindingEjectaCore.cpp \
                     ../../../sources/ejecta/EJBindingEventedBase.cpp \
                     ../../../sources/ejecta/EJTimer.cpp \
+                    ../../../sources/ejecta/EJAudio/EJBindingAudio.cpp \
                     ../../../sources/ejecta/EJCanvas/EJBindingImage.cpp \
                     ../../../sources/ejecta/EJCanvas/EJBindingImageData.cpp \
                     ../../../sources/ejecta/EJCanvas/EJBindingCanvas.cpp \
@@ -61,6 +62,7 @@ LOCAL_SRC_FILES := \
                     ../../../sources/ejecta/EJCanvas/EJPath.cpp \
                     ../../../sources/ejecta/EJCanvas/EJTexture.cpp \
                     ../../../sources/ejecta/EJCanvas/EJImageData.cpp \
+                    ../../../sources/ejecta/EJUtils/EJBindingLocalStorage.cpp \
                     ejecta.cpp \
 
 LOCAL_LDLIBS :=  -lz -llog -lGLESv1_CM \

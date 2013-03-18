@@ -421,14 +421,17 @@ void EJCanvasContext::setTransform(float m11, float m12, float m21, float m22, f
 
 void EJCanvasContext::drawImage(EJTexture * texture, float sx, float sy, float sw, float sh, float dx, float dy, float dw, float dh)
 {
-	float tw = texture->realWidth;
-	float th = texture->realHeight;
+	if (texture)
+	{
+		float tw = texture->realWidth;
+		float th = texture->realHeight;
 	
-	//EJColorRGBA color = {{255, 255, 255, 255 * state->globalAlpha}};
-	EJColorRGBA color = {0xffffffff};
-	color.rgba.a = (unsigned char)(255 * state->globalAlpha);
-	setTexture(texture);
-	pushRect(dx, dy, dw, dh, sx/tw, sy/th, sw/tw, sh/th, color, state->transform);
+		//EJColorRGBA color = {{255, 255, 255, 255 * state->globalAlpha}};
+		EJColorRGBA color = {0xffffffff};
+		color.rgba.a = (unsigned char)(255 * state->globalAlpha);
+		setTexture(texture);
+		pushRect(dx, dy, dw, dh, sx/tw, sy/th, sw/tw, sh/th, color, state->transform);
+	}
 }
 
 void EJCanvasContext::fillRect(float x, float y, float w, float h)

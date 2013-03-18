@@ -1,16 +1,9 @@
 package com.impactjs.ejecta.sample;
 
-
-
-
 import com.impactjs.ejecta.EjectaGLSurfaceView;
-
 import android.app.Activity;
-
 import android.opengl.GLSurfaceView;
 import android.os.Bundle;
-
-
 
 public class DemoActivity extends Activity{
 	private GLSurfaceView mGLView;
@@ -22,8 +15,6 @@ public class DemoActivity extends Activity{
 		int height = getWindowManager().getDefaultDisplay().getHeight();
 	    mGLView = new EjectaGLSurfaceView(this, width, height);
         setContentView(mGLView);
-       
-       
 	}
 	
 	 

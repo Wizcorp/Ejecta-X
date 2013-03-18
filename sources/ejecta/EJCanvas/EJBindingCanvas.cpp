@@ -360,7 +360,7 @@ EJ_BIND_FUNCTION(EJBindingCanvas, drawImage, ctx, argc, argv) {
 	EJBindingImage* drawable = (EJBindingImage*)JSObjectGetPrivate((JSObjectRef)argv[0]);
 	// NSObject<EJDrawable> * drawable = (NSObject<EJDrawable> *)JSObjectGetPrivate((JSObjectRef)argv[0]);
 	EJTexture * image = drawable->texture;
-	float scale = image->contentScale;
+	float scale = image?image->contentScale:1;
 	
 	short sx = 0, sy = 0, sw = 0, sh = 0;
 	float dx = 0, dy = 0, dw = sw, dh = sh;	
@@ -369,8 +369,8 @@ EJ_BIND_FUNCTION(EJBindingCanvas, drawImage, ctx, argc, argv) {
 		// drawImage(image, dx, dy)
 		dx = (float)JSValueToNumberFast(ctx, argv[1]);
 		dy = (float)JSValueToNumberFast(ctx, argv[2]);
-		sw = image->width;
-		sh = image->height;
+		sw = image?image->width:0;
+		sh = image?image->height:0;
 		dw = sw / scale;
 		dh = sh / scale;
 	}
@@ -380,8 +380,8 @@ EJ_BIND_FUNCTION(EJBindingCanvas, drawImage, ctx, argc, argv) {
 		dy = (float)JSValueToNumberFast(ctx, argv[2]);
 		dw = (float)JSValueToNumberFast(ctx, argv[3]);
 		dh = (float)JSValueToNumberFast(ctx, argv[4]);
-		sw = image->width;
-		sh = image->height;
+		sw = image?image->width:0;
+		sh = image?image->height:0;
 	}
 	else if( argc >= 9 ) {
 		// drawImage(image, sx, sy, sw, sh, dx, dy, dw, dh)
