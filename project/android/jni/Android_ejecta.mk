@@ -26,13 +26,14 @@ LOCAL_C_INCLUDES := \
                     $(LOCAL_PATH)/../../../sources/ejecta/EJCanvas \
                     $(LOCAL_PATH)/../../../sources/ejecta/EJCocoa \
                     $(LOCAL_PATH)/../../../sources/ejecta/EJCocoa/support \
+                    $(LOCAL_PATH)/../../../library/android/libfreetype/include \
                     $(LOCAL_PATH)/../../../library/android/libpng/include \
                     $(LOCAL_PATH)/../../../library/android/libjpeg/include \
-                    $(LOCAL_PATH)/../../../library/android/JavaScriptCore/include \
-                    $(LOCAL_PATH)/../../../library/android/corefoundation-lite-android 
+                    $(LOCAL_PATH)/../../../library/android/JavaScriptCore/include 
 
 LOCAL_SRC_FILES := \
                     ../../../sources/ejecta/lodepng/lodepng.cpp \
+                    ../../../sources/ejecta/lodejpeg/lodejpeg.cpp \
                     ../../../sources/ejecta/EJCocoa/support/nsCArray.cpp \
                     ../../../sources/ejecta/EJCocoa/NSObject.cpp \
                     ../../../sources/ejecta/EJCocoa/NSObjectFactory.cpp \
@@ -61,14 +62,16 @@ LOCAL_SRC_FILES := \
                     ../../../sources/ejecta/EJCanvas/EJCanvasContextTexture.cpp \
                     ../../../sources/ejecta/EJCanvas/EJPath.cpp \
                     ../../../sources/ejecta/EJCanvas/EJTexture.cpp \
+                    ../../../sources/ejecta/EJCanvas/EJFont.cpp \
                     ../../../sources/ejecta/EJCanvas/EJImageData.cpp \
                     ../../../sources/ejecta/EJUtils/EJBindingLocalStorage.cpp \
                     ejecta.cpp \
 
 LOCAL_LDLIBS :=  -lz -llog -lGLESv1_CM \
+                    -L$(LOCAL_PATH)/../../../library/android/libfreetype/libs/$(TARGET_ARCH_ABI) -lfreetype \
                     -L$(LOCAL_PATH)/../../../library/android/libpng/libs/$(TARGET_ARCH_ABI) -lpng \
                     -L$(LOCAL_PATH)/../../../library/android/libjpeg/libs/$(TARGET_ARCH_ABI) -ljpeg \
 
-LOCAL_SHARED_LIBRARIES := libJavaScriptCore libcorefoundation
+LOCAL_SHARED_LIBRARIES := libJavaScriptCore
 
 include $(BUILD_SHARED_LIBRARY)

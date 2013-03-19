@@ -34,6 +34,9 @@
     <Filter Include="ejecta\EJUtils">
       <UniqueIdentifier>{5030f7d8-7f86-449f-a0b2-1ebbc5445fda}</UniqueIdentifier>
     </Filter>
+    <Filter Include="ejecta\lodejpeg">
+      <UniqueIdentifier>{9650e057-f786-4916-add2-99822507ede8}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <None Include="ReadMe.txt" />
@@ -180,6 +183,12 @@
     <ClInclude Include="..\..\..\sources\ejecta\EJUtils\EJBindingLocalStorage.h">
       <Filter>ejecta\EJUtils</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\..\sources\ejecta\lodejpeg\lodejpeg.h">
+      <Filter>ejecta\lodejpeg</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\sources\ejecta\EJCanvas\EJFont.h">
+      <Filter>ejecta\EJCanvas</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="stdafx.cpp">
@@ -280,6 +289,12 @@
     </ClCompile>
     <ClCompile Include="..\..\..\sources\ejecta\EJUtils\EJBindingLocalStorage.cpp">
       <Filter>ejecta\EJUtils</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\sources\ejecta\lodejpeg\lodejpeg.cpp">
+      <Filter>ejecta\lodejpeg</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\sources\ejecta\EJCanvas\EJFont.cpp">
+      <Filter>ejecta\EJCanvas</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

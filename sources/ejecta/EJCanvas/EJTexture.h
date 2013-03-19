@@ -2,6 +2,8 @@
 #define __EJTEXTURE_H__
 
 #ifdef _WINDOWS
+#include <gl/glew.h>
+#include <gl/wglew.h>
 #include <windows.h>
 #include <tchar.h>
 #include <gl//gl.h>
@@ -12,7 +14,7 @@
 #endif
 #include "../EJCocoa/NSString.h"
 
-class EJTexture: public NSObject {
+class EJTexture : public NSObject {
 
 	NSString * fullPath;
 	GLenum format;

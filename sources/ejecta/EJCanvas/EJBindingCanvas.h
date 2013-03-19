@@ -97,8 +97,8 @@ public:
 	EJ_BIND_GET_DEFINE( miterLimit, ctx);
 	EJ_BIND_SET_DEFINE( miterLimit, ctx, value);
 
-//	EJ_BIND_GET_DEFINE(font, ctx);
-//	EJ_BIND_SET_DEFINE(font, ctx, value);
+	EJ_BIND_GET_DEFINE(font, ctx);
+	EJ_BIND_SET_DEFINE(font, ctx, value);
 	EJ_BIND_GET_DEFINE(width, ctx);
 	EJ_BIND_SET_DEFINE(width, ctx, value);
 	EJ_BIND_GET_DEFINE(height, ctx);

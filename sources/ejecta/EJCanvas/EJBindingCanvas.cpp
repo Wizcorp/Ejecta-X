@@ -131,30 +131,29 @@ EJ_BIND_SET( EJBindingCanvas, miterLimit, ctx, value) {
 	renderingContext->state->miterLimit = (float)JSValueToNumberFast(ctx, value);
 }
 
-//UIFont ÔÝÎ´ÊµÏÖ
-// EJ_BIND_GET( EJBindingCanvas,font, ctx) {
-// 	UIFont * font = renderingContext->state->font;
-// 	NSString * name = NSString::stringWithFormat("%dpt %s", (int)font.pointSize, font.fontName);
-// 	return NSStringToJSValue(ctx, name);
-// }
+EJ_BIND_GET( EJBindingCanvas,font, ctx) {
+ 	//UIFont * font = renderingContext->state->font;
+ 	NSString * name = NSStringMake("16dpt simsun");//NSString::stringWithFormat("%dpt %s", (int)font.pointSize, font.fontName);
+ 	return NSStringToJSValue(ctx, name);
+}
 
-// EJ_BIND_SET( EJBindingCanvas,font, ctx, value) {
-// 	char string[64]; // Long font names are long
-// 	JSStringRef jsString = JSValueToStringCopy( ctx, value, NULL );
-// 	JSStringGetUTF8CString(jsString, string, 64);
+EJ_BIND_SET( EJBindingCanvas,font, ctx, value) {
+ 	char string[64]; // Long font names are long
+ 	JSStringRef jsString = JSValueToStringCopy( ctx, value, NULL );
+ 	JSStringGetUTF8CString(jsString, string, 64);
 
-// 	// Yeah, oldschool!
-// 	float size = 0;
-// 	char name[64];
-// 	sscanf( string, "%fp%*[tx] %63s", &size, name); // matches: 10.5p[tx] helvetica
-// 	UIFont * newFont = [UIFont fontWithName:[NSString stringWithUTF8String:name] size:size];
+ 	// Yeah, oldschool!
+ 	float size = 0;
+ 	char name[64];
+ 	sscanf( string, "%fp%*[tx] %63s", &size, name); // matches: 10.5p[tx] helvetica
+ 	//UIFont * newFont = [UIFont fontWithName:[NSString stringWithUTF8String:name] size:size];
 
-// 	if( newFont ) {
-// 		renderingContext->font = newFont;
-// 	}
+ 	//if( newFont ) {
+ 	//	renderingContext->font = newFont;
+ 	//}
 
-// 	JSStringRelease(jsString);
-// }
+ 	JSStringRelease(jsString);
+}
 
  EJ_BIND_GET( EJBindingCanvas,width, ctx) {
  	return JSValueMakeNumber(ctx, width);

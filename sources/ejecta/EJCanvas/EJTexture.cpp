@@ -1,6 +1,7 @@
 #include <math.h>
 #include "EJTexture.h"
 #include "../lodepng/lodepng.h"
+#include "../lodejpeg/lodejpeg.h"
 
 
 // Textures check this global filter state when binding
@@ -172,15 +173,41 @@ GLubyte * EJTexture::loadPixelsFromPath(NSString * path) {
 	// way to opt-out - thanks Apple, awesome idea.
 	// So, for PNG images we use the lodepng library instead.
 	
-	//return (std::string(path->pathExtension()).find("png") == std::string::npos)?
-	//	loadPixelsWithCGImageFromPath(path):loadPixelsWithLodePNGFromPath(path);
-
-	return loadPixelsWithLodePNGFromPath(path);
+	return (std::string(path->getCString()).find(".png") == std::string::npos)?
+		loadPixelsWithCGImageFromPath(path):loadPixelsWithLodePNGFromPath(path);
 }
 
 GLubyte * EJTexture::loadPixelsWithCGImageFromPath(NSString * path) {
-	//not implement
-	return NULL;
+	unsigned int w, h;
+	unsigned char * origPixels = NULL;
+	unsigned int error = lodejpeg_decode32_file(&origPixels, &w, &h, path->getCString());
+	if( error ) {
+		NSLOG("Error Loading image %s - %u: %s", path->getCString(), error, lodejpeg_error_text(error));
+		return origPixels;
+	}
+
+	setWidthAndHeight(w, h);
+
+	// If the image is already in the correct (power of 2) size, just return
+	// the original pixels unmodified
+
+	if( width == realWidth && height == realHeight ) {
+		return origPixels;
+	}
+
+	// Copy the original pixels into the upper left corner of a larger
+	// (power of 2) pixel buffer, free the original pixels and return
+	// the larger buffer
+	else {
+		GLubyte * pixels = (GLubyte *)calloc( realWidth * realHeight * 4, sizeof(GLubyte) );
+
+		for( int y = 0; y < height; y++ ) {
+			memcpy( &pixels[y*realWidth*4], &origPixels[y*width*4], width*4 );
+		}
+
+		free( origPixels );
+		return pixels;
+	}
 }
 
 GLubyte * EJTexture::loadPixelsWithLodePNGFromPath(NSString * path) {
