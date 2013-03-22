@@ -32,6 +32,7 @@ LOCAL_C_INCLUDES := \
                     $(LOCAL_PATH)/../../../library/android/JavaScriptCore/include 
 
 LOCAL_SRC_FILES := \
+                    ../../../sources/ejecta/lodefreetype/lodefreetype.cpp \
                     ../../../sources/ejecta/lodepng/lodepng.cpp \
                     ../../../sources/ejecta/lodejpeg/lodejpeg.cpp \
                     ../../../sources/ejecta/EJCocoa/support/nsCArray.cpp \

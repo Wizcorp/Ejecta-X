@@ -9,6 +9,7 @@
 #include <GLES/glext.h>
 #endif
 #include "EJCanvasContext.h"
+#include "EJFont.h"
 
 EJVertex CanvasVertexBuffer[EJ_CANVAS_VERTEX_BUFFER_SIZE];
 
@@ -566,12 +567,18 @@ void EJCanvasContext::fillText(NSString * text, float x, float y)
 {
 	// EJFont *font = [self acquireFont:state->font.fontName size:state->font.pointSize fill:YES contentScale:backingStoreRatio];
 	// [font drawString:text toContext:self x:x y:y];
+	EJFont* font = new EJFont(NSStringMake("./files/build/simsun.ttc"), 48, true, backingStoreRatio);
+	font->drawString(text, this, x, y);
+	drawImage(font->texture,x,y,font->width,font->height,x,y,font->width,font->height);
 }
 
 void EJCanvasContext::strokeText(NSString * text, float x, float y)
 {
 	// EJFont *font = [self acquireFont:state->font.fontName size:state->font.pointSize fill:NO contentScale:backingStoreRatio];
 	// [font drawString:text toContext:self x:x y:y];
+	EJFont* font = new EJFont(NSStringMake("./files/build/stonsans.ttf"), 48, false, backingStoreRatio);
+	font->drawString(text, this, x, y);
+	drawImage(font->texture,x,y,font->width,font->height,x,y,font->width,font->height);
 }
 
 float EJCanvasContext::measureText(NSString * text)

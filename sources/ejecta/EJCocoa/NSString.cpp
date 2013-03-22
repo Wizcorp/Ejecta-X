@@ -119,7 +119,6 @@ const char* NSString::getCString() const
     return m_sString.c_str();
 }
 
-
 const char* NSString::pathExtension()const
 {
     int pos = m_sString.find_last_of(".");

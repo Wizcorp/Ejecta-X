@@ -12,10 +12,12 @@ class EJCanvasContext;
 
 class EJFont : public NSObject {
 	// Glyph information
-	NSArray * textures;
 	//__gnu_cxx::hash_map<int, GlyphInfo> glyphInfoMap;
 	float txLineX, txLineY, txLineH;
 	
+	void * font_info;
+	unsigned long font_index;
+	size_t font_size;
 	//GlyphLayout * layoutBuffer;
 	
 	// Font preferences
@@ -30,6 +32,10 @@ class EJFont : public NSObject {
 	//CGGlyph * glyphsBuffer;
 	//CGPoint * positionsBuffer;
 public:
+
+	EJTexture * texture;
+	unsigned int width, height;
+
 	EJFont();
 	EJFont(NSString* font, NSInteger size, BOOL fill, float contentScale);
 	~EJFont();

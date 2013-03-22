@@ -1,14 +1,18 @@
 #include "EJFont.h"
 #include "EJCanvasContext.h"
+#include "lodefreetype/lodefreetype.h"
 
-EJFont::EJFont()
+EJFont::EJFont() : font_info(0), font_index(0), font_size(16)
 {
 
 }
 
-EJFont::EJFont(NSString* font, NSInteger size, BOOL fill, float contentScale)
+EJFont::EJFont(NSString* font, NSInteger size, BOOL fill, float contentScale) : font_info(0), font_index(0), font_size(size.getValue())
 {
-
+	width = 0;
+	height = font_size;
+	lodefreetype_decode32_file(&font_info, &width, &height, font->getCString());
+	texture = 0;
 }
 
 EJFont::~EJFont()
@@ -18,7 +22,10 @@ EJFont::~EJFont()
 
 void EJFont::drawString(NSString* string, EJCanvasContext* context, float x, float y)
 {
-
+	draw_freetype_font(NULL, &width, &height, font_info, font_index, font_size, x, y, string->getCString());
+	GLubyte * bitmap = (GLubyte *)calloc( width * height, sizeof(GLubyte) );
+	draw_freetype_font(&bitmap, &width, &height, font_info, font_index, font_size, x, y, string->getCString());
+	texture = new EJTexture(width, height, bitmap);
 }
 
 float EJFont::measureString(NSString* string)

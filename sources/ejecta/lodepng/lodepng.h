@@ -23,8 +23,8 @@ freely, subject to the following restrictions:
     distribution.
 */
 
-#ifndef LODEPNG_H
-#define LODEPNG_H
+#ifndef __LODEPNG_H_
+#define __LODEPNG_H_
 
 #include <string.h> /*for size_t*/
 
@@ -863,7 +863,7 @@ TODO:
 [ ] let the C++ wrapper catch exceptions coming from the standard library and return LodePNG error codes
 */
 
-#endif /*LODEPNG_H inclusion guard*/
+#endif /*__LODEPNG_H_ inclusion guard*/
 
 /*
 LodePNG Documentation

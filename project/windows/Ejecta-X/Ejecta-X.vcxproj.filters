@@ -37,6 +37,9 @@
     <Filter Include="ejecta\lodejpeg">
       <UniqueIdentifier>{9650e057-f786-4916-add2-99822507ede8}</UniqueIdentifier>
     </Filter>
+    <Filter Include="ejecta\lodefreetype">
+      <UniqueIdentifier>{d7bf0011-d9e8-4364-af98-25a439321c62}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <None Include="ReadMe.txt" />
@@ -189,6 +192,9 @@
     <ClInclude Include="..\..\..\sources\ejecta\EJCanvas\EJFont.h">
       <Filter>ejecta\EJCanvas</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\..\sources\ejecta\lodefreetype\lodefreetype.h">
+      <Filter>ejecta\lodefreetype</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="stdafx.cpp">
@@ -295,6 +301,9 @@
     </ClCompile>
     <ClCompile Include="..\..\..\sources\ejecta\EJCanvas\EJFont.cpp">
       <Filter>ejecta\EJCanvas</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\sources\ejecta\lodefreetype\lodefreetype.cpp">
+      <Filter>ejecta\lodefreetype</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

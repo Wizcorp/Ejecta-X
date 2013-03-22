@@ -1,5 +1,5 @@
-#ifndef LODEJPEG_H
-#define LODEJPEG_H
+#ifndef __LODEJPEG_H_
+#define __LODEJPEG_H_
 
 #ifdef __cplusplus
 #include <vector>
@@ -33,7 +33,7 @@ unsigned lodejpeg_decode32_file(unsigned char** out, unsigned* w, unsigned* h,
                                const char* filename);
 
 
-#endif /*LODEJPEG_H inclusion guard*/
+#endif /*__LODEJPEG_H_ inclusion guard*/
 /*
 LodePNG Documentation
 ---------------------
