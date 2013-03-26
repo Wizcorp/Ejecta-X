@@ -17,17 +17,11 @@ public class DemoActivity extends Activity{
         setContentView(mGLView);
 	}
 	
-	 
 	@Override
-	protected void onPause() {
-		super.onPause();
-		mGLView.onPause();
-	}
-
-	@Override
-	protected void onResume() {
-		super.onResume();
-		mGLView.onResume();
+	protected void onDestroy() {
+		// TODO Auto-generated method stub
+		((EjectaGLSurfaceView)mGLView).onDestroy();
+		super.onDestroy();
 	}
 	
 	static {

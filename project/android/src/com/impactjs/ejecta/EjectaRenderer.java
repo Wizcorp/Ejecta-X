@@ -44,9 +44,19 @@ public class EjectaRenderer implements Renderer {
 		nativeCreated(mainBundle, screen_width, screen_height);
 	}
 
-	private static native void nativeRender();
+	private native void nativeRender();
 
-	private static native void nativeCreated(String mainBundle, int width, int height);
+	private native void nativeCreated(String mainBundle, int width, int height);
 	
-	private static native void nativeChanged(int width, int height);
+	private native void nativeChanged(int width, int height);
+	
+	public native void nativeFinalize();
+    
+	public native void nativePause();
+	public native void nativeResume();
+    
+	public native void nativeTouch(int action, int x, int y);
+	public native void nativeOnSensorChanged(float accle_x, float accle_y, float accle_z);
+	public native void nativeOnKeyDown(int key_code);
+	public native void nativeOnKeyUp(int key_code);
 }

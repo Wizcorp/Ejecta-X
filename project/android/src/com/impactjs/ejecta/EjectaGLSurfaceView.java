@@ -2,6 +2,8 @@ package com.impactjs.ejecta;
 
 import android.content.Context;
 import android.opengl.GLSurfaceView;
+import android.view.KeyEvent;
+import android.view.MotionEvent;
 
 public class EjectaGLSurfaceView extends GLSurfaceView {
 	
@@ -17,5 +19,47 @@ public class EjectaGLSurfaceView extends GLSurfaceView {
 		mRenderer = new EjectaRenderer(context, width, height);
         setRenderer(mRenderer);
 	}
+	
+	@Override
+	public void onResume() {
+		// TODO Auto-generated method stub
+		mRenderer.nativeResume();
+		super.onResume();
+	}
+	
+	@Override
+	public void onPause() {
+		// TODO Auto-generated method stub
+		super.onPause();
+		mRenderer.nativePause();
+	}
+	
+	@Override
+	public boolean onTouchEvent(MotionEvent event) {
+		// TODO Auto-generated method stub
+		mRenderer.nativeTouch(event.getAction(), (int)event.getX(), (int)event.getY());
+		return super.onTouchEvent(event);
+	}
+	
+	@Override
+	public boolean onKeyDown(int keyCode, KeyEvent event) {
+		// TODO Auto-generated method stub
+		mRenderer.nativeOnKeyDown(keyCode);
+		return super.onKeyDown(keyCode, event);
+	}
+	
+	@Override
+	public boolean onKeyUp(int keyCode, KeyEvent event) {
+		// TODO Auto-generated method stub
+		mRenderer.nativeOnKeyUp(keyCode);
+		return super.onKeyUp(keyCode, event);
+	}
+	
+	public void onDestroy() {
+		// TODO Auto-generated method stub
+		mRenderer.nativeFinalize();
+	}
+	
+	
 	private static native void nativeSetPaths();
 }
