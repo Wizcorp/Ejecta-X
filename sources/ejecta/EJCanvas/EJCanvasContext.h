@@ -131,6 +131,7 @@ public:
 	EJCanvasContext(short widthp, short heightp);
 	~EJCanvasContext();
 	virtual void create();
+	void setScreenSize(int widthp, int heightp);
 	void createStencilBufferOnce();
 	void bindVertexBuffer();
 	virtual void prepare();

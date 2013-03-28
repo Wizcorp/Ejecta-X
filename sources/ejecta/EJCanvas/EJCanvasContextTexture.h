@@ -8,7 +8,7 @@
 #include "EJCanvasContext.h"
 #include "EJTexture.h"
 
-class EJCanvasContextTexture : EJCanvasContext {
+class EJCanvasContextTexture : public EJCanvasContext {
 private:
 	bool msaaNeedsResolving;
 

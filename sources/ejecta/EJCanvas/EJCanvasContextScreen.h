@@ -24,7 +24,7 @@ typedef struct {
 	CGSize size;
 } CGRect;
 
-class EJCanvasContextScreen : EJCanvasContext {
+class EJCanvasContextScreen : public EJCanvasContext {
 	//EAGLView * glview;
 	GLuint colorRenderbuffer;
 	

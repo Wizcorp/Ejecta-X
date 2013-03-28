@@ -8,6 +8,7 @@
 #include <GLES/gl.h>
 #include <GLES/glext.h>
 #endif
+#include "../EJApp.h"
 #include "EJCanvasContext.h"
 #include "EJFont.h"
 
@@ -42,8 +43,7 @@ EJCanvasContext::EJCanvasContext(short widthp, short heightp) : viewFrameBuffer(
 	//state->font = [[UIFont fontWithName:@"Helvetica" size:10] retain];
 	state->clipPath = NULL;
 	
-	bufferWidth = viewportWidth = width = widthp;
-	bufferHeight = viewportHeight = height = heightp;
+	setScreenSize(widthp, heightp);
 	
 	path = new EJPath();
 	backingStoreRatio = 1;
@@ -122,6 +122,12 @@ void EJCanvasContext::create()
 	// glBindRenderbufferOES(GL_RENDERBUFFER_OES, viewRenderBuffer);
 #endif
 
+}
+
+void EJCanvasContext::setScreenSize(int widthp, int heightp)
+{
+	bufferWidth = viewportWidth = width = widthp;
+	bufferHeight = viewportHeight = height = heightp;
 }
 
 void EJCanvasContext::createStencilBufferOnce()
@@ -567,8 +573,10 @@ void EJCanvasContext::fillText(NSString * text, float x, float y)
 {
 	// EJFont *font = [self acquireFont:state->font.fontName size:state->font.pointSize fill:YES contentScale:backingStoreRatio];
 	// [font drawString:text toContext:self x:x y:y];
-	EJFont* font = new EJFont(NSStringMake("./files/build/simsun.ttc"), 48, true, backingStoreRatio);
+	NSString * fullPath = EJApp::instance()->pathForResource(NSStringMake("droidsans.ttf"));
+	EJFont* font = new EJFont(fullPath, 150, true, backingStoreRatio);
 	font->drawString(text, this, x, y);
+	NSLOG("%f, %f, %u, %u", x,y,font->width,font->height);
 	drawImage(font->texture,x,y,font->width,font->height,x,y,font->width,font->height);
 }
 
@@ -576,7 +584,8 @@ void EJCanvasContext::strokeText(NSString * text, float x, float y)
 {
 	// EJFont *font = [self acquireFont:state->font.fontName size:state->font.pointSize fill:NO contentScale:backingStoreRatio];
 	// [font drawString:text toContext:self x:x y:y];
-	EJFont* font = new EJFont(NSStringMake("./files/build/stonsans.ttf"), 48, false, backingStoreRatio);
+	NSString * fullPath = EJApp::instance()->pathForResource(NSStringMake("droidsans.ttf"));
+	EJFont* font = new EJFont(fullPath, 150, false, backingStoreRatio);
 	font->drawString(text, this, x, y);
 	drawImage(font->texture,x,y,font->width,font->height,x,y,font->width,font->height);
 }

@@ -176,10 +176,13 @@ void EJApp::setScreenSize(int w, int h)
 	{
 		// Redraw the canvas
 		currentRenderingContext = (EJCanvasContext *)screenRenderingContext;
-		
+		currentRenderingContext->setScreenSize(w, h);
 	}
 
-	if(screenRenderingContext)screenRenderingContext->prepare();
+	if(screenRenderingContext) {
+		screenRenderingContext->setScreenSize(w, h);
+		screenRenderingContext->prepare();
+	}
 }
 
 void EJApp::run(void)

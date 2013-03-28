@@ -401,7 +401,7 @@ EJ_BIND_FUNCTION(EJBindingCanvas, drawImage, ctx, argc, argv) {
 	ejectaInstance->currentRenderingContext = renderingContext;
 	renderingContext->drawImage(image, sx, sy, sw, sh, dx, dy, dw, dh);
 	// [renderingContext drawImage:image sx:sx sy:sy sw:sw sh:sh dx:dx dy:dy dw:dw dh:dh];
-	
+
 	return NULL;
 }
 
@@ -648,6 +648,11 @@ EJ_BIND_FUNCTION(EJBindingCanvas, drawImage, ctx, argc, argv) {
 	
  	ejectaInstance->currentRenderingContext = renderingContext;
  	renderingContext->fillText(string,x ,y);
+
+	EJTexture *  texture = new EJTexture(16,16);
+	renderingContext->drawImage(texture, 0, 0, 0, 0, 0, 0, 0, 0);
+	texture->autorelease();
+
  	return NULL;
  }
 

@@ -1,3 +1,4 @@
+﻿#include <stdlib.h>
 #include "lodefreetype.h"
 
 extern "C"
@@ -113,27 +114,72 @@ unsigned delete_freetype_font(unsigned char* font_info)
     return error;
 }
 
-void charToWchar(wchar_t* buf, size_t buf_size, const char* str)
+void utf8ToWchar(wchar_t* buf, size_t buf_size, const char* str)
 {
-	if (!buf || buf_size == 0 || !str)
+	if (str == NULL) 
 	{
 		return;
 	}
 
-	for (int i = 0; i < buf_size; i++)
+	int size_s = buf_size;
+	int size_d = size_s + 10;
+
+	wchar_t *des = buf;
+
+	int s = 0, d = 0;
+	bool toomuchbyte = true; //set true to skip error prefix.
+
+	while (s < size_s && d < size_d)
 	{
-		char c = str[i];
-
-		if (!c)
+		unsigned char c = str[s];
+		if ((c & 0x80) == 0) 
 		{
-			buf[i] = L'\0';
-			break;
-		}
+			des[d++] += str[s++];
+		} 
+		else if((c & 0xE0) == 0xC0)  ///< 110x-xxxx 10xx-xxxx
+		{
+			wchar_t* wideChar = &des[d++];
+			*wideChar  = (str[s + 0] & 0x3F) << 6;
+			*wideChar |= (str[s + 1] & 0x3F);
 
-		buf[i] = c;
+			s += 2;
+		}
+		else if((c & 0xF0) == 0xE0)  ///< 1110-xxxx 10xx-xxxx 10xx-xxxx
+		{
+			wchar_t* wideChar = &des[d++];
+
+			*wideChar  = (str[s + 0] & 0x1F) << 12;
+			*wideChar |= (str[s + 1] & 0x3F) << 6;
+			*wideChar |= (str[s + 2] & 0x3F);
+
+			s += 3;
+		} 
+		else if((c & 0xF8) == 0xF0)  ///< 1111-0xxx 10xx-xxxx 10xx-xxxx 10xx-xxxx 
+		{
+			wchar_t* wideChar = &des[d++];
+
+			*wideChar  = (str[s + 0] & 0x0F) << 18;
+			*wideChar  = (str[s + 1] & 0x3F) << 12;
+			*wideChar |= (str[s + 2] & 0x3F) << 6;
+			*wideChar |= (str[s + 3] & 0x3F);
+
+			s += 4;
+		} 
+		else 
+		{
+			wchar_t* wideChar = &des[d++]; ///< 1111-10xx 10xx-xxxx 10xx-xxxx 10xx-xxxx 10xx-xxxx 
+
+			*wideChar  = (str[s + 0] & 0x07) << 24;
+			*wideChar  = (str[s + 1] & 0x3F) << 18;
+			*wideChar  = (str[s + 2] & 0x3F) << 12;
+			*wideChar |= (str[s + 3] & 0x3F) << 6;
+			*wideChar |= (str[s + 4] & 0x3F);
+
+			s += 5;
+		}
 	}
 
-	buf[buf_size - 1] = L'\0';
+	buf = des;
 }
 
 
@@ -169,39 +215,35 @@ static void rasterSpanFunc(int y, int count, const FT_Span* spans, void* user)
 	}
 }
 
-unsigned int draw_freetype_font(void* image, unsigned* image_width, unsigned* image_height, void* font_info, unsigned long font_index, size_t font_size, unsigned int x, unsigned int y, const char* str)
+unsigned int draw_freetype_font(char** image, unsigned* image_width, unsigned* image_height, void* font_info, unsigned long font_index, size_t font_size, unsigned int x, unsigned int y, const char* cstr)
 {
-	int len = strlen(str);
-	wchar_t* wstr = new wchar_t[len];
-	charToWchar(wstr, len, str);
-
-	//std::string str1 = str;
-	//std::wstring str2(L"");//wstring not support in android...
-	//str2.assign(str1.begin(), str1.end());
-	//const wchar_t * wstr = str2.c_str();
+	size_t len = strlen(cstr) + 1;
+	wchar_t* str = new wchar_t[len];
+	wmemset(str, 0, len);
+	utf8ToWchar(str, len, cstr);
 
 	if(!font_info)return -1;
 	FT_Face face = *(reinterpret_cast<FT_Face*>(font_info) + font_index);
 
-    FT_Size_RequestRec size_req;
-    size_req.type = FT_SIZE_REQUEST_TYPE_CELL;
-    size_req.width = 0;
-    size_req.height = font_size << 6;
-    size_req.horiResolution = 0;
-    size_req.vertResolution = 0;
+	FT_Size_RequestRec size_req;
+	size_req.type = FT_SIZE_REQUEST_TYPE_CELL;
+	size_req.width = 0;
+	size_req.height = font_size << 6;
+	size_req.horiResolution = 0;
+	size_req.vertResolution = 0;
 
-    if (FT_Request_Size(face, &size_req))
-    {
-        return -1;
-    }
+	if (FT_Request_Size(face, &size_req))
+	{
+		return -1;
+	}
 
-	if (image)
+ 	if (*image)
 	{
 		unsigned int pen_x = x;
 		unsigned int pen_y = y + static_cast<unsigned int>(face->ascender * face->size->metrics.y_ppem / face->units_per_EM);
 
 		RasterInfo raster_info;
-		raster_info.image = image;
+		raster_info.image = *image;
 		raster_info.width = *image_width;
 
 		FT_Raster_Params raster_params = {};
@@ -248,16 +290,14 @@ unsigned int draw_freetype_font(void* image, unsigned* image_width, unsigned* im
 
 		for ( ; *str != L'\0'; str++)
 		{
-			if (FT_Load_Char(face, *str, FT_LOAD_RENDER ))
+			if (FT_Load_Char(face, *str, FT_LOAD_DEFAULT | FT_LOAD_NO_BITMAP))
 			{
 				return -1;
 			}
 
 			pen_x += glyph_slot->advance.x >> 6;
 		}
-		*image_width = (unsigned int)(glyph_slot->bitmap.width);
-		*image_height = (unsigned int)(glyph_slot->bitmap.rows);
-
+		if(pen_x%8!=0)pen_x+=8-pen_x%8;
 		return pen_x;
 	}
 
