@@ -10,6 +10,9 @@ class EJTimerCollection : public NSObject
 
 	NSDictionary * timers;
 	int lastId;
+	boolean simpleMutex;
+	void lock();
+	void unlock();
 
 public:
 

@@ -5,7 +5,7 @@
 
 #include "EJTimer.h"
 
-EJTimerCollection::EJTimerCollection()
+EJTimerCollection::EJTimerCollection() : lastId(0),simpleMutex(false)
 {
 	timers = NSDictionary::create();
 }
@@ -15,6 +15,17 @@ EJTimerCollection::~EJTimerCollection()
 	timers->release();
 }
 
+void EJTimerCollection::lock()
+{
+	simpleMutex = true;
+}
+
+void EJTimerCollection::unlock()
+{
+	simpleMutex = false;
+}
+
+
 int EJTimerCollection::scheduleCallback(JSObjectRef callback, float interval, BOOL repeat)
 {
 	lastId++;
@@ -22,26 +33,42 @@ int EJTimerCollection::scheduleCallback(JSObjectRef callback, float interval, BO
 	EJTimer * timer = new EJTimer(callback, interval, repeat);
 	timers->setObject(timer, lastId);
 	timer->release();
+
 	return lastId;
 }
 
 void EJTimerCollection::cancelId(int timerId)
 {
-	timers->removeObjectForKey(timerId);
+	if(simpleMutex)
+	{
+		EJTimer* timer = (EJTimer*)timers->objectForKey(timerId);
+		timer->active = false;
+	}
+	else 
+	{
+		lock();
+		timers->removeObjectForKey(timerId);
+		unlock();
+	}
 }
 
 void EJTimerCollection::update()
 {
-	NSDictElement* pElement = NULL;
-	NSObject* pObject = NULL;
-	NSDICT_FOREACH(timers, pElement)
+	if(!simpleMutex)
 	{
-		pObject = pElement->getObject();
-	    EJTimer* timer = (EJTimer*)pObject;
-        timer->check();
-        if( !timer->active ) {
-			timers->removeObjectForKey(pElement->getIntKey());
-		}	
+		lock();
+		NSDictElement* pElement = NULL;
+		NSObject* pObject = NULL;
+		NSDICT_FOREACH(timers, pElement)
+		{
+			pObject = pElement->getObject();
+			EJTimer* timer = (EJTimer*)pObject;
+			timer->check();
+			if( !timer->active ) {
+				timers->removeObjectForElememt(pElement);
+			}	
+		}
+		unlock();
 	}
 }
 
