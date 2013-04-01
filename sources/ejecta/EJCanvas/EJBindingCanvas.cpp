@@ -198,7 +198,8 @@ EJ_BIND_GET(EJBindingCanvas, retinaResolutionEnabled, ctx) {
 }
 
 EJ_BIND_SET(EJBindingCanvas, imageSmoothingEnabled, ctx, value) {
-	ejectaInstance->currentRenderingContext = renderingContext;
+	//ejectaInstance->currentRenderingContext = renderingContext;
+	ejectaInstance->setCurrentRenderingContext(renderingContext);
 	renderingContext->imageSmoothingEnabled = JSValueToBoolean(ctx, value);
 }
 
@@ -258,7 +259,8 @@ EJ_BIND_FUNCTION( EJBindingCanvas, getContext, ctx, argc, argv) {
 	renderingContext->msaaSamples = msaaSamples;
 	
 	renderingContext->create();
-	ejectaInstance->currentRenderingContext = renderingContext;
+	//ejectaInstance->currentRenderingContext = renderingContext;
+	ejectaInstance->setCurrentRenderingContext(renderingContext);
 
 	// Context and canvas are one and the same object, so getContext just
 	// returns itself
@@ -354,11 +356,13 @@ EJ_BIND_FUNCTION( EJBindingCanvas, getContext, ctx, argc, argv) {
  }
 
 EJ_BIND_FUNCTION(EJBindingCanvas, drawImage, ctx, argc, argv) {
+
 	if( argc < 3 || !JSValueIsObject(ctx, argv[0]) ) return NULL;
 	
 	EJBindingImage* drawable = (EJBindingImage*)JSObjectGetPrivate((JSObjectRef)argv[0]);
 	// NSObject<EJDrawable> * drawable = (NSObject<EJDrawable> *)JSObjectGetPrivate((JSObjectRef)argv[0]);
 	EJTexture * image = drawable->texture;
+
 	float scale = image?image->contentScale:1;
 	
 	short sx = 0, sy = 0, sw = 0, sh = 0;
@@ -398,7 +402,8 @@ EJ_BIND_FUNCTION(EJBindingCanvas, drawImage, ctx, argc, argv) {
 		return NULL;
 	}
 	
-	ejectaInstance->currentRenderingContext = renderingContext;
+	//ejectaInstance->currentRenderingContext = renderingContext;
+	ejectaInstance->setCurrentRenderingContext(renderingContext);
 	renderingContext->drawImage(image, sx, sy, sw, sh, dx, dy, dw, dh);
 	// [renderingContext drawImage:image sx:sx sy:sy sw:sw sh:sh dx:dx dy:dy dw:dw dh:dh];
 
@@ -414,7 +419,8 @@ EJ_BIND_FUNCTION(EJBindingCanvas, drawImage, ctx, argc, argv) {
  		w = JSValueToNumberFast(ctx, argv[2]),
  		h = JSValueToNumberFast(ctx, argv[3]);
 		
- 	ejectaInstance->currentRenderingContext = renderingContext;
+ 	//ejectaInstance->currentRenderingContext = renderingContext;
+	ejectaInstance->setCurrentRenderingContext(renderingContext);
  	renderingContext->fillRect(dx,dy,w,h);
  	return NULL;
  }
@@ -428,7 +434,8 @@ EJ_BIND_FUNCTION(EJBindingCanvas, drawImage, ctx, argc, argv) {
  		w = JSValueToNumberFast(ctx, argv[2]),
  		h = JSValueToNumberFast(ctx, argv[3]);
 	
- 	ejectaInstance->currentRenderingContext = renderingContext;
+	//ejectaInstance->currentRenderingContext = renderingContext;
+	ejectaInstance->setCurrentRenderingContext(renderingContext);
  	renderingContext->strokeRect(dx,dy,w,h);
  	return NULL;
  }
@@ -442,7 +449,8 @@ EJ_BIND_FUNCTION(EJBindingCanvas, drawImage, ctx, argc, argv) {
  		w = JSValueToNumberFast(ctx, argv[2]),
  		h = JSValueToNumberFast(ctx, argv[3]);
 	
- 	ejectaInstance->currentRenderingContext = renderingContext;
+	//ejectaInstance->currentRenderingContext = renderingContext;
+	ejectaInstance->setCurrentRenderingContext(renderingContext);
  	renderingContext->clearRect(dx,dy,w,h);
  	return NULL;
  }
@@ -457,7 +465,8 @@ EJ_BIND_FUNCTION(EJBindingCanvas, drawImage, ctx, argc, argv) {
  		sh = JSValueToNumberFast(ctx, argv[3]);
 		
  	// Get the image data
- 	ejectaInstance->currentRenderingContext = renderingContext;
+ 	//ejectaInstance->currentRenderingContext = renderingContext;
+	ejectaInstance->setCurrentRenderingContext(renderingContext);
  	EJImageData * imageData = renderingContext->getImageData(sx,sy,sw,sh);
 	
  	// Create the JS object
@@ -511,7 +520,9 @@ EJ_BIND_FUNCTION(EJBindingCanvas, drawImage, ctx, argc, argv) {
  		dx = JSValueToNumberFast(ctx, argv[1]),
  		dy = JSValueToNumberFast(ctx, argv[2]);
 	
- 	ejectaInstance->currentRenderingContext = renderingContext;
+ 	//ejectaInstance->currentRenderingContext = renderingContext;
+
+	ejectaInstance->setCurrentRenderingContext(renderingContext);
  	renderingContext->putImageData(jsImageData->m_imageData ,dx ,dy);
  	return NULL;
  }
@@ -527,13 +538,15 @@ EJ_BIND_FUNCTION(EJBindingCanvas, drawImage, ctx, argc, argv) {
  }
 
  EJ_BIND_FUNCTION( EJBindingCanvas,fill, ctx, argc, argv ) {
- 	ejectaInstance->currentRenderingContext = renderingContext;
+ 	//ejectaInstance->currentRenderingContext = renderingContext;
+	ejectaInstance->setCurrentRenderingContext(renderingContext);
  	renderingContext->fill();
  	return NULL;
  }
 
  EJ_BIND_FUNCTION(EJBindingCanvas, stroke, ctx, argc, argv ) {
- 	ejectaInstance->currentRenderingContext = renderingContext;
+ 	//ejectaInstance->currentRenderingContext = renderingContext;
+	ejectaInstance->setCurrentRenderingContext(renderingContext);
  	renderingContext->stroke();
  	return NULL;
  }
@@ -646,7 +659,8 @@ EJ_BIND_FUNCTION(EJBindingCanvas, drawImage, ctx, argc, argv) {
  		x = JSValueToNumberFast(ctx, argv[1]),
  		y = JSValueToNumberFast(ctx, argv[2]);
 	
- 	ejectaInstance->currentRenderingContext = renderingContext;
+ 	//ejectaInstance->currentRenderingContext = renderingContext;
+	ejectaInstance->setCurrentRenderingContext(renderingContext);
  	renderingContext->fillText(string,x ,y);
 
 	EJTexture *  texture = new EJTexture(16,16);
@@ -664,19 +678,22 @@ EJ_BIND_FUNCTION(EJBindingCanvas, drawImage, ctx, argc, argv) {
  		x = JSValueToNumberFast(ctx, argv[1]),
  		y = JSValueToNumberFast(ctx, argv[2]);
 	
- 	ejectaInstance->currentRenderingContext = renderingContext;
+ 	//ejectaInstance->currentRenderingContext = renderingContext;
+	ejectaInstance->setCurrentRenderingContext(renderingContext);
  	renderingContext->strokeText(string ,x ,y);
  	return NULL;
  }
 
  EJ_BIND_FUNCTION(EJBindingCanvas, clip, ctx, argc, argv ) {
- 	ejectaInstance->currentRenderingContext = renderingContext;
+ 	//ejectaInstance->currentRenderingContext = renderingContext;
+	 ejectaInstance->setCurrentRenderingContext(renderingContext);
  	renderingContext->clip();
  	return NULL;
  }
 
  EJ_BIND_FUNCTION(EJBindingCanvas, resetClip, ctx, argc, argv ) {
- 	ejectaInstance->currentRenderingContext = renderingContext;
+ 	//ejectaInstance->currentRenderingContext = renderingContext;
+	 ejectaInstance->setCurrentRenderingContext(renderingContext);
  	renderingContext->resetClip();
  	return NULL;
  }

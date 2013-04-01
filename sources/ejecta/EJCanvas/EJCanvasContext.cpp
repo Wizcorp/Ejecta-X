@@ -88,21 +88,22 @@ void EJCanvasContext::create()
 {
 #ifdef _WINDOWS
 	if( msaaEnabled ) {
-		glGenFramebuffers(1, &msaaFrameBuffer);
-		glBindFramebuffer(GL_FRAMEBUFFER, msaaFrameBuffer);
+		glGenFramebuffersEXT(1, &msaaFrameBuffer);
+		glBindFramebufferEXT(GL_FRAMEBUFFER_EXT, msaaFrameBuffer);
 
-		glGenRenderbuffers(1, &msaaRenderBuffer);
-		glBindRenderbuffer(GL_RENDERBUFFER, msaaRenderBuffer);
+		glGenRenderbuffersEXT(1, &msaaRenderBuffer);
+		glBindRenderbufferEXT(GL_RENDERBUFFER_EXT, msaaRenderBuffer);
 
 		//glRenderbufferStorageMultisampleIMG(GL_RENDERBUFFER, msaaSamples, GL_RGBA8, bufferWidth, bufferHeight);
-		glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_RENDERBUFFER, msaaRenderBuffer);
+		glFramebufferRenderbufferEXT(GL_FRAMEBUFFER_EXT, GL_COLOR_ATTACHMENT0, GL_RENDERBUFFER_EXT, msaaRenderBuffer);
 	}
 
-	// glGenFramebuffers(1, &viewFrameBuffer);
-	// glBindFramebuffer(GL_FRAMEBUFFER, viewFrameBuffer);
+	glGenFramebuffersEXT(1, &viewFrameBuffer);
+	glBindFramebufferEXT(GL_FRAMEBUFFER_EXT, viewFrameBuffer);
 
-	// glGenRenderbuffers(1, &viewRenderBuffer);
-	// glBindRenderbuffer(GL_RENDERBUFFER, viewRenderBuffer);
+	glGenRenderbuffersEXT(1, &viewRenderBuffer);
+	glBindRenderbufferEXT(GL_RENDERBUFFER_EXT, viewRenderBuffer);
+
 #else
 	if( msaaEnabled ) {
 		glGenFramebuffersOES(1, &msaaFrameBuffer);
@@ -115,11 +116,11 @@ void EJCanvasContext::create()
 		glFramebufferRenderbufferOES(GL_FRAMEBUFFER_OES, GL_COLOR_ATTACHMENT0_OES, GL_RENDERBUFFER_OES, msaaRenderBuffer);
 	}
 
-	// glGenFramebuffersOES(1, &viewFrameBuffer);
-	// glBindFramebufferOES(GL_FRAMEBUFFER_OES, viewFrameBuffer);
+	 glGenFramebuffersOES(1, &viewFrameBuffer);
+	 glBindFramebufferOES(GL_FRAMEBUFFER_OES, viewFrameBuffer);
 
-	// glGenRenderbuffersOES(1, &viewRenderBuffer);
-	// glBindRenderbufferOES(GL_RENDERBUFFER_OES, viewRenderBuffer);
+	 glGenRenderbuffersOES(1, &viewRenderBuffer);
+	 glBindRenderbufferOES(GL_RENDERBUFFER_OES, viewRenderBuffer);
 #endif
 
 }
@@ -135,18 +136,18 @@ void EJCanvasContext::createStencilBufferOnce()
 	if( stencilBuffer ) { return; }
 #ifdef _WINDOWS
 
-	glGenRenderbuffers(1, &stencilBuffer);
-	glBindRenderbuffer(GL_RENDERBUFFER, stencilBuffer);
+	glGenRenderbuffersEXT(1, &stencilBuffer);
+	glBindRenderbufferEXT(GL_RENDERBUFFER_EXT, stencilBuffer);
 	if( msaaEnabled ) {
-		glRenderbufferStorageMultisample(GL_RENDERBUFFER, msaaSamples, GL_DEPTH24_STENCIL8, bufferWidth, bufferHeight);
+		glRenderbufferStorageMultisample(GL_RENDERBUFFER_EXT, msaaSamples, GL_DEPTH24_STENCIL8, bufferWidth, bufferHeight);
 	}
 	else {
-		glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH24_STENCIL8, bufferWidth, bufferHeight);
+		glRenderbufferStorage(GL_RENDERBUFFER_EXT, GL_DEPTH24_STENCIL8, bufferWidth, bufferHeight);
 	}
-	glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, stencilBuffer);
-	glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_STENCIL_ATTACHMENT, GL_RENDERBUFFER, stencilBuffer);
+	glFramebufferRenderbufferEXT(GL_FRAMEBUFFER_EXT, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER_EXT, stencilBuffer);
+	glFramebufferRenderbufferEXT(GL_FRAMEBUFFER_EXT, GL_STENCIL_ATTACHMENT, GL_RENDERBUFFER_EXT, stencilBuffer);
 
-	glBindRenderbuffer(GL_RENDERBUFFER, msaaEnabled ? msaaRenderBuffer : viewRenderBuffer );
+	glBindRenderbufferEXT(GL_RENDERBUFFER_EXT, msaaEnabled ? msaaRenderBuffer : viewRenderBuffer );
 
 #else
 
@@ -184,9 +185,14 @@ void EJCanvasContext::prepare()
 {
 	NSLOG("EJCanvasContext prepare");
 	// //Bind the frameBuffer and vertexBuffer array
-	// glBindFramebufferOES(GL_FRAMEBUFFER_OES, msaaEnabled ? msaaFrameBuffer : viewFrameBuffer );
-	// glBindRenderbufferOES(GL_RENDERBUFFER_OES, msaaEnabled ? msaaRenderBuffer : viewRenderBuffer );
-	
+
+#ifdef _WINDOWS
+	glBindFramebufferEXT(GL_FRAMEBUFFER_EXT, msaaEnabled ? msaaFrameBuffer : viewFrameBuffer );
+	glBindRenderbufferEXT(GL_RENDERBUFFER_EXT, msaaEnabled ? msaaRenderBuffer : viewRenderBuffer );
+#else
+	glBindFramebufferOES(GL_FRAMEBUFFER_OES, msaaEnabled ? msaaFrameBuffer : viewFrameBuffer );
+	glBindRenderbufferOES(GL_RENDERBUFFER_OES, msaaEnabled ? msaaRenderBuffer : viewRenderBuffer );
+#endif	
 	NSLOG("viewportWidth : %d, viewportHeight : %d",viewportWidth, viewportHeight);
 	glViewport(0, 0, viewportWidth, viewportHeight);
 	
@@ -194,6 +200,8 @@ void EJCanvasContext::prepare()
 	glLoadIdentity();
 #ifdef _WINDOWS
 	glOrtho(0, width, 0, height, -1, 1);
+	glMatrixMode(GL_MODELVIEW);
+	glLoadIdentity();
 #else
 	glOrthof(0, width, 0, height, -1, 1);
 	glMatrixMode(GL_MODELVIEW);
@@ -574,10 +582,10 @@ void EJCanvasContext::fillText(NSString * text, float x, float y)
 	// EJFont *font = [self acquireFont:state->font.fontName size:state->font.pointSize fill:YES contentScale:backingStoreRatio];
 	// [font drawString:text toContext:self x:x y:y];
 	NSString * fullPath = EJApp::instance()->pathForResource(NSStringMake("droidsans.ttf"));
-	EJFont* font = new EJFont(fullPath, 150, true, backingStoreRatio);
+	EJFont* font = new EJFont(fullPath, 32, true, backingStoreRatio);
 	font->drawString(text, this, x, y);
 	NSLOG("%f, %f, %u, %u", x,y,font->width,font->height);
-	drawImage(font->texture,x,y,font->width,font->height,x,y,font->width,font->height);
+	drawImage(font->texture,0,0,font->width,font->height,x,y,font->width,font->height);
 }
 
 void EJCanvasContext::strokeText(NSString * text, float x, float y)
@@ -585,7 +593,7 @@ void EJCanvasContext::strokeText(NSString * text, float x, float y)
 	// EJFont *font = [self acquireFont:state->font.fontName size:state->font.pointSize fill:NO contentScale:backingStoreRatio];
 	// [font drawString:text toContext:self x:x y:y];
 	NSString * fullPath = EJApp::instance()->pathForResource(NSStringMake("droidsans.ttf"));
-	EJFont* font = new EJFont(fullPath, 150, false, backingStoreRatio);
+	EJFont* font = new EJFont(fullPath, 32, false, backingStoreRatio);
 	font->drawString(text, this, x, y);
 	drawImage(font->texture,x,y,font->width,font->height,x,y,font->width,font->height);
 }

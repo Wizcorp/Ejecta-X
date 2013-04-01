@@ -26,7 +26,7 @@ void EJCanvasContextTexture::create()
 #endif
 	prepare();
 
-	glClearColor(1.0f, 0.0f, 0.0f, 0.5f);
+	glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
 	glClear(GL_COLOR_BUFFER_BIT);
 }
 
@@ -57,21 +57,19 @@ EJTexture* EJCanvasContextTexture::texture()
 
 #ifdef _WINDOWS
 		glGetIntegerv( GL_FRAMEBUFFER_BINDING, &boundFrameBuffer );
+		
+		//not support  Android MSAA
+
+		//Bind the MSAA and View frameBuffers and resolve
+		glBindFramebufferEXT(GL_FRAMEBUFFER_EXT, msaaFrameBuffer);
+		glBindFramebufferEXT(GL_DRAW_FRAMEBUFFER_EXT, viewFrameBuffer);
+		//glResolveMultisampleFramebufferAPPLE();
 #else
 		glGetIntegerv( GL_FRAMEBUFFER_BINDING_OES, &boundFrameBuffer );
 #endif
-		
-		/*
-			Android上不支持多重采样
-		**/
-
-		//Bind the MSAA and View frameBuffers and resolve
-		// glBindFramebufferOES(GL_FRAMEBUFFER_OES, msaaFrameBuffer);
-		// glBindFramebufferOES(GL_DRAW_FRAMEBUFFER_APPLE, viewFrameBuffer);
-		// glResolveMultisampleFramebufferAPPLE();
 
 #ifdef _WINDOWS
-		glBindFramebuffer(GL_FRAMEBUFFER, boundFrameBuffer);
+		glBindFramebufferEXT(GL_FRAMEBUFFER_EXT, boundFrameBuffer);
 #else
 		glBindFramebufferOES(GL_FRAMEBUFFER_OES, boundFrameBuffer);
 #endif
@@ -85,7 +83,6 @@ EJTexture* EJCanvasContextTexture::texture()
 void EJCanvasContextTexture::prepare() {
 
 	NSLOG("EJCanvasContextTexture prepare");
-	
-	//EJCanvasContext::prepare();
+	EJCanvasContext::prepare();
 	msaaNeedsResolving = msaaEnabled;
 }

@@ -39,7 +39,7 @@ EJImageData* EJBindingImageData::imageData() {
 	return m_imageData;
 }
 
-EJ_BIND_GET( EJBindingImageData, m_imageData, ctx ) {
+EJ_BIND_GET( EJBindingImageData, data, ctx ) {
 	if( !dataArray ) {
 		int count = m_imageData->width * m_imageData->height * 4;
 		dataArray = ByteArrayToJSObject(ctx, m_imageData->pixels, count);

@@ -59,7 +59,7 @@ class EJApp : public NSObject {
 
 	char* mainBundle;
 
-	void setCurrentRenderingContext(EJCanvasContext * renderingContext);
+	
 
 public:
 
@@ -93,6 +93,7 @@ public:
 
     static EJApp* instance();
     static void finalize();
+	void setCurrentRenderingContext(EJCanvasContext * renderingContext);
 
 };
 

@@ -20,25 +20,34 @@ EJCanvasContextScreen::~EJCanvasContextScreen()
 
 void EJCanvasContextScreen::present()
 {
+	glViewport(0, 0, viewportWidth, viewportHeight);
+#ifdef _WINDOWS
+	glBindFramebufferEXT(GL_FRAMEBUFFER_EXT, 0 );
+	glBindRenderbufferEXT(GL_RENDERBUFFER_EXT, 0 );
+#else
+	glBindFramebufferOES(GL_FRAMEBUFFER_OES, 0 );
+	glBindRenderbufferOES(GL_RENDERBUFFER_OES, 0 );
+#endif	
+
 	// [self flushBuffers];
 	EJCanvasContext::flushBuffers();
 	
 	if( msaaEnabled ) {
 #ifdef _WINDOWS
 		//Bind the MSAA and View frameBuffers and resolve
-		// glBindFramebuffer(GL_READ_FRAMEBUFFER_APPLE, msaaFrameBuffer);
-		// glBindFramebuffer(GL_DRAW_FRAMEBUFFER_APPLE, viewFrameBuffer);
-		// glResolveMultisampleFramebufferAPPLE();
+		glBindFramebufferEXT(GL_READ_FRAMEBUFFER_EXT, msaaFrameBuffer);
+		glBindFramebufferEXT(GL_DRAW_FRAMEBUFFER_EXT, viewFrameBuffer);
+		//glResolveMultisampleFramebufferAPPLE();
 
-		glBindRenderbuffer(GL_RENDERBUFFER, viewRenderBuffer);
+		glBindRenderbufferEXT(GL_RENDERBUFFER_EXT, viewRenderBuffer);
 		// [[EJApp instance].glContext presentRenderbuffer:GL_RENDERBUFFER];
 		// EJApp::instance()->glContext->presentRenderbuffer(GL_RENDERBUFFER_OES);
 		// presentRenderbuffer(GL_RENDERBUFFER_OES);
-		glBindFramebuffer(GL_FRAMEBUFFER, msaaFrameBuffer);
+		glBindFramebufferEXT(GL_FRAMEBUFFER_EXT, msaaFrameBuffer);
 #else
 		//Bind the MSAA and View frameBuffers and resolve
-		// glBindFramebuffer(GL_READ_FRAMEBUFFER_APPLE, msaaFrameBuffer);
-		// glBindFramebuffer(GL_DRAW_FRAMEBUFFER_APPLE, viewFrameBuffer);
+		glBindFramebufferOES(GL_FRAMEBUFFER_OES, msaaFrameBuffer);
+		glBindFramebufferOES(GL_FRAMEBUFFER_OES, viewFrameBuffer);
 		// glResolveMultisampleFramebufferAPPLE();
 
 		glBindRenderbufferOES(GL_RENDERBUFFER_OES, viewRenderBuffer);
@@ -49,7 +58,6 @@ void EJCanvasContextScreen::present()
 #endif
 	}
 	else {
-		// [[EJApp instance].glContext presentRenderbuffer:GL_RENDERBUFFER];
 	}	
 }
 
@@ -103,7 +111,7 @@ void EJCanvasContextScreen::create()
 	
 // 	// Set up the renderbuffer and some initial OpenGL properties
 // 	[[EJApp instance].glContext renderbufferStorage:GL_RENDERBUFFER fromDrawable:(CAEAGLLayer *)glview.layer];
-// 	glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_RENDERBUFFER, viewRenderBuffer);
+// 	glFramebufferRenderbuffer(GL_FRAMEBUFFER_EXT, GL_COLOR_ATTACHMENT0, GL_RENDERBUFFER_EXT, viewRenderBuffer);
 	
 
 	glDisable(GL_CULL_FACE);
@@ -116,7 +124,7 @@ void EJCanvasContextScreen::create()
 
 	prepare();
 	
-	glClearColor(0.0f, 0.0f, 1.0f, 0.5f);
+	glClearColor(0.0f, 1.0f, 0.0f, 1.0f);
     glClear(GL_COLOR_BUFFER_BIT);
 
 // 	// Append the OpenGL view to Impact's main view

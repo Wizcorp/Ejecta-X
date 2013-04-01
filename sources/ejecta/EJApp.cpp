@@ -172,16 +172,9 @@ void EJApp::setScreenSize(int w, int h)
 {
 	height = h;
 	width = w;
-	if (screenRenderingContext)
-	{
-		// Redraw the canvas
-		currentRenderingContext = (EJCanvasContext *)screenRenderingContext;
-		currentRenderingContext->setScreenSize(w, h);
-	}
-
 	if(screenRenderingContext) {
 		screenRenderingContext->setScreenSize(w, h);
-		screenRenderingContext->prepare();
+		setCurrentRenderingContext((EJCanvasContext *)screenRenderingContext);
 	}
 }
 
@@ -196,11 +189,12 @@ void EJApp::run(void)
 	if (screenRenderingContext)
 	{
 	// Redraw the canvas
-		currentRenderingContext = (EJCanvasContext *)screenRenderingContext;
+		//currentRenderingContext = (EJCanvasContext *)screenRenderingContext;
+		setCurrentRenderingContext((EJCanvasContext *)screenRenderingContext);
 		
 	}
 
-	if(currentRenderingContext)currentRenderingContext->flushBuffers();
+	if(screenRenderingContext)screenRenderingContext->present();
 }
 
 void EJApp::pause(void)
@@ -403,8 +397,10 @@ JSValueRef EJApp::deleteTimer(JSContextRef ctxp, size_t argc, const JSValueRef a
 void EJApp::setCurrentRenderingContext(EJCanvasContext * renderingContext)
 {
 	if( renderingContext != currentRenderingContext ) {
-		currentRenderingContext->flushBuffers();
-		currentRenderingContext->release();
+		if(currentRenderingContext) {
+			currentRenderingContext->flushBuffers();
+			currentRenderingContext->release();
+		}
 		renderingContext->prepare();
 		renderingContext->retain();
 		currentRenderingContext = renderingContext;
@@ -425,7 +421,7 @@ void EJApp::finalize()
 {
 	if (ejectaInstance != NULL)
 	{
-		delete ejectaInstance;
+		ejectaInstance->release();
 		ejectaInstance = NULL;
 	}
 }

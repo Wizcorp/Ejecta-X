@@ -21,7 +21,7 @@ public:
 
 	REFECTION_CLASS_IMPLEMENT_DEFINE(EJBindingImageData);
 
-	EJ_BIND_GET_DEFINE( m_imageData, ctx );
+	EJ_BIND_GET_DEFINE( data, ctx );
 	EJ_BIND_GET_DEFINE( width, ctx );
 	EJ_BIND_GET_DEFINE( height, ctx );
 };

@@ -66,7 +66,13 @@ EJTexture::EJTexture(int widthp, int heightp, GLenum formatp) : textureId(0), wi
 
 EJTexture::EJTexture(int widthp, int heightp) : textureId(0), width(0), height(0), realWidth(0), realHeight(0) {
 	// Create an empty RGBA texture
-	EJTexture(widthp, heightp, GL_RGBA);
+	//EJTexture(widthp, heightp, GL_RGBA);
+	contentScale = 1;
+	NSString* empty = NSStringMake("[Empty]");
+	empty->retain();
+	fullPath = empty;
+	setWidthAndHeight(widthp, heightp);
+	createTextureWithPixels(NULL, GL_RGBA);
 }
 
 EJTexture::EJTexture(int widthp, int heightp, GLubyte * pixels) : textureId(0), width(0), height(0), realWidth(0), realHeight(0) {

@@ -24,11 +24,11 @@ EJFont::~EJFont()
 void EJFont::drawString(NSString* string, EJCanvasContext* context, float x, float y)
 {
 	char * p_bitmap = NULL;
-	width = draw_freetype_font(&p_bitmap, 0, 0, font_info, font_index, font_size, x, y, string->getCString());
+	width = draw_freetype_font(&p_bitmap, 0, 0, font_info, font_index, font_size, 0, 0, string->getCString());
 	GLubyte * bitmap = (GLubyte *)calloc( width * height, sizeof(GLubyte) );
 	memset(bitmap, 0, width * height);
 	p_bitmap = (char*)bitmap;
-	draw_freetype_font(&p_bitmap, &width, &height, font_info, font_index, font_size, x, y, string->getCString());
+	draw_freetype_font(&p_bitmap, &width, &height, font_info, font_index, font_size, 0, 0, string->getCString());
 
 	texture = new EJTexture(width, height, GL_ALPHA);
 	texture->updateTextureWithPixels(bitmap, 0, 0, width, height);

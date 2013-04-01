@@ -2,6 +2,7 @@ package com.impactjs.ejecta.sample;
 
 import com.impactjs.ejecta.EjectaGLSurfaceView;
 import android.app.Activity;
+import android.content.res.Configuration;
 import android.opengl.GLSurfaceView;
 import android.os.Bundle;
 
@@ -22,6 +23,12 @@ public class DemoActivity extends Activity{
 		// TODO Auto-generated method stub
 		((EjectaGLSurfaceView)mGLView).onDestroy();
 		super.onDestroy();
+	}
+	
+	@Override
+	public void onConfigurationChanged(Configuration newConfig) {
+		// TODO Auto-generated method stub
+		super.onConfigurationChanged(newConfig);
 	}
 	
 	static {
