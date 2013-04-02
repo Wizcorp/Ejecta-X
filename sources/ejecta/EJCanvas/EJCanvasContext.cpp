@@ -16,7 +16,6 @@ EJVertex CanvasVertexBuffer[EJ_CANVAS_VERTEX_BUFFER_SIZE];
 
 EJCanvasContext::EJCanvasContext() : viewFrameBuffer(0), viewRenderBuffer(0), msaaFrameBuffer(0), msaaRenderBuffer(0), stencilBuffer(0),vertexBufferIndex(0)
 {
-	NSLOG("EJCanvasContext");
 }
 
 //返回类名
@@ -26,8 +25,6 @@ const char* EJCanvasContext::getClassName() {
 
 EJCanvasContext::EJCanvasContext(short widthp, short heightp) : viewFrameBuffer(0), viewRenderBuffer(0), msaaFrameBuffer(0), msaaRenderBuffer(0), stencilBuffer(0),vertexBufferIndex(0)
 {
-	NSLOG("EJCanvasContext : %d, %d", widthp, heightp);
-
 	memset(stateStack, 0, sizeof(stateStack));
 	stateIndex = 0;
 	state = &stateStack[stateIndex];
@@ -183,8 +180,7 @@ void EJCanvasContext::bindVertexBuffer()
 
 void EJCanvasContext::prepare()
 {
-	NSLOG("EJCanvasContext prepare");
-	// //Bind the frameBuffer and vertexBuffer array
+	//Bind the frameBuffer and vertexBuffer array
 
 #ifdef _WINDOWS
 	glBindFramebufferEXT(GL_FRAMEBUFFER_EXT, msaaEnabled ? msaaFrameBuffer : viewFrameBuffer );
@@ -193,7 +189,6 @@ void EJCanvasContext::prepare()
 	glBindFramebufferOES(GL_FRAMEBUFFER_OES, msaaEnabled ? msaaFrameBuffer : viewFrameBuffer );
 	glBindRenderbufferOES(GL_RENDERBUFFER_OES, msaaEnabled ? msaaRenderBuffer : viewRenderBuffer );
 #endif	
-	NSLOG("viewportWidth : %d, viewportHeight : %d",viewportWidth, viewportHeight);
 	glViewport(0, 0, viewportWidth, viewportHeight);
 	
 	glMatrixMode(GL_PROJECTION);
@@ -583,9 +578,10 @@ void EJCanvasContext::fillText(NSString * text, float x, float y)
 	// [font drawString:text toContext:self x:x y:y];
 	NSString * fullPath = EJApp::instance()->pathForResource(NSStringMake("droidsans.ttf"));
 	EJFont* font = new EJFont(fullPath, 32, true, backingStoreRatio);
+	fullPath->release();
 	font->drawString(text, this, x, y);
-	NSLOG("%f, %f, %u, %u", x,y,font->width,font->height);
 	drawImage(font->texture,0,0,font->width,font->height,x,y,font->width,font->height);
+	font->release();
 }
 
 void EJCanvasContext::strokeText(NSString * text, float x, float y)
@@ -594,8 +590,10 @@ void EJCanvasContext::strokeText(NSString * text, float x, float y)
 	// [font drawString:text toContext:self x:x y:y];
 	NSString * fullPath = EJApp::instance()->pathForResource(NSStringMake("droidsans.ttf"));
 	EJFont* font = new EJFont(fullPath, 32, false, backingStoreRatio);
+	fullPath->release();
 	font->drawString(text, this, x, y);
 	drawImage(font->texture,x,y,font->width,font->height,x,y,font->width,font->height);
+	font->release();
 }
 
 float EJCanvasContext::measureText(NSString * text)

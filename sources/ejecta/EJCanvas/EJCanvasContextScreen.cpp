@@ -96,7 +96,7 @@ void EJCanvasContextScreen::create()
 	bufferHeight = viewportHeight = (short)(frame.size.height * contentScale);
 	
 	NSLOG(
-		"Creating ScreenCanvas: \nsize: %dx%d, aspect ratio: %.3f, \nscaled: %.3f = %dx%d, \nretina: no = %.0fx%.0f, \nmsaa: no",
+		"====    Creating ScreenCanvas    ==== \n**    size: %dx%d, aspect ratio: %.3f, \n**    scaled: %.3f = %dx%d, \n**    retina: no = %.0fx%.0f, \n**    msaa: no\n=====================================",
 		width, height, aspect, 
 		internalScaling, frame.size.width, frame.size.height,
 		frame.size.width * contentScale, frame.size.height * contentScale
@@ -133,9 +133,6 @@ void EJCanvasContextScreen::create()
 
 void EJCanvasContextScreen::prepare()
 {
-
-	NSLOG("EJCanvasContextScreen prepare");
-	
 	EJCanvasContext::prepare();
 
 	glTranslatef(0, height, 0);

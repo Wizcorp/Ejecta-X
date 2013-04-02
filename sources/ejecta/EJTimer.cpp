@@ -42,7 +42,7 @@ void EJTimerCollection::cancelId(int timerId)
 	if(simpleMutex)
 	{
 		EJTimer* timer = (EJTimer*)timers->objectForKey(timerId);
-		timer->active = false;
+		if(timer)timer->active = false;
 	}
 	else 
 	{

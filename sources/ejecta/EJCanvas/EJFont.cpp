@@ -1,7 +1,6 @@
 #include "EJFont.h"
 #include "EJCanvasContext.h"
 #include "lodefreetype/lodefreetype.h"
-#include "../EJApp.h"
 
 EJFont::EJFont() : font_info(0), font_index(0), font_size(16)
 {
@@ -12,29 +11,43 @@ EJFont::EJFont(NSString* font, NSInteger size, BOOL fill, float contentScale) : 
 {
 	width = 0;
 	height = font_size;
-	//NSLOG("path : %s", font->getCString());
-	lodefreetype_decode32_file(&font_info, &width, &height, font->getCString());
 	texture = 0;
+	bitmap = 0;
+	buffer = 0;
+	lodefreetype_decode32_file(&font_info, &buffer, &width, &height, font->getCString());
 }
 
 EJFont::~EJFont()
 {
+	if (texture)
+	{
+		//texture->release();
+	}
+	if (bitmap)
+	{
+		//free(bitmap);
+	}
+	if (buffer)
+	{
+		free(buffer);
+	}
+	if (font_info)
+	{
+		delete_freetype_font(font_info);
+	}
 }
 
 void EJFont::drawString(NSString* string, EJCanvasContext* context, float x, float y)
 {
 	char * p_bitmap = NULL;
 	width = draw_freetype_font(&p_bitmap, 0, 0, font_info, font_index, font_size, 0, 0, string->getCString());
-	GLubyte * bitmap = (GLubyte *)calloc( width * height, sizeof(GLubyte) );
+	bitmap = (GLubyte *)calloc( width * height, sizeof(GLubyte) );
 	memset(bitmap, 0, width * height);
 	p_bitmap = (char*)bitmap;
 	draw_freetype_font(&p_bitmap, &width, &height, font_info, font_index, font_size, 0, 0, string->getCString());
 
 	texture = new EJTexture(width, height, GL_ALPHA);
 	texture->updateTextureWithPixels(bitmap, 0, 0, width, height);
-
-	NSLOG("width : %d, height :%d ", width, height);
-
 }
 
 float EJFont::measureString(NSString* string)

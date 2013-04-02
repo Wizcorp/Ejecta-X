@@ -74,14 +74,13 @@ unsigned lodefreetype_decode_memory(void** data , unsigned* w, unsigned* h, cons
 }
 
 
-unsigned lodefreetype_decode32_file(void** out, unsigned* w, unsigned* h, const char* filename)
+unsigned lodefreetype_decode32_file(void** out, unsigned char** buffer, unsigned* w, unsigned* h, const char* filename)
 {
-  unsigned char* buffer;
   size_t buffersize;
   unsigned error;
   create_freetype_font();
-  error = lodefreetype_load_file(&buffer, &buffersize, filename);
-  if(!error) error = lodefreetype_decode_memory(out, w, h, buffer, buffersize);
+  error = lodefreetype_load_file(buffer, &buffersize, filename);
+  if(!error) error = lodefreetype_decode_memory(out, w, h, *buffer, buffersize);
   return error;
 }
 
@@ -96,7 +95,7 @@ unsigned create_freetype_font()
 }
 
 
-unsigned delete_freetype_font(unsigned char* font_info)
+unsigned delete_freetype_font(void* font_info)
 {
     unsigned error = 0;
     FT_Face* faces = reinterpret_cast<FT_Face*>(font_info);
@@ -108,9 +107,13 @@ unsigned delete_freetype_font(unsigned char* font_info)
         if(error)return error;
     }
 
-    delete font_info;
+    free(font_info);
 
-    error = FT_Done_Library(s_freetype);
+	if (s_freetype)
+	{
+		error = FT_Done_Library(s_freetype);
+		s_freetype = NULL;
+	}
     return error;
 }
 

@@ -56,9 +56,7 @@ EJBindingCanvas::EJBindingCanvas(JSContextRef ctx ,JSObjectRef obj, size_t argc,
 
 	if( firstCanvasInstance ) {
 		isScreenCanvas = true;
-		NSLOG("firstCanvasInstance : %d", firstCanvasInstance);
 		firstCanvasInstance = false;
-		NSLOG("firstCanvasInstance : %d", firstCanvasInstance);
 	}
 	
 	if( argc == 2 ) {
@@ -232,9 +230,6 @@ EJ_BIND_GET(EJBindingCanvas, MSAASamples, ctx) {
 //
 
 EJ_BIND_FUNCTION( EJBindingCanvas, getContext, ctx, argc, argv) {
-
-	NSLOG("Canvas.getContext('2d'), firstCanvasInstance %d, isScreenCanvas : %d", firstCanvasInstance, isScreenCanvas);
-
 	if( argc < 1 || !JSValueToNSString(ctx, argv[0])->isEqual(NSStringMake("2d")) ) { 
 		return NULL; 
 	};
@@ -242,7 +237,6 @@ EJ_BIND_FUNCTION( EJBindingCanvas, getContext, ctx, argc, argv) {
 	if( renderingContext ) { return jsObject; }
 	ejectaInstance->currentRenderingContext = NULL;
 	if( isScreenCanvas ) {
-		NSLOG("get Screen Canvas Context");
 		EJCanvasContextScreen * sc = new EJCanvasContextScreen(width, height);
 		sc->useRetinaResolution = useRetinaResolution;
 		sc->scalingMode = scalingMode;
@@ -251,7 +245,6 @@ EJ_BIND_FUNCTION( EJBindingCanvas, getContext, ctx, argc, argv) {
 		renderingContext = (EJCanvasContext*)sc;
 	}
 	else {
-		NSLOG("get Texture Canvas Context");
 		renderingContext = (EJCanvasContext*)(new EJCanvasContextTexture(width, height));
 	}
 	
@@ -662,10 +655,6 @@ EJ_BIND_FUNCTION(EJBindingCanvas, drawImage, ctx, argc, argv) {
  	//ejectaInstance->currentRenderingContext = renderingContext;
 	ejectaInstance->setCurrentRenderingContext(renderingContext);
  	renderingContext->fillText(string,x ,y);
-
-	EJTexture *  texture = new EJTexture(16,16);
-	renderingContext->drawImage(texture, 0, 0, 0, 0, 0, 0, 0, 0);
-	texture->autorelease();
 
  	return NULL;
  }

@@ -110,8 +110,6 @@ JSClassRef EJBindingBase::getJSClass (EJBindingBase* ej_obj){
 		values[i].attributes = kJSPropertyAttributeDontDelete;
 		SEL get = NSSelectorFromString(key_name);
 		values[i].getProperty = (JSObjectGetPropertyCallback)get;
-
-		NSLOG("binding GET Property %s to %s", values[i].name, key_name.c_str());
 		
 		// Property has a setter? Otherwise mark as read only
 		int pos = key_name.find("_get_");
@@ -119,13 +117,9 @@ JSClassRef EJBindingBase::getJSClass (EJBindingBase* ej_obj){
 		SEL set = NSSelectorFromString(key_name);
 		if( set ) {
 			values[i].setProperty = (JSObjectSetPropertyCallback)set;
-
-			NSLOG("binding SET Property %s to %s", values[i].name, key_name.c_str());
 		}
 		else {
 			values[i].attributes |= kJSPropertyAttributeReadOnly;
-
-			NSLOG("binding Property %s Attribute ReadOnly (disable) %s", values[i].name, key_name.c_str());
 		}
 
 		i++;
@@ -153,8 +147,6 @@ JSClassRef EJBindingBase::getJSClass (EJBindingBase* ej_obj){
 		
 		SEL call = NSSelectorFromString(key_name);
 		functions[i].callAsFunction = (JSObjectCallAsFunctionCallback)call;
-
-		NSLOG("binding Function %s to %s", functions[i].name, key_name.c_str());
 
 		i++;
 	}

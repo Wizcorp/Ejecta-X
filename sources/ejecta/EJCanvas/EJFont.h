@@ -31,6 +31,8 @@ class EJFont : public NSObject {
 	// Core text variables for line layout
 	//CGGlyph * glyphsBuffer;
 	//CGPoint * positionsBuffer;
+	unsigned char* buffer;
+	GLubyte * bitmap;
 public:
 
 	EJTexture * texture;

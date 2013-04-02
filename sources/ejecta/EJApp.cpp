@@ -16,8 +16,6 @@ JSValueRef ej_getNativeClass(JSContextRef ctx, JSObjectRef object, JSStringRef p
  	JSObjectRef obj = NULL;
  	NSString * fullClassName = new NSString();
 
-    NSLOG("ej_getNativeClass : EJBinding%s", className);
-
  	fullClassName->initWithFormat("EJBinding%s",className);
  	EJBindingBase* pClass = (EJBindingBase*)NSClassFromString(fullClassName->getCString());
 	if( pClass ) {
@@ -25,11 +23,6 @@ JSValueRef ej_getNativeClass(JSContextRef ctx, JSObjectRef object, JSStringRef p
 	} else {
 		 NSLOG("%s is NULL ... ", fullClassName->getCString());
 	}
-
-    if (obj)
-    {
-    	NSLOG("constructor js-obj for %s", className);
-    }
 	
     free(className);
     fullClassName->autorelease();
@@ -41,8 +34,6 @@ JSObjectRef ej_callAsConstructor(JSContextRef ctx, JSObjectRef constructor, size
 
 
 	EJBindingBase* pClass = (EJBindingBase*)(JSObjectGetPrivate( constructor ));
-	
-    NSLOG("ej_callAsConstructor constructor: %s()", pClass->toString().c_str());
 
 	JSClassRef jsClass = EJApp::instance()->getJSClassForClass(pClass);
 
@@ -50,8 +41,6 @@ JSObjectRef ej_callAsConstructor(JSContextRef ctx, JSObjectRef constructor, size
 	
  	EJBindingBase* instance = (EJBindingBase*)NSClassFromString(pClass->toString().c_str());
 	instance->init(ctx, obj, argc, argv);
-
-    NSLOG("binding constructor: %s", instance->toString().c_str());
 
 	JSObjectSetPrivate( obj, (void *)instance );
 	
@@ -113,21 +102,6 @@ EJApp::EJApp() : currentRenderingContext(0), screenRenderingContext(0)
 		
 		// Create the OpenGL ES1 Context
 		// Android init GLView on java framework
-
-		
-	NSObjectFactory::map_type* base = NSObjectFactory::getMap();
-	for(NSObjectFactory::map_type::iterator it = base->begin(); it != base->end(); it++)
-	{
-		string name = it->first;
-		NSLOG("NSObjectFactory : %s", name.c_str());
-	} 
-		
-	NSObjectFactory::fuc_map_type* fuc_base = NSObjectFactory::getFunctionMap();
-	for(NSObjectFactory::fuc_map_type::iterator it = fuc_base->begin(); it != fuc_base->end(); it++)
-	{
-		string name = it->first;
-		NSLOG("NSObjectFactory : %s", name.c_str());
-	} 
 		
 }
 

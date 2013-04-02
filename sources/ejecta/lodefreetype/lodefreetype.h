@@ -23,11 +23,11 @@ unsigned lodefreetype_decode_memory(void** out, unsigned* w, unsigned* h,
               const unsigned char* in, size_t insize);
 
 /*Same as lodefreetype_decode32_file, but always decodes to 32-bit RGB raw image.*/
-unsigned lodefreetype_decode32_file(void** out, unsigned* w, unsigned* h,
+unsigned lodefreetype_decode32_file(void** out,  unsigned char** buffer, unsigned* w, unsigned* h,
                                const char* filename);
 
 unsigned create_freetype_font();
-unsigned delete_freetype_font(unsigned char* font_info);
+unsigned delete_freetype_font(void* font_info);
 unsigned draw_freetype_font(char** image, unsigned* w, unsigned* h, void* font_info, unsigned long font_index, size_t font_size, unsigned int x, unsigned int y, const char* str);
 
 #endif //__LODEFREETYPE_H_

@@ -12,7 +12,6 @@
 
 void EJCanvasContextTexture::create() 
 {
-	NSLOG("EJCanvasContextTexture create");
 	m_texture = new EJTexture(width, height);
 
 	bufferWidth = m_texture->realWidth;
@@ -80,9 +79,8 @@ EJTexture* EJCanvasContextTexture::texture()
 	return m_texture;
 }
 
-void EJCanvasContextTexture::prepare() {
-
-	NSLOG("EJCanvasContextTexture prepare");
+void EJCanvasContextTexture::prepare() 
+{
 	EJCanvasContext::prepare();
 	msaaNeedsResolving = msaaEnabled;
 }

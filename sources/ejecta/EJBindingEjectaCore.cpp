@@ -74,19 +74,14 @@ EJ_BIND_FUNCTION(EJBindingEjectaCore,clearInterval, ctx, argc, argv ) {
 //
 
 EJ_BIND_GET(EJBindingEjectaCore,devicePixelRatio, ctx ) {
-	NSLOG("devicePixelRatio return:1");
 	return JSValueMakeNumber( ctx, 1);
 }
 //
 EJ_BIND_GET(EJBindingEjectaCore,screenWidth, ctx ) {
-//	return JSValueMakeNumber( ctx, EJApp::instance()->view->bounds->size->width );
-	NSLOG("screenWidth is %d",EJApp::instance()->width);
 	return JSValueMakeNumber( ctx, EJApp::instance()->width );
 }
 //
 EJ_BIND_GET(EJBindingEjectaCore,screenHeight, ctx ) {
-//	return JSValueMakeNumber( ctx, [EJApp instance].view.bounds.size.height );
-	NSLOG("screenHeight is %d",EJApp::instance()->height);
 	return JSValueMakeNumber( ctx, EJApp::instance()->height);
 }
 //
@@ -95,7 +90,6 @@ EJ_BIND_GET(EJBindingEjectaCore,landscapeMode, ctx ) {
 }
 //
 EJ_BIND_GET(EJBindingEjectaCore,userAgent, ctx ) {
-	NSLOG("userAgent is	android");
 	return NSStringToJSValue(ctx,NSStringMake("android"));
 }
 //
