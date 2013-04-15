@@ -48,6 +48,7 @@ LOCAL_SRC_FILES := \
                     ../../../sources/ejecta/EJCocoa/NSString.cpp \
                     ../../../sources/ejecta/EJCocoa/NSValue.cpp \
                     ../../../sources/ejecta/EJCocoa/NSZone.cpp \
+                    ../../../sources/ejecta/EJCocoa/NSCache.cpp \
                     ../../../sources/ejecta/EJApp.cpp \
                     ../../../sources/ejecta/EJConvert.cpp \
                     ../../../sources/ejecta/EJBindingBase.cpp \

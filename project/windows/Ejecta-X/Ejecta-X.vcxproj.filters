@@ -195,6 +195,12 @@
     <ClInclude Include="..\..\..\sources\ejecta\lodefreetype\lodefreetype.h">
       <Filter>ejecta\lodefreetype</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\..\sources\ejecta\EJCocoa\NSCache.h">
+      <Filter>ejecta\EJCocoa</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\sources\ejecta\EJCocoa\UIFont.h">
+      <Filter>ejecta\EJCocoa</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="stdafx.cpp">
@@ -304,6 +310,9 @@
     </ClCompile>
     <ClCompile Include="..\..\..\sources\ejecta\lodefreetype\lodefreetype.cpp">
       <Filter>ejecta\lodefreetype</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\sources\ejecta\EJCocoa\NSCache.cpp">
+      <Filter>ejecta\EJCocoa</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

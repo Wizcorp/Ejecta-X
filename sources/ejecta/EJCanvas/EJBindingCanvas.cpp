@@ -130,8 +130,9 @@ EJ_BIND_SET( EJBindingCanvas, miterLimit, ctx, value) {
 }
 
 EJ_BIND_GET( EJBindingCanvas,font, ctx) {
- 	//UIFont * font = renderingContext->state->font;
- 	NSString * name = NSStringMake("16dpt simsun");//NSString::stringWithFormat("%dpt %s", (int)font.pointSize, font.fontName);
+	UIFont * font = renderingContext->state->font;
+ 	//NSString * name = NSStringMake("16pt simsun");
+ 	NSString * name = NSString::createWithFormat("%pt %s", (int)font->pointSize, font->fontName->getCString());
  	return NSStringToJSValue(ctx, name);
 }
 
@@ -144,11 +145,12 @@ EJ_BIND_SET( EJBindingCanvas,font, ctx, value) {
  	float size = 0;
  	char name[64];
  	sscanf( string, "%fp%*[tx] %63s", &size, name); // matches: 10.5p[tx] helvetica
- 	//UIFont * newFont = [UIFont fontWithName:[NSString stringWithUTF8String:name] size:size];
-
- 	//if( newFont ) {
- 	//	renderingContext->font = newFont;
- 	//}
+	
+ 	UIFont * newFont = new UIFont(NSStringMake("droidsans.ttf"),size);
+ 	if( newFont ) {
+		renderingContext->state->font->release();
+ 	 	renderingContext->state->font = newFont;
+ 	}
 
  	JSStringRelease(jsString);
 }

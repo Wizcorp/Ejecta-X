@@ -32,8 +32,8 @@ using namespace std;
 #define EJECTA_VERSION "0.99"
 #define EJECTA_APP_FOLDER "files/build/"
 
-#define EJECTA_BOOT_JS "ejecta.js"
-#define EJECTA_MAIN_JS "index.js"
+#define EJECTA_BOOT_JS "lib/ejecta/ejecta.js"
+#define EJECTA_MAIN_JS "lib/ejecta/index.js"
 
 class EJBindingBase;
 class EJTimerCollection;

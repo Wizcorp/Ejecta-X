@@ -5,6 +5,7 @@
 #include "../EJCocoa/NSArray.h"
 #include "../EJCocoa/NSInteger.h"
 #include "../EJCocoa/NSString.h"
+#include "../EJCocoa/NSCache.h"
 
 #define EJ_FONT_TEXTURE_SIZE 1024
 
@@ -32,14 +33,15 @@ class EJFont : public NSObject {
 	//CGGlyph * glyphsBuffer;
 	//CGPoint * positionsBuffer;
 	unsigned char* buffer;
-	GLubyte * bitmap;
-public:
 
-	EJTexture * texture;
+	NSCache* textures ;
+public:
+		
 	unsigned int width, height;
+	NSString* fontName;
 
 	EJFont();
-	EJFont(NSString* font, NSInteger size, BOOL fill, float contentScale);
+	EJFont(NSString* font, NSInteger size, BOOL usefill, float contentScale);
 	~EJFont();
 
 	void drawString(NSString* string, EJCanvasContext* context, float x, float y);

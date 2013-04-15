@@ -18,6 +18,10 @@
 #include "EJImageData.h"
 #include "EJPath.h"
 #include "EJCanvasTypes.h"
+#include "EJFont.h"
+#include "../EJCocoa/NSDictionary.h"
+#include "../EJCocoa/NSCache.h"
+#include "../EJCocoa/UIFont.h"
 
 #define EJ_CANVAS_STATE_STACK_SIZE 16
 #define EJ_CANVAS_VERTEX_BUFFER_SIZE 2048
@@ -91,7 +95,7 @@ typedef struct {
 	
 	EJTextAlign textAlign;
 	EJTextBaseline textBaseline;
-	//UIFont * font;
+	UIFont* font;
 	
 	EJPath * clipPath;
 } EJCanvasState;
@@ -114,14 +118,13 @@ protected:
 	
 	int stateIndex;
 	EJCanvasState stateStack[EJ_CANVAS_STATE_STACK_SIZE];
-	
-	//NSCache * fontCache;
-
+		
 public:
+	NSCache * fontCache;
 
 	EJCanvasState * state;
 	EJCompositeOperation globalCompositeOperation;
-	//@property (nonatomic, retain) UIFont * font;
+	UIFont * font;
 	float backingStoreRatio;
 	bool msaaEnabled;
 	int msaaSamples;
@@ -140,8 +143,7 @@ public:
 	void pushQuad(EJVector2 v1, EJVector2 v2, EJVector2 v3, EJVector2 v4, EJVector2 t1, EJVector2 t2, EJVector2 t3, EJVector2 t4, EJColorRGBA color, CGAffineTransform transform);
 	void pushRect(float x, float y, float w, float h, float tx, float ty, float tw, float th, EJColorRGBA color, CGAffineTransform transform);
 	void flushBuffers();
-
-
+	
 	void save();
 	void restore();
 	void rotate(float angle);
@@ -166,7 +168,7 @@ public:
 	void quadraticCurveTo(float cpx, float cpy, float x, float y);
 	void arcTo(float x1, float y1, float x2, float y2, float radius);
 	void arc(float x, float y, float radius, float startAngle, float endAngle, BOOL antiClockwise);
-
+	EJFont* acquireFont(NSString* fontName , float pointSize ,BOOL fill ,float contentScale);
 	void fillText(NSString * text, float x, float y);
 	void strokeText(NSString * text, float x, float y);
 	float measureText(NSString * text);

@@ -10,7 +10,6 @@
 #endif
 #include "../EJApp.h"
 #include "EJCanvasContext.h"
-#include "EJFont.h"
 
 EJVertex CanvasVertexBuffer[EJ_CANVAS_VERTEX_BUFFER_SIZE];
 
@@ -38,6 +37,8 @@ EJCanvasContext::EJCanvasContext(short widthp, short heightp) : viewFrameBuffer(
 	state->textBaseline = kEJTextBaselineAlphabetic;
 	state->textAlign = kEJTextAlignStart;
 	//state->font = [[UIFont fontWithName:@"Helvetica" size:10] retain];
+	state->font = new UIFont(NSStringMake("simsun.ttc"),32);
+	state->font->retain();
 	state->clipPath = NULL;
 	
 	setScreenSize(widthp, heightp);
@@ -45,8 +46,8 @@ EJCanvasContext::EJCanvasContext(short widthp, short heightp) : viewFrameBuffer(
 	path = new EJPath();
 	backingStoreRatio = 1;
 	
-	// fontCache = [[NSCache alloc] init];
-	// fontCache.countLimit = 8;
+	fontCache = new NSCache();
+	fontCache->setCountLimit(8);
 	
 	imageSmoothingEnabled = true;
 	msaaEnabled = false;
@@ -55,11 +56,11 @@ EJCanvasContext::EJCanvasContext(short widthp, short heightp) : viewFrameBuffer(
 
 EJCanvasContext::~EJCanvasContext()
 {
-	//[fontCache release];
+	fontCache->release();
 	
 	// Release all fonts and clip paths from the stack
 	for( int i = 0; i < stateIndex + 1; i++ ) {
-		//[stateStack[i].font release];
+		stateStack[i].font->release();
 		stateStack[i].clipPath->release();
 	}
 
@@ -359,7 +360,7 @@ void EJCanvasContext::save()
 	stateStack[stateIndex+1] = stateStack[stateIndex];
 	stateIndex++;
 	state = &stateStack[stateIndex];
-	//[state->font retain];
+	state->font->retain();
 	if(state->clipPath)state->clipPath->retain();
 }
 
@@ -374,7 +375,7 @@ void EJCanvasContext::restore()
 	EJPath * oldClipPath = state->clipPath;
 	
 	// Clean up current state
-	//[state->font release];
+	state->font->release();
 
 	if( state->clipPath && state->clipPath != stateStack[stateIndex-1].clipPath ) {
 		resetClip();
@@ -571,36 +572,36 @@ void EJCanvasContext::arc(float x, float y, float radius, float startAngle, floa
 	path->arc(x, y, radius, startAngle, endAngle, antiClockwise);
 }
 
+EJFont* EJCanvasContext::acquireFont(NSString* fontName , float pointSize ,BOOL fill ,float contentScale) {
+	NSString * cacheKey = NSString::createWithFormat("%s_%.2f_%d_%.2f", fontName->getCString(), pointSize, fill, contentScale);
+	EJFont * font = (EJFont *)fontCache->objectForKey(cacheKey->getCString());
+	//EJFont * font = (EJFont *)fontCache->objectForKey(fontName->getCString());
+	if( !font ) {
+		font =new EJFont(fontName,pointSize ,fill ,contentScale);
+		NSLOG("acquireFont  :%s",cacheKey->getCString());
+		fontCache->setObject(font,cacheKey->getCString());
+		font->release();
+	}
+	return font;
+}
 
 void EJCanvasContext::fillText(NSString * text, float x, float y)
-{
-	// EJFont *font = [self acquireFont:state->font.fontName size:state->font.pointSize fill:YES contentScale:backingStoreRatio];
-	// [font drawString:text toContext:self x:x y:y];
-	NSString * fullPath = EJApp::instance()->pathForResource(NSStringMake("droidsans.ttf"));
-	EJFont* font = new EJFont(fullPath, 32, true, backingStoreRatio);
-	fullPath->release();
+{		
+	EJFont *font =acquireFont(state->font->fontName ,state->font->pointSize,true,backingStoreRatio);	
 	font->drawString(text, this, x, y);
-	drawImage(font->texture,0,0,font->width,font->height,x,y,font->width,font->height);
-	font->release();
 }
 
 void EJCanvasContext::strokeText(NSString * text, float x, float y)
 {
-	// EJFont *font = [self acquireFont:state->font.fontName size:state->font.pointSize fill:NO contentScale:backingStoreRatio];
-	// [font drawString:text toContext:self x:x y:y];
-	NSString * fullPath = EJApp::instance()->pathForResource(NSStringMake("droidsans.ttf"));
-	EJFont* font = new EJFont(fullPath, 32, false, backingStoreRatio);
-	fullPath->release();
-	font->drawString(text, this, x, y);
-	drawImage(font->texture,x,y,font->width,font->height,x,y,font->width,font->height);
-	font->release();
+	EJFont *font =acquireFont(state->font->fontName ,state->font->pointSize,false,backingStoreRatio);
+	font->drawString(text, this, x, y);	
+	fillText(text,x,y);
 }
 
 float EJCanvasContext::measureText(NSString * text)
 {
-	// EJFont *font = [self acquireFont:state->font.fontName size:state->font.pointSize fill:YES contentScale:backingStoreRatio];
-	// return [font measureString:text];
-	return 0.0f;
+	EJFont *font =acquireFont(state->font->fontName ,state->font->pointSize,true,backingStoreRatio);
+	return font->measureString(text);
 }
 
 void EJCanvasContext::clip()
