@@ -55,6 +55,8 @@ public:
     friend class NSAutoreleasePool;
 };
 
+template<class T>
+class NSObjectT : virtual public NSObject, virtual public T{};
 
 typedef void (NSObject::*SEL_SCHEDULE)(float);
 typedef void (NSObject::*SEL_CallFunc)();

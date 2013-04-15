@@ -35,7 +35,7 @@ void SetupRC()
 	//glHint(GL_PERSPECTIVE_CORRECTION_HINT, GL_NICEST);// Really Nice Perspective Calculations
 
 	const char *nativeString = ".";
-	EJApp::instance()->init(nativeString, SCREEN_WIDTH, SCREEN_HEIGHT);
+	EJAppViewController::instance()->init(nativeString, SCREEN_WIDTH, SCREEN_HEIGHT);
 
 }
 
@@ -53,7 +53,7 @@ void RenderScene(void)
 	//glVertex2f(0.5, 0.0);
 	//glEnd();
 
-	EJApp::instance()->run();
+	EJAppViewController::instance()->run();
 
 
 	// Flush drawing commands
@@ -70,7 +70,7 @@ void ChangeSize(int w, int h)
 	//glMatrixMode(GL_MODELVIEW);// Select The Modelview Matrix
 	//glLoadIdentity();
 
-	EJApp::instance()->setScreenSize(w, h);
+	EJAppViewController::instance()->setScreenSize(w, h);
 }
 
 int APIENTRY _tWinMain(HINSTANCE hInstance,
@@ -308,7 +308,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 		case IDM_EXIT:
 			//Cleanup OGL RC
 			
-			EJApp::finalize();
+			EJAppViewController::finalize();
 
 			if(g_hRC) 
 			{

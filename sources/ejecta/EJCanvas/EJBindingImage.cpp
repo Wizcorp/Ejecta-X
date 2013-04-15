@@ -1,97 +1,103 @@
-#include "EJBindingImage.h"
-#include "../EJApp.h"
+#import "EJBindingImage.h"
+#import "EJJavaScriptView.h"
+#import "EJNonRetainingProxy.h"
 
+@implementation EJBindingImage
+@synthesize texture;
 
-EJBindingImage::EJBindingImage() : texture(0), path(0), loading(false) {
-}
-
-EJBindingImage::~EJBindingImage() {
-	texture->release();
-	path->release();
-}
-
-void EJBindingImage::beginLoad() {
+- (void)beginLoad {
 	// This will begin loading the texture in a background thread and will call the
 	// JavaScript onload callback when done
-	loading = true;
+	loading = YES;
 	
-	NSString* sharegroup = new NSString();
-	sharegroup->autorelease();
-	load(sharegroup);
+	// Protect this image object from garbage collection, as its callback function
+	// may be the only thing holding on to it
+	JSValueProtect(scriptView.jsGlobalContext, jsObject);
+	
+	NSLog(@"Loading Image: %@", path);
+	NSString *fullPath = [scriptView pathForResource:path];
+	
+	// Use a non-retaining proxy for the callback operation and take care that the
+	// loadCallback is always cancelled when dealloc'ing
+	loadCallback = [[NSInvocationOperation alloc]
+		initWithTarget:[EJNonRetainingProxy proxyWithTarget:self]
+		selector:@selector(endLoad) object:nil];
+	
+	texture = [[EJTexture cachedTextureWithPath:fullPath
+		loadOnQueue:scriptView.backgroundQueue callback:loadCallback] retain];
 }
 
-void EJBindingImage::load(NSString* sharegroup) {
-
-	NSLOG("Loading Image: %s", path->getCString() );
-	NSString * fullPath = EJApp::instance()->pathForResource(path);
-	EJTexture * tempTex = new EJTexture(fullPath, sharegroup);
-	tempTex->autorelease();
-	endLoad(tempTex);
-
+- (void)prepareGarbageCollection {
+	[loadCallback cancel];
+	[loadCallback release];
+	loadCallback = nil;
 }
 
-void EJBindingImage::endLoad(EJTexture * tex) {
-	loading = false;
-	tex->retain();
-	texture = tex;
-
-	if( tex->textureId ) {
-		EJBindingEventedBase::triggerEvent(NSStringMake("load") ,0 ,NULL);
-	}
-	else {
-		EJBindingEventedBase::triggerEvent(NSStringMake("error") ,0 ,NULL);
-	}
+- (void)dealloc {
+	[loadCallback cancel];
+	[loadCallback release];
+	
+	[texture release];
+	[path release];
+	[super dealloc];
 }
 
-EJ_BIND_GET( EJBindingImage, src, ctx ) { 
-	JSStringRef src = JSStringCreateWithUTF8CString( path->getCString() );
+- (void)endLoad {
+	loading = NO;
+	[loadCallback release];
+	loadCallback = nil;
+	
+	[self triggerEvent:(texture.textureId ? @"load" : @"error") argc:0 argv:NULL];		
+	JSValueUnprotect(scriptView.jsGlobalContext, jsObject);
+}
+
+EJ_BIND_GET(src, ctx ) { 
+	JSStringRef src = JSStringCreateWithUTF8CString( [path UTF8String] );
 	JSValueRef ret = JSValueMakeString(ctx, src);
 	JSStringRelease(src);
 	return ret;
 }
 
-EJ_BIND_SET( EJBindingImage, src, ctx, value) {
+EJ_BIND_SET(src, ctx, value) {
 	// If the texture is still loading, do nothing to avoid confusion
 	// This will break some edge cases; FIXME
 	if( loading ) { return; }
-
-	NSString * newPath = JSValueToNSString( ctx, value );
+	
+	NSString *newPath = JSValueToNSString( ctx, value );
+	
+	// Same as the old path? Nothing to do here
+	if( [path isEqualToString:newPath] ) { return; }
+	
 	
 	// Release the old path and texture?
 	if( path ) {
-	
-		// Same as the old path? Nothing to do here
-		if( path->isEqual(newPath) ) { return; }
-
-		path->release();
-		path = NULL;
+		[path release];
+		path = nil;
 		
-		texture->release();
-		texture = NULL;
+		[texture release];
+		texture = nil;
 	}
 	
-	if( newPath->length() ) {
-		newPath->retain();
-		path = newPath;
-		beginLoad();
+	if( [newPath length] ) {
+		path = [newPath retain];
+		[self beginLoad];
 	}
-
 }
 
-EJ_BIND_GET( EJBindingImage, width, ctx ) {
-	return JSValueMakeNumber( ctx, texture ? (texture->width / texture->contentScale) : 0);
+EJ_BIND_GET(width, ctx ) {
+	return JSValueMakeNumber( ctx, texture ? (texture.width / texture.contentScale) : 0);
 }
 
-EJ_BIND_GET( EJBindingImage, height, ctx ) { 
-	return JSValueMakeNumber( ctx, texture ? (texture->height / texture->contentScale) : 0 );
+EJ_BIND_GET(height, ctx ) { 
+	return JSValueMakeNumber( ctx, texture ? (texture.height / texture.contentScale) : 0 );
 }
 
-EJ_BIND_GET( EJBindingImage, complete, ctx ) {
-	return JSValueMakeBoolean(ctx, (texture && texture->textureId) );
+EJ_BIND_GET(complete, ctx ) {
+	return JSValueMakeBoolean(ctx, (texture && texture.textureId) );
 }
 
-EJ_BIND_EVENT( EJBindingImage, load);
+EJ_BIND_EVENT(load);
+EJ_BIND_EVENT(error);
 
-EJ_BIND_EVENT( EJBindingImage, error);
 
-REFECTION_CLASS_IMPLEMENT(EJBindingImage);
+@end

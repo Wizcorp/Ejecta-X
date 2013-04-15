@@ -66,54 +66,6 @@
     <ClInclude Include="..\..\..\sources\ejecta\EJCocoa\CGAffineTransform.h">
       <Filter>ejecta\EJCocoa</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\sources\ejecta\EJApp.h">
-      <Filter>ejecta</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\sources\ejecta\EJBindingBase.h">
-      <Filter>ejecta</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\sources\ejecta\EJCanvas\EJBindingCanvas.h">
-      <Filter>ejecta\EJCanvas</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\sources\ejecta\EJBindingEjectaCore.h">
-      <Filter>ejecta</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\sources\ejecta\EJBindingEventedBase.h">
-      <Filter>ejecta</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\sources\ejecta\EJCanvas\EJBindingImage.h">
-      <Filter>ejecta\EJCanvas</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\sources\ejecta\EJCanvas\EJBindingImageData.h">
-      <Filter>ejecta\EJCanvas</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\sources\ejecta\EJCanvas\EJCanvasContext.h">
-      <Filter>ejecta\EJCanvas</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\sources\ejecta\EJCanvas\EJCanvasContextTexture.h">
-      <Filter>ejecta\EJCanvas</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\sources\ejecta\EJCanvas\EJCanvasContextScreen.h">
-      <Filter>ejecta\EJCanvas</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\sources\ejecta\EJCanvas\EJCanvasTypes.h">
-      <Filter>ejecta\EJCanvas</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\sources\ejecta\EJConvert.h">
-      <Filter>ejecta</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\sources\ejecta\EJCanvas\EJImageData.h">
-      <Filter>ejecta\EJCanvas</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\sources\ejecta\EJCanvas\EJPath.h">
-      <Filter>ejecta\EJCanvas</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\sources\ejecta\EJCanvas\EJTexture.h">
-      <Filter>ejecta\EJCanvas</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\sources\ejecta\EJTimer.h">
-      <Filter>ejecta</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\..\sources\ejecta\lodepng\lodepng.h">
       <Filter>ejecta\lodepng</Filter>
     </ClInclude>
@@ -180,20 +132,26 @@
     <ClInclude Include="..\..\..\sources\ejecta\EJCocoa\support\utlist.h">
       <Filter>ejecta\EJCocoa\support</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\sources\ejecta\EJAudio\EJBindingAudio.h">
-      <Filter>ejecta\EJAudio</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\sources\ejecta\EJUtils\EJBindingLocalStorage.h">
-      <Filter>ejecta\EJUtils</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\..\sources\ejecta\lodejpeg\lodejpeg.h">
       <Filter>ejecta\lodejpeg</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\sources\ejecta\EJCanvas\EJFont.h">
-      <Filter>ejecta\EJCanvas</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\..\sources\ejecta\lodefreetype\lodefreetype.h">
       <Filter>ejecta\lodefreetype</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\sources\ejecta\EJAppViewController.h">
+      <Filter>ejecta</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\sources\ejecta\EJClassLoader.h">
+      <Filter>ejecta</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\sources\ejecta\EJConvert.h">
+      <Filter>ejecta</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\sources\ejecta\EJJavaScriptView.h">
+      <Filter>ejecta</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\sources\ejecta\EJTimer.h">
+      <Filter>ejecta</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -205,48 +163,6 @@
     </ClCompile>
     <ClCompile Include="..\..\..\sources\ejecta\EJCocoa\CGAffineTransform.cpp">
       <Filter>ejecta\EJCocoa</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\sources\ejecta\EJBindingBase.cpp">
-      <Filter>ejecta</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\sources\ejecta\EJBindingEjectaCore.cpp">
-      <Filter>ejecta</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\sources\ejecta\EJBindingEventedBase.cpp">
-      <Filter>ejecta</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\sources\ejecta\EJCanvas\EJBindingCanvas.cpp">
-      <Filter>ejecta\EJCanvas</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\sources\ejecta\EJCanvas\EJBindingImage.cpp">
-      <Filter>ejecta\EJCanvas</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\sources\ejecta\EJCanvas\EJBindingImageData.cpp">
-      <Filter>ejecta\EJCanvas</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\sources\ejecta\EJCanvas\EJCanvasContext.cpp">
-      <Filter>ejecta\EJCanvas</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\sources\ejecta\EJCanvas\EJCanvasContextScreen.cpp">
-      <Filter>ejecta\EJCanvas</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\sources\ejecta\EJCanvas\EJCanvasContextTexture.cpp">
-      <Filter>ejecta\EJCanvas</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\sources\ejecta\EJConvert.cpp">
-      <Filter>ejecta</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\sources\ejecta\EJCanvas\EJImageData.cpp">
-      <Filter>ejecta\EJCanvas</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\sources\ejecta\EJCanvas\EJPath.cpp">
-      <Filter>ejecta\EJCanvas</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\sources\ejecta\EJCanvas\EJTexture.cpp">
-      <Filter>ejecta\EJCanvas</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\sources\ejecta\EJTimer.cpp">
-      <Filter>ejecta</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\sources\ejecta\lodepng\lodepng.cpp">
       <Filter>ejecta\lodepng</Filter>
@@ -287,23 +203,26 @@
     <ClCompile Include="..\..\..\sources\ejecta\EJCocoa\support\nsCArray.cpp">
       <Filter>ejecta\EJCocoa\support</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\sources\ejecta\EJApp.cpp">
-      <Filter>ejecta</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\sources\ejecta\EJAudio\EJBindingAudio.cpp">
-      <Filter>ejecta\EJAudio</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\sources\ejecta\EJUtils\EJBindingLocalStorage.cpp">
-      <Filter>ejecta\EJUtils</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\..\sources\ejecta\lodejpeg\lodejpeg.cpp">
       <Filter>ejecta\lodejpeg</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\sources\ejecta\EJCanvas\EJFont.cpp">
-      <Filter>ejecta\EJCanvas</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\..\sources\ejecta\lodefreetype\lodefreetype.cpp">
       <Filter>ejecta\lodefreetype</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\sources\ejecta\EJClassLoader.cpp">
+      <Filter>ejecta</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\sources\ejecta\EJConvert.cpp">
+      <Filter>ejecta</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\sources\ejecta\EJJavaScriptView.cpp">
+      <Filter>ejecta</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\sources\ejecta\EJTimer.cpp">
+      <Filter>ejecta</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\sources\ejecta\EJAppViewController.cpp">
+      <Filter>ejecta</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

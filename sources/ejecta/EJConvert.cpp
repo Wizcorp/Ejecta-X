@@ -41,149 +41,149 @@ double JSValueToNumberFast( JSContextRef ctx, JSValueRef v ) {
       }         
 }
 
-static const EJColorRGBA ColorNames[] = {
-      {0xff000000}, // invaid
-      {0xfffff8f0}, // aliceblue
-      {0xffd7ebfa}, // antiquewhite
-      {0xffffff00}, // aqua
-      {0xffd4ff7f}, // aquamarine
-      {0xfffffff0}, // azure
-      {0xffdcf5f5}, // beige
-      {0xffc4e4ff}, // bisque
-      {0xff000000}, // black
-      {0xffcdebff}, // blanchedalmond
-      {0xffff0000}, // blue
-      {0xffe22b8a}, // blueviolet
-      {0xff2a2aa5}, // brown
-      {0xff87b8de}, // burlywood
-      {0xffa09e5f}, // cadetblue
-      {0xff00ff7f}, // chartreuse
-      {0xff1e69d2}, // chocolate
-      {0xff507fff}, // coral
-      {0xffed9564}, // cornflowerblue
-      {0xffdcf8ff}, // cornsilk
-      {0xff3c14dc}, // crimson
-      {0xffffff00}, // cyan
-      {0xff8b0000}, // darkblue
-      {0xff8b8b00}, // darkcyan
-      {0xff0b86b8}, // darkgoldenrod
-      {0xffa9a9a9}, // darkgray
-      {0xff006400}, // darkgreen
-      {0xff6bb7bd}, // darkkhaki
-      {0xff8b008b}, // darkmagenta
-      {0xff2f6b55}, // darkolivegreen
-      {0xff008cff}, // darkorange
-      {0xffcc3299}, // darkorchid
-      {0xff00008b}, // darkred
-      {0xff7a96e9}, // darksalmon
-      {0xff8fbc8f}, // darkseagreen
-      {0xff8b3d48}, // darkslateblue
-      {0xff4f4f2f}, // darkslategray
-      {0xffd1ce00}, // darkturquoise
-      {0xffd30094}, // darkviolet
-      {0xff9314ff}, // deeppink
-      {0xffffbf00}, // deepskyblue
-      {0xff696969}, // dimgray
-      {0xffff901e}, // dodgerblue
-      {0xff2222b2}, // firebrick
-      {0xfff0faff}, // floralwhite
-      {0xff228b22}, // forestgreen
-      {0xffff00ff}, // fuchsia
-      {0xffdcdcdc}, // gainsboro
-      {0xfffff8f8}, // ghostwhite
-      {0xff00d7ff}, // gold
-      {0xff20a5da}, // goldenrod
-      {0xff808080}, // gray
-      {0xff008000}, // green
-      {0xff2fffad}, // greenyellow
-      {0xfff0fff0}, // honeydew
-      {0xffb469ff}, // hotpink
-      {0xff5c5ccd}, // indianred
-      {0xff82004b}, // indigo
-      {0xfff0ffff}, // ivory
-      {0xff8ce6f0}, // khaki
-      {0xfffae6e6}, // lavender
-      {0xfff5f0ff}, // lavenderblush
-      {0xff00fc7c}, // lawngreen
-      {0xffcdfaff}, // lemonchiffon
-      {0xffe6d8ad}, // lightblue
-      {0xff8080f0}, // lightcoral
-      {0xffffffe0}, // lightcyan
-      {0xffd2fafa}, // lightgoldenrodyellow
-      {0xffd3d3d3}, // lightgray
-      {0xff90ee90}, // lightgreen
-      {0xffc1b6ff}, // lightpink
-      {0xff7aa0ff}, // lightsalmon
-      {0xffaab220}, // lightseagreen
-      {0xffface87}, // lightskyblue
-      {0xff998877}, // lightslategray
-      {0xffdec4b0}, // lightsteelblue
-      {0xffe0ffff}, // lightyellow
-      {0xff00ff00}, // lime
-      {0xff32cd32}, // limegreen
-      {0xffe6f0fa}, // linen
-      {0xffff00ff}, // magenta
-      {0xff000080}, // maroon
-      {0xffaacd66}, // mediumaquamarine
-      {0xffcd0000}, // mediumblue
-      {0xffd355ba}, // mediumorchid
-      {0xffd87093}, // mediumpurple
-      {0xff71b33c}, // mediumseagreen
-      {0xffee687b}, // mediumslateblue
-      {0xff9afa00}, // mediumspringgreen
-      {0xffccd148}, // mediumturquoise
-      {0xff8515c7}, // mediumvioletred
-      {0xff701919}, // midnightblue
-      {0xfffafff5}, // mintcream
-      {0xffe1e4ff}, // mistyrose
-      {0xffb5e4ff}, // moccasin
-      {0xffaddeff}, // navajowhite
-      {0xff800000}, // navy
-      {0xffe6f5fd}, // oldlace
-      {0xff008080}, // olive
-      {0xff238e6b}, // olivedrab
-      {0xff00a5ff}, // orange
-      {0xff0045ff}, // orangered
-      {0xffd670da}, // orchid
-      {0xffaae8ee}, // palegoldenrod
-      {0xff98fb98}, // palegreen
-      {0xffeeeeaf}, // paleturquoise
-      {0xff9370d8}, // palevioletred
-      {0xffd5efff}, // papayawhip
-      {0xffb9daff}, // peachpuff
-      {0xff3f85cd}, // peru
-      {0xffcbc0ff}, // pink
-      {0xffdda0dd}, // plum
-      {0xffe6e0b0}, // powderblue
-      {0xff800080}, // purple
-      {0xff0000ff}, // red
-      {0xff8f8fbc}, // rosybrown
-      {0xffe16941}, // royalblue
-      {0xff13458b}, // saddlebrown
-      {0xff7280fa}, // salmon
-      {0xff60a4f4}, // sandybrown
-      {0xff578b2e}, // seagreen
-      {0xffeef5ff}, // seashell
-      {0xff2d52a0}, // sienna
-      {0xffc0c0c0}, // silver
-      {0xffebce87}, // skyblue
-      {0xffcd5a6a}, // slateblue
-      {0xff908070}, // slategray
-      {0xfffafaff}, // snow
-      {0xff7fff00}, // springgreen
-      {0xffb48246}, // steelblue
-      {0xff8cb4d2}, // tan
-      {0xff808000}, // teal
-      {0xffd8bfd8}, // thistle
-      {0xff4763ff}, // tomato
-      {0xffd0e040}, // turquoise
-      {0xffee82ee}, // violet
-      {0xffb3def5}, // wheat
-      {0xffffffff}, // white
-      {0xfff5f5f5}, // whitesmoke
-      {0xff00ffff}, // yellow
-      {0xff32cd9a}  // yellowgreen
-};
+//static const EJColorRGBA ColorNames[] = {
+//      {0xff000000}, // invaid
+//      {0xfffff8f0}, // aliceblue
+//      {0xffd7ebfa}, // antiquewhite
+//      {0xffffff00}, // aqua
+//      {0xffd4ff7f}, // aquamarine
+//      {0xfffffff0}, // azure
+//      {0xffdcf5f5}, // beige
+//      {0xffc4e4ff}, // bisque
+//      {0xff000000}, // black
+//      {0xffcdebff}, // blanchedalmond
+//      {0xffff0000}, // blue
+//      {0xffe22b8a}, // blueviolet
+//      {0xff2a2aa5}, // brown
+//      {0xff87b8de}, // burlywood
+//      {0xffa09e5f}, // cadetblue
+//      {0xff00ff7f}, // chartreuse
+//      {0xff1e69d2}, // chocolate
+//      {0xff507fff}, // coral
+//      {0xffed9564}, // cornflowerblue
+//      {0xffdcf8ff}, // cornsilk
+//      {0xff3c14dc}, // crimson
+//      {0xffffff00}, // cyan
+//      {0xff8b0000}, // darkblue
+//      {0xff8b8b00}, // darkcyan
+//      {0xff0b86b8}, // darkgoldenrod
+//      {0xffa9a9a9}, // darkgray
+//      {0xff006400}, // darkgreen
+//      {0xff6bb7bd}, // darkkhaki
+//      {0xff8b008b}, // darkmagenta
+//      {0xff2f6b55}, // darkolivegreen
+//      {0xff008cff}, // darkorange
+//      {0xffcc3299}, // darkorchid
+//      {0xff00008b}, // darkred
+//      {0xff7a96e9}, // darksalmon
+//      {0xff8fbc8f}, // darkseagreen
+//      {0xff8b3d48}, // darkslateblue
+//      {0xff4f4f2f}, // darkslategray
+//      {0xffd1ce00}, // darkturquoise
+//      {0xffd30094}, // darkviolet
+//      {0xff9314ff}, // deeppink
+//      {0xffffbf00}, // deepskyblue
+//      {0xff696969}, // dimgray
+//      {0xffff901e}, // dodgerblue
+//      {0xff2222b2}, // firebrick
+//      {0xfff0faff}, // floralwhite
+//      {0xff228b22}, // forestgreen
+//      {0xffff00ff}, // fuchsia
+//      {0xffdcdcdc}, // gainsboro
+//      {0xfffff8f8}, // ghostwhite
+//      {0xff00d7ff}, // gold
+//      {0xff20a5da}, // goldenrod
+//      {0xff808080}, // gray
+//      {0xff008000}, // green
+//      {0xff2fffad}, // greenyellow
+//      {0xfff0fff0}, // honeydew
+//      {0xffb469ff}, // hotpink
+//      {0xff5c5ccd}, // indianred
+//      {0xff82004b}, // indigo
+//      {0xfff0ffff}, // ivory
+//      {0xff8ce6f0}, // khaki
+//      {0xfffae6e6}, // lavender
+//      {0xfff5f0ff}, // lavenderblush
+//      {0xff00fc7c}, // lawngreen
+//      {0xffcdfaff}, // lemonchiffon
+//      {0xffe6d8ad}, // lightblue
+//      {0xff8080f0}, // lightcoral
+//      {0xffffffe0}, // lightcyan
+//      {0xffd2fafa}, // lightgoldenrodyellow
+//      {0xffd3d3d3}, // lightgray
+//      {0xff90ee90}, // lightgreen
+//      {0xffc1b6ff}, // lightpink
+//      {0xff7aa0ff}, // lightsalmon
+//      {0xffaab220}, // lightseagreen
+//      {0xffface87}, // lightskyblue
+//      {0xff998877}, // lightslategray
+//      {0xffdec4b0}, // lightsteelblue
+//      {0xffe0ffff}, // lightyellow
+//      {0xff00ff00}, // lime
+//      {0xff32cd32}, // limegreen
+//      {0xffe6f0fa}, // linen
+//      {0xffff00ff}, // magenta
+//      {0xff000080}, // maroon
+//      {0xffaacd66}, // mediumaquamarine
+//      {0xffcd0000}, // mediumblue
+//      {0xffd355ba}, // mediumorchid
+//      {0xffd87093}, // mediumpurple
+//      {0xff71b33c}, // mediumseagreen
+//      {0xffee687b}, // mediumslateblue
+//      {0xff9afa00}, // mediumspringgreen
+//      {0xffccd148}, // mediumturquoise
+//      {0xff8515c7}, // mediumvioletred
+//      {0xff701919}, // midnightblue
+//      {0xfffafff5}, // mintcream
+//      {0xffe1e4ff}, // mistyrose
+//      {0xffb5e4ff}, // moccasin
+//      {0xffaddeff}, // navajowhite
+//      {0xff800000}, // navy
+//      {0xffe6f5fd}, // oldlace
+//      {0xff008080}, // olive
+//      {0xff238e6b}, // olivedrab
+//      {0xff00a5ff}, // orange
+//      {0xff0045ff}, // orangered
+//      {0xffd670da}, // orchid
+//      {0xffaae8ee}, // palegoldenrod
+//      {0xff98fb98}, // palegreen
+//      {0xffeeeeaf}, // paleturquoise
+//      {0xff9370d8}, // palevioletred
+//      {0xffd5efff}, // papayawhip
+//      {0xffb9daff}, // peachpuff
+//      {0xff3f85cd}, // peru
+//      {0xffcbc0ff}, // pink
+//      {0xffdda0dd}, // plum
+//      {0xffe6e0b0}, // powderblue
+//      {0xff800080}, // purple
+//      {0xff0000ff}, // red
+//      {0xff8f8fbc}, // rosybrown
+//      {0xffe16941}, // royalblue
+//      {0xff13458b}, // saddlebrown
+//      {0xff7280fa}, // salmon
+//      {0xff60a4f4}, // sandybrown
+//      {0xff578b2e}, // seagreen
+//      {0xffeef5ff}, // seashell
+//      {0xff2d52a0}, // sienna
+//      {0xffc0c0c0}, // silver
+//      {0xffebce87}, // skyblue
+//      {0xffcd5a6a}, // slateblue
+//      {0xff908070}, // slategray
+//      {0xfffafaff}, // snow
+//      {0xff7fff00}, // springgreen
+//      {0xffb48246}, // steelblue
+//      {0xff8cb4d2}, // tan
+//      {0xff808000}, // teal
+//      {0xffd8bfd8}, // thistle
+//      {0xff4763ff}, // tomato
+//      {0xffd0e040}, // turquoise
+//      {0xffee82ee}, // violet
+//      {0xffb3def5}, // wheat
+//      {0xffffffff}, // white
+//      {0xfff5f5f5}, // whitesmoke
+//      {0xff00ffff}, // yellow
+//      {0xff32cd9a}  // yellowgreen
+//};
 
 // This is a bit wild. ColorHashForString returns a hash of the input string in the range
 // of [0 -- 497] (the smallest range I could find with such a simple hash function). This
@@ -214,79 +214,79 @@ static inline unsigned int ColorHashForString( const JSChar * s, int length ) {
 	return (h % 498);
 };
 
-EJColorRGBA JSValueToColorRGBA(JSContextRef ctx, JSValueRef value) {
-	EJColorRGBA c = {0xff000000};
-	if( !JSValueIsString(ctx, value) ) { return c; }
-	
-	JSStringRef jsString = JSValueToStringCopy( ctx, value, NULL );
-	int length = JSStringGetLength( jsString );
-	
-	if( length < 3 ) { return c; }
-	
-	const JSChar * jsc = JSStringGetCharactersPtr(jsString);
-	char str[] = "ffffff";
-	
-	// #f0f format
-	if( jsc[0] == '#' && length == 4 ) {
-		str[0] = str[1] = jsc[3];
-		str[2] = str[3] = jsc[2];
-		str[4] = str[5] = jsc[1];
-		c.hex = 0xff000000 | strtol( str, NULL, 16 );
-	}
-	
-	// #ff00ff format
-	else if( jsc[0] == '#' && length == 7 ) {
-		str[0] = jsc[5];
-		str[1] = jsc[6];
-		str[2] = jsc[3];
-		str[3] = jsc[4];
-		str[4] = jsc[1];
-		str[5] = jsc[2];
-		c.hex = 0xff000000 | strtol( str, NULL, 16 );
-	}
-	
-	// assume rgb(255,0,255) or rgba(255,0,255,0.5) format
-	else if( jsc[0] == 'r' && jsc[1] == 'g' ) {
-		int component = 0;
-		for( int i = 4; i < length-1 && component < 4; i++ ) {
-			if( component == 3 ) {
-				// If we have an alpha component, copy the rest of the wide
-				// string into a char array and use atof() to parse it.
-				char alpha[8] = { 0,0,0,0, 0,0,0,0 };
-				for( int j = 0; i + j < length-1 && j < 7; j++ ) {
-					alpha[j] = jsc[i+j];
-				}
-				c.components[component] = atof(alpha) * 255.0f;
-				component++;
-			}
-			else if( isdigit(jsc[i]) ) {
-				c.components[component] = c.components[component] * 10 + (jsc[i] - '0'); 
-			}
-			else if( jsc[i] == ',' || jsc[i] == ')' ) {
-				component++;
-			}
-		}
-	}
-	
-	// try color name
-	else {
-		unsigned int hash = ColorHashForString( jsc, length );
-		c = ColorNames[ColorHashesToColorNames[hash]];
-	}
-	
-	JSStringRelease(jsString);
-	return c;
-}
-
-JSValueRef ColorRGBAToJSValue( JSContextRef ctx, EJColorRGBA c ) {
-	static char buffer[32];
-	sprintf(buffer, "rgba(%d,%d,%d,%.3f)", c.rgba.r, c.rgba.g, c.rgba.b, (float)c.rgba.a/255.0f );
-	
-	JSStringRef src = JSStringCreateWithUTF8CString( buffer );
-	JSValueRef ret = JSValueMakeString(ctx, src);
-	JSStringRelease(src);
-	return ret;
-}
+//EJColorRGBA JSValueToColorRGBA(JSContextRef ctx, JSValueRef value) {
+//	EJColorRGBA c = {0xff000000};
+//	if( !JSValueIsString(ctx, value) ) { return c; }
+//	
+//	JSStringRef jsString = JSValueToStringCopy( ctx, value, NULL );
+//	int length = JSStringGetLength( jsString );
+//	
+//	if( length < 3 ) { return c; }
+//	
+//	const JSChar * jsc = JSStringGetCharactersPtr(jsString);
+//	char str[] = "ffffff";
+//	
+//	// #f0f format
+//	if( jsc[0] == '#' && length == 4 ) {
+//		str[0] = str[1] = jsc[3];
+//		str[2] = str[3] = jsc[2];
+//		str[4] = str[5] = jsc[1];
+//		c.hex = 0xff000000 | strtol( str, NULL, 16 );
+//	}
+//	
+//	// #ff00ff format
+//	else if( jsc[0] == '#' && length == 7 ) {
+//		str[0] = jsc[5];
+//		str[1] = jsc[6];
+//		str[2] = jsc[3];
+//		str[3] = jsc[4];
+//		str[4] = jsc[1];
+//		str[5] = jsc[2];
+//		c.hex = 0xff000000 | strtol( str, NULL, 16 );
+//	}
+//	
+//	// assume rgb(255,0,255) or rgba(255,0,255,0.5) format
+//	else if( jsc[0] == 'r' && jsc[1] == 'g' ) {
+//		int component = 0;
+//		for( int i = 4; i < length-1 && component < 4; i++ ) {
+//			if( component == 3 ) {
+//				// If we have an alpha component, copy the rest of the wide
+//				// string into a char array and use atof() to parse it.
+//				char alpha[8] = { 0,0,0,0, 0,0,0,0 };
+//				for( int j = 0; i + j < length-1 && j < 7; j++ ) {
+//					alpha[j] = jsc[i+j];
+//				}
+//				c.components[component] = atof(alpha) * 255.0f;
+//				component++;
+//			}
+//			else if( isdigit(jsc[i]) ) {
+//				c.components[component] = c.components[component] * 10 + (jsc[i] - '0'); 
+//			}
+//			else if( jsc[i] == ',' || jsc[i] == ')' ) {
+//				component++;
+//			}
+//		}
+//	}
+//	
+//	// try color name
+//	else {
+//		unsigned int hash = ColorHashForString( jsc, length );
+//		c = ColorNames[ColorHashesToColorNames[hash]];
+//	}
+//	
+//	JSStringRelease(jsString);
+//	return c;
+//}
+//
+//JSValueRef ColorRGBAToJSValue( JSContextRef ctx, EJColorRGBA c ) {
+//	static char buffer[32];
+//	sprintf(buffer, "rgba(%d,%d,%d,%.3f)", c.rgba.r, c.rgba.g, c.rgba.b, (float)c.rgba.a/255.0f );
+//	
+//	JSStringRef src = JSStringCreateWithUTF8CString( buffer );
+//	JSValueRef ret = JSValueMakeString(ctx, src);
+//	JSStringRelease(src);
+//	return ret;
+//}
 
 JSObjectRef ByteArrayToJSObject( JSContextRef ctx, unsigned char * bytes, int count ) {
 	// This creates a JSON string from a byte array and then uses the JSC APIs
@@ -334,3 +334,52 @@ void JSObjectToByteArray( JSContextRef ctx, JSObjectRef array, unsigned char * b
 		bytes[i] = JSValueToNumberFast(ctx, JSObjectGetPropertyAtIndex(ctx, array, i, NULL));
 	}
 }
+
+void JSValueUnprotectSafe( JSContextRef ctx, JSValueRef v ) {
+	if( ctx && v ) {
+		JSValueUnprotect(ctx, v);
+	}
+}
+
+// #import "EJConvert.h"
+
+// NSString *JSValueToNSString( JSContextRef ctx, JSValueRef v ) {
+// 	JSStringRef jsString = JSValueToStringCopy( ctx, v, NULL );
+// 	if( !jsString ) return nil;
+	
+// 	NSString *string = (NSString *)JSStringCopyCFString( kCFAllocatorDefault, jsString );
+// 	[string autorelease];
+// 	JSStringRelease( jsString );
+	
+// 	return string;
+// }
+
+// JSValueRef NSStringToJSValue( JSContextRef ctx, NSString *string ) {
+// 	JSStringRef jstr = JSStringCreateWithCFString((CFStringRef)string);
+// 	JSValueRef ret = JSValueMakeString(ctx, jstr);
+// 	JSStringRelease(jstr);
+// 	return ret;
+// }
+
+// double JSValueToNumberFast( JSContextRef ctx, JSValueRef v ) {
+// 	// This struct represents the memory layout of a C++ JSValue instance
+// 	// See JSC/runtime/JSValue.h for an explanation of the tagging
+// 	struct {
+// 		unsigned char cppClassData[8];
+// 		union {
+// 			double asDouble;
+// 			struct { int32_t asInt; int32_t tag; } asBits;
+// 		} payload;
+// 	} *decoded = (void *)v;
+	
+// 	return decoded->payload.asBits.tag < 0xfffffff9
+// 		? decoded->payload.asDouble
+// 		: decoded->payload.asBits.asInt;
+// }
+
+// void JSValueUnprotectSafe( JSContextRef ctx, JSValueRef v ) {
+// 	if( ctx && v ) {
+// 		JSValueUnprotect(ctx, v);
+// 	}
+// }
+

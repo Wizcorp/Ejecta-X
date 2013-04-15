@@ -1,210 +1,244 @@
-#include "EJBindingAudio.h"
+#import "EJBindingAudio.h"
+#import "EJJavaScriptView.h"
+#import "EJNonRetainingProxy.h"
 
-EJBindingAudio::EJBindingAudio() {
+@implementation EJBindingAudio
+
+@synthesize loop, ended, volume;
+@synthesize path;
+@synthesize preload;
+
+- (id)initWithContext:(JSContextRef)ctx argc:(size_t)argc argv:(const JSValueRef [])argv {
+	if( self = [super initWithContext:ctx argc:argc argv:argv] ) {
+		volume = 1;
+		paused = true;
+		preload = kEJAudioPreloadNone;
+		
+		if( argc > 0 ) {
+			[self setSourcePath:JSValueToNSString(ctx, argv[0])];
+		}
+	}
+	return self;
 }
 
-void EJBindingAudio::init(JSContextRef ctx ,JSObjectRef obj, size_t argc, const JSValueRef argv[]) {
-	volume = 1;
-	preload = kEJAudioPreloadNone;
+- (void)dealloc {
+	[loadCallback cancel];
+	[loadCallback release];
+
+	[source release];
+	[path release];
+	[super dealloc];
+}
+
+- (void)setSourcePath:(NSString *)pathp {
+	if( !path || ![path isEqualToString:pathp] ) {
+		[path release];
+		[source release];
+		source = NULL;
 		
-	if( argc > 0 ) {
-		setSourcePath(JSValueToNSString(ctx, argv[0]));
+		path = [pathp retain];
+		if( preload != kEJAudioPreloadNone ) {
+			[self load];
+		}
 	}
 }
 
-EJBindingAudio::~EJBindingAudio() {
-	source->release();
-	path->release();
-}
-
-
-
-void EJBindingAudio::setSourcePath(NSString* pathp) {
-	// if( !path || ![path isEqualToString:pathp] ) {
-	// 	[path release];
-	// 	[source release];
-	// 	source = NULL;
+- (void)load {
+	if( source || !path || loading ) { return; }
+	
+	// This will begin loading the sound in a background thread
+	loading = YES;
+	
+	// Protect this Audio object from garbage collection, as its callback function
+	// may be the only thing holding on to it
+	JSValueProtect(scriptView.jsGlobalContext, jsObject);
+	
+	
+	EJNonRetainingProxy *proxy = [EJNonRetainingProxy proxyWithTarget:self];
+	
+	loadCallback = [[NSInvocationOperation alloc]
+		initWithTarget:proxy selector:@selector(endLoad) object:nil];
+	
+	NSOperation *loadOp = [[NSInvocationOperation alloc]
+		initWithTarget:proxy selector:@selector(backgroundLoad) object:nil];
 		
-	// 	path = [pathp retain];
-	// 	if( preload == kEJAudioPreloadAuto ) {
-	// 		[self load];
-	// 	}
-	// }
+	[scriptView.backgroundQueue addOperation:loadOp];
+	[loadOp release];
 }
 
-void EJBindingAudio::load() {
-	// if( source || !path || loading ) { return; }
-	
-	// // This will begin loading the sound in a background thread
-	// loading = YES;
-	
-	// NSString * fullPath = [[EJApp instance] pathForResource:path];
-	// NSInvocationOperation* loadOp = [[NSInvocationOperation alloc] initWithTarget:self
-	// 			selector:@selector(loadOperation:) object:fullPath];
-	// [loadOp setThreadPriority:0.0];
-	// [[EJApp instance].opQueue addOperation:loadOp];
-	// [loadOp release];
+- (void)prepareGarbageCollection {
+	[loadCallback cancel];
 }
 
-void EJBindingAudio::loadOperation(NSString* fullPath) {
-	// NSAutoreleasePool *autoreleasepool = [[NSAutoreleasePool alloc] init];
+- (void)backgroundLoad {
+	// Decide whether to load the sound as OpenAL or AVAudioPlayer source
+	NSString *fullPath = [scriptView pathForResource:path];
+	unsigned long long size = [[[NSFileManager defaultManager] attributesOfItemAtPath:fullPath error:nil] fileSize];
 	
-	// // Decide whether to load the sound as OpenAL or AVAudioPlayer source
-	// unsigned long long size = [[[NSFileManager defaultManager] attributesOfItemAtPath:fullPath error:nil] fileSize];
-	
-	// NSObject<EJAudioSource> * src;
-	// if( size <= EJ_AUDIO_OPENAL_MAX_SIZE ) {
-	// 	NSLog(@"Loading Sound(OpenAL): %@", path);
-	// 	src = [[EJAudioSourceOpenAL alloc] initWithPath:fullPath];
-	// }
-	// else {
-	// 	NSLog(@"Loading Sound(AVAudio): %@", path);
-	// 	src = [[EJAudioSourceAVAudio alloc] initWithPath:fullPath];
-	// 	((EJAudioSourceAVAudio *)src).delegate = self;
-	// }
-	// [src autorelease];
-	
-	// [self performSelectorOnMainThread:@selector(endLoad:) withObject:src waitUntilDone:NO];
-	// [autoreleasepool release];
-}
-
-void EJBindingAudio::endLoad(NSObject * src) {
-	// source = [src retain];
-	// [source setLooping:loop];
-	// [source setVolume:volume];
-	
-	// if( playAfterLoad ) {
-	// 	[source play];
-	// }
-	// loading = NO;
-	
-	// [self triggerEvent:@"canplaythrough" argc:0 argv:NULL];
-}
-
-void EJBindingAudio::setPreload(EJAudioPreload preloadp) {
-	// preload = preloadp;
-	// if( preload == kEJAudioPreloadAuto ) {
-	// 	[self load];
-	// }
-}
-
-
-
-EJ_BIND_FUNCTION(EJBindingAudio, play, ctx, argc, argv) {
-	if( !source ) {
-		playAfterLoad = true;
-		load();
+	if( size <= EJ_AUDIO_OPENAL_MAX_SIZE ) {
+		NSLog(@"Loading Sound(OpenAL): %@", path);
+		source = [[EJAudioSourceOpenAL alloc] initWithPath:fullPath];
 	}
 	else {
-		//[source play];
+		NSLog(@"Loading Sound(AVAudio): %@", path);
+		source = [[EJAudioSourceAVAudio alloc] initWithPath:fullPath];
+	}
+
+	[NSOperationQueue.mainQueue addOperation:loadCallback];
+}
+
+- (void)endLoad {
+	[loadCallback release];
+	loadCallback = nil;
+		
+	source.delegate = self;
+	[source setLooping:loop];
+	[source setVolume:volume];
+	
+	if( playAfterLoad ) {
+		[source play];
+	}
+	
+	loading = NO;
+	[self triggerEvent:@"canplaythrough" argc:0 argv:NULL];
+	[self triggerEvent:@"loadedmetadata" argc:0 argv:NULL];
+	
+	JSValueUnprotectSafe(scriptView.jsGlobalContext, jsObject);
+}
+
+- (void)sourceDidFinishPlaying:(NSObject<EJAudioSource> *)source {
+	ended = true;
+	[self triggerEvent:@"ended" argc:0 argv:NULL];
+}
+
+- (void)setPreload:(EJAudioPreload)preloadp {
+	preload = preloadp;
+	if( preload != kEJAudioPreloadNone ) {
+		[self load];
+	}
+}
+
+
+EJ_BIND_FUNCTION(play, ctx, argc, argv) {
+	if( !source ) {
+		playAfterLoad = YES;
+		[self load];
+	}
+	else {
+		[source play];
+		paused = false;
 		ended = false;
 	}
 	return NULL;
 }
 
-EJ_BIND_FUNCTION(EJBindingAudio, pause, ctx, argc, argv) {
+EJ_BIND_FUNCTION(pause, ctx, argc, argv) {
 	if( !source ) {
-		playAfterLoad = false;
+		playAfterLoad = NO;
 	}
 	else {
-		//[source pause];
+		paused = true;
+		[source pause];
 	}
 	return NULL;
 }
 
-EJ_BIND_FUNCTION(EJBindingAudio, load, ctx, argc, argv) {
-	load();
+EJ_BIND_FUNCTION(load, ctx, argc, argv) {
+	[self load];
 	return NULL;
 }
 
-EJ_BIND_FUNCTION(EJBindingAudio, canPlayType, ctx, argc, argv) {
+EJ_BIND_FUNCTION(canPlayType, ctx, argc, argv) {
 	if( argc != 1 ) return NULL;
 	
-	NSString * mime = JSValueToNSString(ctx, argv[0]);
+	NSString *mime = JSValueToNSString(ctx, argv[0]);
 	if( 
-		std::string(mime->getCString()).find("audio/x-caf") == std::string::npos || 
-		std::string(mime->getCString()).find("audio/mpeg") == std::string::npos || 
-		std::string(mime->getCString()).find("audio/mp4") == std::string::npos
+		[mime hasPrefix:@"audio/x-caf"] ||
+		[mime hasPrefix:@"audio/mpeg"] ||
+		[mime hasPrefix:@"audio/mp4"]
 	) {
-		return NSStringToJSValue(ctx, NSStringMake("probably"));
+		return NSStringToJSValue(ctx, @"probably");
 	}
 	return NULL;
 }
 
-EJ_BIND_FUNCTION(EJBindingAudio, cloneNode, ctx, argc, argv) {
-	// Create new JS object
-	EJBindingBase* pClass = (EJBindingBase*)NSClassFromString(std::string("EJBindingAudio"));
-	JSClassRef audioClass = EJApp::instance()->getJSClassForClass(pClass);
-	JSObjectRef obj = JSObjectMake( ctx, audioClass, NULL );
+EJ_BIND_FUNCTION(cloneNode, ctx, argc, argv) {
+	EJBindingAudio *audio = [[EJBindingAudio alloc] initWithContext:ctx argc:0 argv:NULL];
+	JSObjectRef clone = [EJBindingAudio createJSObjectWithContext:ctx scriptView:scriptView instance:audio];
 	
-	// Create the native instance
-	EJBindingAudio* audio = (EJBindingAudio*)NSClassFromString(pClass->toString().c_str());
-	audio->init(ctx, obj, 0, NULL);
-	
-	audio->loop = loop;
-	audio->volume = volume;
-	audio->preload = preload;
-	audio->path = path;
+	audio.loop = loop;
+	audio.volume = volume;
+	audio.preload = preload;
+	audio.path = path;
 	
 	if( source ) {
 		// If the source for this audio element was loaded,
 		// load it for the cloned one as well.
-		audio->load();
+		[audio load];
 	}
 	
-	// Attach the native instance to the js object
-	JSObjectSetPrivate( obj, (void *)audio );
-	pClass->autorelease();
-	return obj;
+	[audio release];
+	return clone;
 }
 
-EJ_BIND_GET(EJBindingAudio, loop, ctx) {
+EJ_BIND_GET(duration, ctx) {
+	return JSValueMakeNumber(ctx, source.duration);
+}
+
+EJ_BIND_GET(loop, ctx) {
 	return JSValueMakeBoolean( ctx, loop );
 }
 
-EJ_BIND_SET(EJBindingAudio, loop, ctx, value) {
+EJ_BIND_SET(loop, ctx, value) {
 	loop = JSValueToBoolean(ctx, value);
-	//[source setLooping:loop];
+	[source setLooping:loop];
 }
 
-EJ_BIND_GET(EJBindingAudio, volume, ctx) {
+EJ_BIND_GET(volume, ctx) {
 	return JSValueMakeNumber( ctx, volume );
 }
 
-EJ_BIND_SET(EJBindingAudio, volume, ctx, value) {
+EJ_BIND_SET(volume, ctx, value) {
 	volume = MIN(1,MAX(JSValueToNumberFast(ctx, value),0));
-	//[source setVolume:volume];
+	[source setVolume:volume];
 }
 
-EJ_BIND_GET(EJBindingAudio, currentTime, ctx) {
-	return 0;//JSValueMakeNumber( ctx, source ? [source getCurrentTime] : 0 );
+EJ_BIND_GET(currentTime, ctx) {
+	return JSValueMakeNumber( ctx, source ? source.currentTime : 0 );
 }
 
-EJ_BIND_SET(EJBindingAudio, currentTime, ctx, value) {
-	load();
-	//[source setCurrentTime:JSValueToNumberFast(ctx, value)];
+EJ_BIND_SET(currentTime, ctx, value) {
+	[self load];
+	source.currentTime = JSValueToNumberFast(ctx, value);
 }
 
-EJ_BIND_GET(EJBindingAudio, src, ctx) {
+EJ_BIND_GET(src, ctx) {
 	return path ? NSStringToJSValue(ctx, path) : NULL;
 }
 
-EJ_BIND_SET(EJBindingAudio, src, ctx, value) {
-	setSourcePath(JSValueToNSString(ctx, value));
-	if( preload == kEJAudioPreloadAuto ) {
-		load();
+EJ_BIND_SET(src, ctx, value) {
+	[self setSourcePath:JSValueToNSString(ctx, value)];
+	if( preload != kEJAudioPreloadNone ) {
+		[self load];
 	}
 }
 
-EJ_BIND_GET(EJBindingAudio, ended, ctx) {
+EJ_BIND_GET(ended, ctx) {
 	return JSValueMakeBoolean(ctx, ended);
 }
 
-//EJ_BIND_ENUM(EJBindingAudio, preload, EJAudioPreloadNames, self.preload);
+EJ_BIND_GET(paused, ctx) {
+	return JSValueMakeBoolean(ctx, paused);
+}
 
-EJ_BIND_EVENT(EJBindingAudio, canplaythrough);
-EJ_BIND_EVENT(EJBindingAudio, ended);
+EJ_BIND_ENUM(preload, self.preload,
+	"none",		// kEJAudioPreloadNone
+	"metadata", // kEJAudioPreloadMetadata
+	"auto"		// kEJAudioPreloadAuto
+);
 
+EJ_BIND_EVENT(loadedmetadata);
+EJ_BIND_EVENT(canplaythrough);
+EJ_BIND_EVENT(ended);
 
-
-REFECTION_CLASS_IMPLEMENT(EJBindingAudio);
+@end

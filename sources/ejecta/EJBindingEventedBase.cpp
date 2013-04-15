@@ -1,146 +1,108 @@
-#include "EJBindingEventedBase.h"
+#import "EJBindingEventedBase.h"
+#import "EJJavaScriptView.h"
 
+@implementation EJBindingEventedBase
 
-EJBindingEventedBase::EJBindingEventedBase() {
-
-	eventListeners =  new NSDictionary();
-    if (eventListeners != NULL)
-    {
-        eventListeners->retain();
-    }
-	onCallbacks =  new NSDictionary();
-    if (onCallbacks != NULL)
-    {
-        onCallbacks->retain();
-    }
-
+- (id)initWithContext:(JSContextRef)ctxp argc:(size_t)argc argv:(const JSValueRef [])argv {
+	if( self = [super initWithContext:ctxp argc:argc argv:argv] ) {
+		eventListeners = [[NSMutableDictionary alloc] init];
+		onCallbacks = [[NSMutableDictionary alloc] init];
+	}
+	return self;
 }
 
-EJBindingEventedBase::EJBindingEventedBase(JSContextRef ctxp, JSObjectRef obj,
-		size_t argc, const JSValueRef argv[]) {
-
-	eventListeners =  new NSDictionary();
-    if (eventListeners != NULL)
-    {
-        eventListeners->retain();
-    }
-	onCallbacks =  new NSDictionary();
-    if (onCallbacks != NULL)
-    {
-        onCallbacks->retain();
-    }
-}
-
-//
-EJBindingEventedBase::~EJBindingEventedBase() {
-	JSContextRef ctx = EJApp::instance()->jsGlobalContext;
-
+- (void)dealloc {
+	JSContextRef ctx = scriptView.jsGlobalContext;
+	
 	// Unprotect all event callbacks
-	NSDictElement* eElement = NULL;
-	NSDICT_FOREACH(eventListeners, eElement) {
-		NSArray * listeners = (NSArray *) eElement->getObject()->copy();
-
-		for (unsigned int var = 0; var < listeners->count(); ++var) {
-			NSValue * callbackValue = (NSValue *) listeners->objectAtIndex(var);
-			JSValueUnprotect(ctx, (JSValueRef) callbackValue->pointerValue());
+	for( NSString *name in eventListeners ) {
+		NSArray *listeners = eventListeners[name];
+		for( NSValue *callbackValue in listeners ) {
+			JSValueUnprotectSafe(ctx, [callbackValue pointerValue]);
 		}
 	}
-	delete eventListeners;
-
+	[eventListeners release];
+	
 	// Unprotect all event callbacks
-	NSDictElement* oElement = NULL;
-	NSDICT_FOREACH(eventListeners, oElement) {
-		NSValue * listener = (NSValue *) oElement->getObject()->copy();
-		JSValueUnprotect(ctx, (JSValueRef) listener->pointerValue());
+	for( NSString *name in onCallbacks ) {
+		NSValue *listener = onCallbacks[name];
+		JSValueUnprotectSafe(ctx, [(NSValue *)listener pointerValue]);
 	}
-	delete onCallbacks;
+	[onCallbacks release];
+	
+	[super dealloc];
 }
-//
-JSObjectRef EJBindingEventedBase::getCallbackWith(NSString * name,
-		JSContextRef ctx) {
-	NSValue * listener = (NSValue *) onCallbacks->objectForKey(
-			name->getCString());
-	return listener ? (JSObjectRef) listener->pointerValue() : NULL;
-}
-//
-void EJBindingEventedBase::setCallbackWith(NSString * name, JSContextRef ctx,
-		JSValueRef callbackValue) {
-	// remove old event listener?
-	JSObjectRef oldCallback = getCallbackWith(name, ctx);
-	if (oldCallback) {
-		JSValueUnprotect(ctx, oldCallback);
-		onCallbacks->removeObjectForKey(name->getCString());
-	}
 
+- (JSObjectRef)getCallbackWith:(NSString *)name ctx:(JSContextRef)ctx {
+	NSValue *listener = onCallbacks[name];
+	return listener ? [listener pointerValue] : NULL;
+}
+
+- (void)setCallbackWith:(NSString *)name ctx:(JSContextRef)ctx callback:(JSValueRef)callbackValue {
+	// remove old event listener?
+	JSObjectRef oldCallback = [self getCallbackWith:name ctx:ctx];
+	if( oldCallback ) {
+		JSValueUnprotectSafe(ctx, oldCallback);
+		[onCallbacks removeObjectForKey:name];
+	}
+	
 	JSObjectRef callback = JSValueToObject(ctx, callbackValue, NULL);
-	if (callback && JSObjectIsFunction(ctx, callback)) {
+	if( callback && JSObjectIsFunction(ctx, callback) ) {
 		JSValueProtect(ctx, callback);
-		onCallbacks->setObject(new NSValue(callback, kJSObjectRef), name->getCString());
+		onCallbacks[name] = [NSValue valueWithPointer:callback];
 		return;
 	}
 }
-//
-EJ_BIND_FUNCTION(EJBindingEventedBase,addEventListener, ctx, argc, argv) {
-	if (argc < 2) {
-		return NULL;
-	}
 
-	NSString * name = JSValueToNSString(ctx, argv[0]);
+EJ_BIND_FUNCTION(addEventListener, ctx, argc, argv) {
+	if( argc < 2 ) { return NULL; }
+	
+	NSString *name = JSValueToNSString( ctx, argv[0] );
 	JSObjectRef callback = JSValueToObject(ctx, argv[1], NULL);
 	JSValueProtect(ctx, callback);
-	NSValue * callbackValue = new NSValue(callback, kJSObjectRef);
-
-	NSArray * listeners = NULL;
-	if ((listeners = (NSArray *) eventListeners->objectForKey(
-			name->getCString()))) {
-		listeners->addObject(callbackValue);
-	} else {
-		eventListeners->setObject(NSArray::createWithObject(callbackValue),
-				name->getCString());
+	NSValue *callbackValue = [NSValue valueWithPointer:callback];
+	
+	NSMutableArray *listeners = NULL;
+	if( (listeners = eventListeners[name]) ) {
+		[listeners addObject:callbackValue];
+	}
+	else {
+		eventListeners[name] = [NSMutableArray arrayWithObject:callbackValue];
 	}
 	return NULL;
 }
-//
-EJ_BIND_FUNCTION(EJBindingEventedBase,removeEventListener, ctx, argc, argv) {
+
+EJ_BIND_FUNCTION(removeEventListener, ctx, argc, argv) {
 	if( argc < 2 ) { return NULL; }
+	
+	NSString *name = JSValueToNSString( ctx, argv[0] );
 
-	NSString * name = JSValueToNSString( ctx, argv[0] );
-
-	NSArray * listeners = NULL;
-	if( (listeners = (NSArray *)eventListeners->objectForKey(name->getCString()) ) ) {
+	NSMutableArray *listeners = NULL;
+	if( (listeners = eventListeners[name]) ) {
 		JSObjectRef callback = JSValueToObject(ctx, argv[1], NULL);
-		for(unsigned int i = 0; i < listeners->count(); i++ ) {
-			NSValue* temp =  (NSValue *)listeners->objectAtIndex(i);
-			if( JSValueIsStrictEqual(ctx, callback, (JSObjectRef)temp->pointerValue() ) ) {
-				listeners->removeObjectAtIndex(i);
+		for( int i = 0; i < listeners.count; i++ ) {
+			if( JSValueIsStrictEqual(ctx, callback, [listeners[i] pointerValue]) ) {
+				[listeners removeObjectAtIndex:i];
 				return NULL;
 			}
 		}
 	}
 	return NULL;
 }
-//
-void EJBindingEventedBase::triggerEvent(NSString * name, int argc,
-		JSValueRef argv[]) {
-	EJApp * ejecta = EJApp::instance();
 
-	NSArray * listeners = (NSArray *) eventListeners->objectForKey(
-			name->getCString());
-	if (listeners) {
-
-		for (unsigned int var = 0; var < listeners->count(); ++var) {
-			NSValue * callbackValue = (NSValue *) listeners->objectAtIndex(var);
-			ejecta->invokeCallback((JSObjectRef)callbackValue->pointerValue(), jsObject,
-					argc, argv);
+- (void)triggerEvent:(NSString *)name argc:(int)argc argv:(JSValueRef[])argv {
+	NSArray *listeners = eventListeners[name];
+	if( listeners ) {
+		for( NSValue *callbackValue in listeners ) {
+			[scriptView invokeCallback:[callbackValue pointerValue] thisObject:jsObject argc:argc argv:argv];
 		}
 	}
-
-	NSValue * callbackValue = (NSValue *) onCallbacks->objectForKey(
-			name->getCString());
-	if (callbackValue) {
-		ejecta->invokeCallback((JSObjectRef)callbackValue->pointerValue(), jsObject, argc,
-				argv);
+	
+	NSValue *callbackValue = onCallbacks[name];
+	if( callbackValue ) {
+		[scriptView invokeCallback:[callbackValue pointerValue] thisObject:jsObject argc:argc argv:argv];
 	}
 }
 
-REFECTION_CLASS_IMPLEMENT(EJBindingEventedBase);
+
+@end

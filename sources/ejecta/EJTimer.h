@@ -1,22 +1,28 @@
 #ifndef __EJ_TIMER_H__
 #define __EJ_TIMER_H__
 
-#include "EJApp.h"
+#include <JavaScriptCore/JavaScriptCore.h>
+
 #include "EJCocoa/NSObject.h"
 #include "EJCocoa/NSDictionary.h"
+
+class EJJavaScriptView;
 
 class EJTimerCollection : public NSObject
 {
 
-	NSDictionary * timers;
+	NSDictionary *timers;
 	int lastId;
+
+	EJJavaScriptView *scriptView;
+
 	BOOL simpleMutex;
 	void lock();
 	void unlock();
 
 public:
 
-	EJTimerCollection();
+	EJTimerCollection(EJJavaScriptView* scriptView);
 	~EJTimerCollection();
 
 	int scheduleCallback(JSObjectRef callback, float interval, BOOL repeat);
@@ -31,13 +37,49 @@ class EJTimer : public NSObject
 	float interval;
 	JSObjectRef callback;
 	BOOL repeat;
+	EJJavaScriptView *scriptView;
 public:
 	BOOL active;
 	EJTimer();
-	EJTimer(JSObjectRef callbackp, float intervalp, BOOL repeatp);
+	EJTimer(EJJavaScriptView* scriptViewp, JSObjectRef callbackp, float intervalp, BOOL repeatp);
 	~EJTimer();
 
 	void check();
 };
 
 #endif // __EJ_TIMER_H__
+// #import <Foundation/Foundation.h>
+// #import <JavaScriptCore/JavaScriptCore.h>
+
+// @class EJJavaScriptView;
+
+// @interface EJTimerCollection : NSObject {
+// 	NSMutableDictionary *timers;
+// 	int lastId;
+// 	EJJavaScriptView *scriptView;
+// }
+
+// - (id)initWithScriptView:(EJJavaScriptView *)scriptView;
+// - (int)scheduleCallback:(JSObjectRef)callback interval:(NSTimeInterval)interval repeat:(BOOL)repeat;
+// - (void)cancelId:(int)timerId;
+// - (void)update;
+
+// @end
+
+
+// @interface EJTimer : NSObject {
+// 	NSTimeInterval interval;
+// 	JSObjectRef callback;
+// 	BOOL active, repeat;
+// 	EJJavaScriptView *scriptView;
+// }
+
+// - (id)initWithScriptView:(EJJavaScriptView *)scriptViewp
+// 	callback:(JSObjectRef)callbackp
+// 	interval:(NSTimeInterval)intervalp
+// 	repeat:(BOOL)repeatp;
+// - (void)check;
+
+// @property (readonly) BOOL active;
+
+// @end

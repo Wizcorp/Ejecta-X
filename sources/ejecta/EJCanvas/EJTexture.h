@@ -1,54 +1,63 @@
-#ifndef __EJTEXTURE_H__
-#define __EJTEXTURE_H__
+#import <UIKit/UIKit.h>
+#import <OpenGLES/EAGL.h>
+#import <OpenGLES/ES1/gl.h>
+#import <OpenGLES/ES1/glext.h>
 
-#ifdef _WINDOWS
-#include <gl/glew.h>
-#include <gl/wglew.h>
-#include <windows.h>
-#include <tchar.h>
-#include <gl//gl.h>
-#include <gl/glext.h>
-#else
-#include <GLES/gl.h>
-#include <GLES/glext.h>
-#endif
-#include "../EJCocoa/NSString.h"
+#import "EJTextureStorage.h"
 
-class EJTexture : public NSObject {
 
-	NSString * fullPath;
+typedef enum {
+	kEJTextureOwningContextCanvas2D,
+	kEJTextureOwningContextWebGL
+} EJTextureOwningContext;
+
+@interface EJTexture : NSObject <NSCopying> {
+	BOOL cached;
+	short width, height;
+	NSString *fullPath;
+	EJTextureStorage *textureStorage;
 	GLenum format;
-	GLint textureFilter;
-
-	void setFilter(GLint filter);
-
-public:
-
+	GLuint fbo;
 	float contentScale;
-	GLuint textureId;
-	short width, height, realWidth, realHeight;
+	
+	EJTextureOwningContext owningContext;
+	EJTextureParams params;
+	NSBlockOperation *loadCallback;
+}
+- (id)initEmptyForWebGL;
+- (id)initWithPath:(NSString *)path;
++ (id)cachedTextureWithPath:(NSString *)path loadOnQueue:(NSOperationQueue *)queue callback:(NSOperation *)callback;
+- (id)initWithPath:(NSString *)path loadOnQueue:(NSOperationQueue *)queue callback:(NSOperation *)callback;
 
-	EJTexture();
-	EJTexture(NSString * path);
-	EJTexture(NSString * path, NSObject* sharegroup);
-	EJTexture(int widthp, int heightp, GLenum format);
-	EJTexture(int widthp, int heightp);
-	EJTexture(int widthp, int heightp, GLubyte * pixels);
-	~EJTexture();
+- (id)initWithWidth:(int)widthp height:(int)heightp;
+- (id)initWithWidth:(int)widthp height:(int)heightp format:(GLenum) format;
+- (id)initWithWidth:(int)widthp height:(int)heightp pixels:(NSData *)pixels;
+- (id)initAsRenderTargetWithWidth:(int)widthp height:(int)heightp fbo:(GLuint)fbo contentScale:(float)contentScalep;
 
-	void setWidthAndHeight(int width, int height);
-	void createTextureWithPixels(GLubyte * pixels, GLenum format);
-	void updateTextureWithPixels(GLubyte * pixels, int atx, int aty,
-			int subWidth, int subHeight);
+- (void)ensureMutableKeepPixels:(BOOL)keepPixels forTarget:(GLenum)target;
 
-	GLubyte * loadPixelsFromPath(NSString * path);
-	GLubyte * loadPixelsWithCGImageFromPath(NSString * path);
-	GLubyte * loadPixelsWithLodePNGFromPath(NSString * path);
+- (void)createWithTexture:(EJTexture *)other;
+- (void)createWithPixels:(NSData *)pixels format:(GLenum)format;
+- (void)createWithPixels:(NSData *)pixels format:(GLenum)formatp target:(GLenum)target;
+- (void)updateWithPixels:(NSData *)pixels atX:(int)x y:(int)y width:(int)subWidth height:(int)subHeight;
 
-	void bind();
+- (NSMutableData *)loadPixelsFromPath:(NSString *)path;
 
-	static bool smoothScaling();
-	static void setSmoothScaling(bool smoothScaling);
-};
+- (GLint)getParam:(GLenum)pname;
+- (void)setParam:(GLenum)pname param:(GLenum)param;
 
-#endif // __EJTEXTURE_H__
+- (void)bindWithFilter:(GLenum)filter;
+- (void)bindToTarget:(GLenum)target;
+
++ (void)premultiplyPixels:(const GLubyte *)inPixels to:(GLubyte *)outPixels byteLength:(int)byteLength format:(GLenum)format;
++ (void)unPremultiplyPixels:(const GLubyte *)inPixels to:(GLubyte *)outPixels byteLength:(int)byteLength format:(GLenum)format;
++ (void)flipPixelsY:(GLubyte *)pixels bytesPerRow:(int)bytesPerRow rows:(int)rows;
+
+@property (readonly, nonatomic) BOOL isDynamic;
+@property (readonly, nonatomic) NSMutableData *pixels;
+@property (readonly, nonatomic)	float contentScale;
+@property (readonly, nonatomic) GLuint textureId;
+@property (readonly, nonatomic) GLenum format;
+@property (readonly, nonatomic) short width, height;
+
+@end

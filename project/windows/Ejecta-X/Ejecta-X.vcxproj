@@ -97,22 +97,8 @@
     <None Include="small.ico" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\..\..\sources\ejecta\EJApp.h" />
-    <ClInclude Include="..\..\..\sources\ejecta\EJAudio\EJBindingAudio.h" />
-    <ClInclude Include="..\..\..\sources\ejecta\EJBindingBase.h" />
-    <ClInclude Include="..\..\..\sources\ejecta\EJBindingEjectaCore.h" />
-    <ClInclude Include="..\..\..\sources\ejecta\EJBindingEventedBase.h" />
-    <ClInclude Include="..\..\..\sources\ejecta\EJCanvas\EJBindingCanvas.h" />
-    <ClInclude Include="..\..\..\sources\ejecta\EJCanvas\EJBindingImage.h" />
-    <ClInclude Include="..\..\..\sources\ejecta\EJCanvas\EJBindingImageData.h" />
-    <ClInclude Include="..\..\..\sources\ejecta\EJCanvas\EJCanvasContext.h" />
-    <ClInclude Include="..\..\..\sources\ejecta\EJCanvas\EJCanvasContextScreen.h" />
-    <ClInclude Include="..\..\..\sources\ejecta\EJCanvas\EJCanvasContextTexture.h" />
-    <ClInclude Include="..\..\..\sources\ejecta\EJCanvas\EJCanvasTypes.h" />
-    <ClInclude Include="..\..\..\sources\ejecta\EJCanvas\EJFont.h" />
-    <ClInclude Include="..\..\..\sources\ejecta\EJCanvas\EJImageData.h" />
-    <ClInclude Include="..\..\..\sources\ejecta\EJCanvas\EJPath.h" />
-    <ClInclude Include="..\..\..\sources\ejecta\EJCanvas\EJTexture.h" />
+    <ClInclude Include="..\..\..\sources\ejecta\EJAppViewController.h" />
+    <ClInclude Include="..\..\..\sources\ejecta\EJClassLoader.h" />
     <ClInclude Include="..\..\..\sources\ejecta\EJCocoa\CGAffineTransform.h" />
     <ClInclude Include="..\..\..\sources\ejecta\EJCocoa\NSArray.h" />
     <ClInclude Include="..\..\..\sources\ejecta\EJCocoa\NSAutoreleasePool.h" />
@@ -136,8 +122,8 @@
     <ClInclude Include="..\..\..\sources\ejecta\EJCocoa\support\uthash.h" />
     <ClInclude Include="..\..\..\sources\ejecta\EJCocoa\support\utlist.h" />
     <ClInclude Include="..\..\..\sources\ejecta\EJConvert.h" />
+    <ClInclude Include="..\..\..\sources\ejecta\EJJavaScriptView.h" />
     <ClInclude Include="..\..\..\sources\ejecta\EJTimer.h" />
-    <ClInclude Include="..\..\..\sources\ejecta\EJUtils\EJBindingLocalStorage.h" />
     <ClInclude Include="..\..\..\sources\ejecta\lodefreetype\lodefreetype.h" />
     <ClInclude Include="..\..\..\sources\ejecta\lodejpeg\lodejpeg.h" />
     <ClInclude Include="..\..\..\sources\ejecta\lodepng\lodepng.h" />
@@ -147,65 +133,11 @@
     <ClInclude Include="targetver.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="..\..\..\sources\ejecta\EJApp.cpp">
+    <ClCompile Include="..\..\..\sources\ejecta\EJAppViewController.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">NotUsing</PrecompiledHeader>
-      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">NotUsing</PrecompiledHeader>
     </ClCompile>
-    <ClCompile Include="..\..\..\sources\ejecta\EJAudio\EJBindingAudio.cpp">
+    <ClCompile Include="..\..\..\sources\ejecta\EJClassLoader.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">NotUsing</PrecompiledHeader>
-      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">NotUsing</PrecompiledHeader>
-    </ClCompile>
-    <ClCompile Include="..\..\..\sources\ejecta\EJBindingBase.cpp">
-      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">NotUsing</PrecompiledHeader>
-      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">NotUsing</PrecompiledHeader>
-    </ClCompile>
-    <ClCompile Include="..\..\..\sources\ejecta\EJBindingEjectaCore.cpp">
-      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">NotUsing</PrecompiledHeader>
-      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">NotUsing</PrecompiledHeader>
-    </ClCompile>
-    <ClCompile Include="..\..\..\sources\ejecta\EJBindingEventedBase.cpp">
-      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">NotUsing</PrecompiledHeader>
-      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">NotUsing</PrecompiledHeader>
-    </ClCompile>
-    <ClCompile Include="..\..\..\sources\ejecta\EJCanvas\EJBindingCanvas.cpp">
-      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">NotUsing</PrecompiledHeader>
-      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">NotUsing</PrecompiledHeader>
-    </ClCompile>
-    <ClCompile Include="..\..\..\sources\ejecta\EJCanvas\EJBindingImage.cpp">
-      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">NotUsing</PrecompiledHeader>
-      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">NotUsing</PrecompiledHeader>
-    </ClCompile>
-    <ClCompile Include="..\..\..\sources\ejecta\EJCanvas\EJBindingImageData.cpp">
-      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">NotUsing</PrecompiledHeader>
-      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">NotUsing</PrecompiledHeader>
-    </ClCompile>
-    <ClCompile Include="..\..\..\sources\ejecta\EJCanvas\EJCanvasContext.cpp">
-      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">NotUsing</PrecompiledHeader>
-      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">NotUsing</PrecompiledHeader>
-    </ClCompile>
-    <ClCompile Include="..\..\..\sources\ejecta\EJCanvas\EJCanvasContextScreen.cpp">
-      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">NotUsing</PrecompiledHeader>
-      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">NotUsing</PrecompiledHeader>
-    </ClCompile>
-    <ClCompile Include="..\..\..\sources\ejecta\EJCanvas\EJCanvasContextTexture.cpp">
-      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">NotUsing</PrecompiledHeader>
-      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">NotUsing</PrecompiledHeader>
-    </ClCompile>
-    <ClCompile Include="..\..\..\sources\ejecta\EJCanvas\EJFont.cpp">
-      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">NotUsing</PrecompiledHeader>
-      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">NotUsing</PrecompiledHeader>
-    </ClCompile>
-    <ClCompile Include="..\..\..\sources\ejecta\EJCanvas\EJImageData.cpp">
-      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">NotUsing</PrecompiledHeader>
-      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">NotUsing</PrecompiledHeader>
-    </ClCompile>
-    <ClCompile Include="..\..\..\sources\ejecta\EJCanvas\EJPath.cpp">
-      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">NotUsing</PrecompiledHeader>
-      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">NotUsing</PrecompiledHeader>
-    </ClCompile>
-    <ClCompile Include="..\..\..\sources\ejecta\EJCanvas\EJTexture.cpp">
-      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">NotUsing</PrecompiledHeader>
-      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">NotUsing</PrecompiledHeader>
     </ClCompile>
     <ClCompile Include="..\..\..\sources\ejecta\EJCocoa\CGAffineTransform.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">NotUsing</PrecompiledHeader>
@@ -261,15 +193,12 @@
     </ClCompile>
     <ClCompile Include="..\..\..\sources\ejecta\EJConvert.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">NotUsing</PrecompiledHeader>
-      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">NotUsing</PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="..\..\..\sources\ejecta\EJJavaScriptView.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">NotUsing</PrecompiledHeader>
     </ClCompile>
     <ClCompile Include="..\..\..\sources\ejecta\EJTimer.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">NotUsing</PrecompiledHeader>
-      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">NotUsing</PrecompiledHeader>
-    </ClCompile>
-    <ClCompile Include="..\..\..\sources\ejecta\EJUtils\EJBindingLocalStorage.cpp">
-      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">NotUsing</PrecompiledHeader>
-      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">NotUsing</PrecompiledHeader>
     </ClCompile>
     <ClCompile Include="..\..\..\sources\ejecta\lodefreetype\lodefreetype.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">NotUsing</PrecompiledHeader>
