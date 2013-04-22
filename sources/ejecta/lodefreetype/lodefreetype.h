@@ -29,5 +29,5 @@ unsigned lodefreetype_decode32_file(void** out,  unsigned char** buffer, unsigne
 unsigned create_freetype_font();
 unsigned delete_freetype_font(void* font_info);
 unsigned draw_freetype_font(char** image, unsigned* w, unsigned* h, void* font_info, unsigned long font_index, size_t font_size, unsigned int x, unsigned int y, const char* str);
-
+unsigned draw_stroke_font(char** image, unsigned* w, unsigned* h, void* font_info, unsigned long font_index, size_t font_size, unsigned int x, unsigned int y, const char* str);
 #endif //__LODEFREETYPE_H_

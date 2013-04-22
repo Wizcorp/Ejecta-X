@@ -102,6 +102,7 @@ EJJavaScriptView::~EJJavaScriptView()
 	// textures etc.
 	// Set 'jsGlobalContext' to null before releasing it, because it may be referenced by
 	// bound objects' dealloc method
+	pause();
 	JSValueUnprotect(jsGlobalContext, jsUndefined);
 	JSGlobalContextRef ctxref = jsGlobalContext;
 	jsGlobalContext = NULL;
@@ -367,10 +368,12 @@ void EJJavaScriptView::setCurrentRenderingContext(EJCanvasContext * renderingCon
 		// 	glCurrentContext = renderingContext.glContext;
 		// 	[EAGLContext setCurrentContext:glCurrentContext];
 		// }
-
-		renderingContext->prepare();
+		
+		if(renderingContext){
+			renderingContext->prepare();
+			renderingContext->retain();
+		}
 		currentRenderingContext = renderingContext;
-		currentRenderingContext->retain();
 	}
 }
 

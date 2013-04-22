@@ -1,16 +1,20 @@
 #include "EJAppViewController.h"
 #include "EJJavaScriptView.h"
+#include "EJCocoa/NSAutoreleasePool.h"
 
 static EJAppViewController* EJAppViewController::ejectaInstance = NULL
 
 EJAppViewController::EJAppViewController()
 {
+	NSPoolManager::sharedPoolManager()->push();
 	landscapeMode = true;
 }
 
 EJAppViewController::~EJAppViewController()
 {
 	view = NULL;
+	NSPoolManager::sharedPoolManager()->pop();
+	NSPoolManager::purgePoolManager();
 }
 
 void EJAppViewController::didReceiveMemoryWarning()
@@ -36,6 +40,7 @@ void EJAppViewController::setScreenSize(int w, int h)
 void EJAppViewController::run(void)
 {
 	view->run();
+	NSPoolManager::sharedPoolManager()->pop();
 }
 
 EJAppViewController* EJAppViewController::instance()

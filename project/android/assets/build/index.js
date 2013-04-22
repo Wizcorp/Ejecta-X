@@ -71,6 +71,6 @@ var maxCurves = 70;
 ctx.fillStyle = '#000000';
 ctx.fillRect( 0, 0, w, h );
 
-ctx.globalAlpha = 0.05;
+ctx.globalAlpha = 0.5;
 ctx.lineWidth = 2;
 setInterval( animate, 16 );

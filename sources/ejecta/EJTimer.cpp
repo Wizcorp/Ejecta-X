@@ -9,12 +9,12 @@
 EJTimerCollection::EJTimerCollection(EJJavaScriptView* scriptViewp) : lastId(0),simpleMutex(false)
 {
 	scriptView = scriptViewp;
-	timers = NSDictionary::create();
+	timers = new NSDictionary();
 }
 
 EJTimerCollection::~EJTimerCollection()
 {
-	timers->release();
+	timers->autorelease();
 }
 
 void EJTimerCollection::lock()

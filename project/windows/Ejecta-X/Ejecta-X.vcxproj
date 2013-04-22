@@ -102,6 +102,7 @@
     <ClInclude Include="..\..\..\sources\ejecta\EJCocoa\CGAffineTransform.h" />
     <ClInclude Include="..\..\..\sources\ejecta\EJCocoa\NSArray.h" />
     <ClInclude Include="..\..\..\sources\ejecta\EJCocoa\NSAutoreleasePool.h" />
+    <ClInclude Include="..\..\..\sources\ejecta\EJCocoa\NSCache.h" />
     <ClInclude Include="..\..\..\sources\ejecta\EJCocoa\NSDictionary.h" />
     <ClInclude Include="..\..\..\sources\ejecta\EJCocoa\NSGeometry.h" />
     <ClInclude Include="..\..\..\sources\ejecta\EJCocoa\NSInteger.h" />
@@ -121,6 +122,7 @@
     <ClInclude Include="..\..\..\sources\ejecta\EJCocoa\support\NSPlatformMacros.h" />
     <ClInclude Include="..\..\..\sources\ejecta\EJCocoa\support\uthash.h" />
     <ClInclude Include="..\..\..\sources\ejecta\EJCocoa\support\utlist.h" />
+    <ClInclude Include="..\..\..\sources\ejecta\EJCocoa\UIFont.h" />
     <ClInclude Include="..\..\..\sources\ejecta\EJConvert.h" />
     <ClInclude Include="..\..\..\sources\ejecta\EJJavaScriptView.h" />
     <ClInclude Include="..\..\..\sources\ejecta\EJTimer.h" />
@@ -150,6 +152,9 @@
     <ClCompile Include="..\..\..\sources\ejecta\EJCocoa\NSAutoreleasePool.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">NotUsing</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">NotUsing</PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="..\..\..\sources\ejecta\EJCocoa\NSCache.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">NotUsing</PrecompiledHeader>
     </ClCompile>
     <ClCompile Include="..\..\..\sources\ejecta\EJCocoa\NSDictionary.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">NotUsing</PrecompiledHeader>
