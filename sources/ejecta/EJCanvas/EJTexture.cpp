@@ -98,7 +98,7 @@ EJTexture::EJTexture(int widthp, int heightp, GLubyte * pixels) : textureId(0), 
 }
 
 EJTexture::~EJTexture() {
-	fullPath->release();
+	if(fullPath)fullPath->release();
 	glDeleteTextures( 1, &textureId );
 }
 

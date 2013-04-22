@@ -6,8 +6,8 @@ EJBindingImage::EJBindingImage() : texture(0), path(0), loading(false) {
 }
 
 EJBindingImage::~EJBindingImage() {
-	texture->release();
-	path->release();
+	if(texture)texture->release();
+	if(path)path->release();
 }
 
 void EJBindingImage::beginLoad() {

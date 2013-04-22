@@ -3,6 +3,8 @@
 #include "lodefreetype/lodefreetype.h"
 #include "../EJApp.h"
 
+#define PT_TO_PX(pt) ceilf((pt)*(1.0f+(1.0f/3.0f)))
+
 EJFont::EJFont() : font_info(0), font_index(0), font_size(16)
 {
 
@@ -18,9 +20,16 @@ EJFont::EJFont(NSString* font, NSInteger size, BOOL usefill, float contentScale)
 	NSString * fullPath = EJApp::instance()->pathForResource(fontName);
 	NSLOG("EJFont path :   %s",fullPath->getCString());
 	width = 0;
-	height = font_size;
+	height = PT_TO_PX(font_size);
 	buffer = 0;	
-	lodefreetype_decode32_file(&font_info, &buffer, &width, &height, fullPath->getCString());
+	unsigned int err = lodefreetype_decode32_file(&font_info, &buffer, &width, &height, fullPath->getCString());
+
+	if(err){		
+		NSLOG("Load EJFont path :   %s   is error",fullPath->getCString());		
+		if (buffer)free(buffer);
+		if (font_info)delete_freetype_font(font_info);
+		if (textures)textures->release();
+	}
 	fullPath->release();
 }
 
@@ -35,17 +44,25 @@ EJFont::~EJFont()
 		delete_freetype_font(font_info);
 	}
 	if(textures){
+		textures->removeAllObjects();
 		textures->release();
 	}
 }
 
+void EJFont::setFill(BOOL isFill)
+{
+	fill=isFill;
+}
+
 void EJFont::drawString(NSString* string, EJCanvasContext* context, float x, float y)
 {	
+	if(!font_info)return;
 	EJCanvasState * state = context->state;
-	font_size = state->font->pointSize;
-	height = state->font->pointSize;
+	font_size =  PT_TO_PX(state->font->pointSize);
+	height =font_size;
 				
-	EJTexture * texture = (EJTexture *)textures->objectForKey(string->getCString());
+	NSString * cacheKey = NSString::createWithFormat("%s_%.2f_%d_%.2f", string->getCString(), pointSize, fill, contentScale);
+	EJTexture * texture = (EJTexture *)textures->objectForKey(cacheKey->getCString());
 	if( !texture ) {
 		char * p_bitmap = NULL;
 		width = draw_freetype_font(&p_bitmap, 0, 0, font_info, font_index, font_size, 0, 0, string->getCString());
@@ -58,13 +75,22 @@ void EJFont::drawString(NSString* string, EJCanvasContext* context, float x, flo
 			draw_stroke_font(&p_bitmap, &width, &height, font_info, font_index, font_size, 0, 0, string->getCString());
 		}
 		
-	
+		if(bitmap){
 		texture = new EJTexture(width, height, GL_ALPHA);
 		texture->updateTextureWithPixels(bitmap, 0, 0, width, height);	
-		textures->setObject(texture,string->getCString());		
+		textures->setObject(texture,cacheKey->getCString());		
 		texture->release();
+
+		EJColorRGBA color = fill ?state->fillColor: state->strokeColor;
+		color.rgba.a = (float)color.rgba.a * state->globalAlpha;
+
+		float tw = texture->realWidth;
+		float th = texture->realHeight;	
+
+		context->setTexture(texture);
+		context->pushRect(x,y, width, height, 0, 0, width/tw, height/th, color, state->transform);
 		
-		free(bitmap);
+		free(bitmap);}
 	}else{
 		// Fill or stroke color?
 		EJColorRGBA color = fill ?state->fillColor: state->strokeColor;

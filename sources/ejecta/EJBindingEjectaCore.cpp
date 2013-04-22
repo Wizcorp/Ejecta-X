@@ -2,14 +2,14 @@
 #include "EJConvert.h"
 
 
-EJBindingEjectaCore::EJBindingEjectaCore() 
+EJBindingEjectaCore::EJBindingEjectaCore() : urlToOpen(0), getTextCallback(0)
 {
 
 }
 
 EJBindingEjectaCore::~EJBindingEjectaCore()
 {
-	delete urlToOpen;
+	if (urlToOpen)urlToOpen->release();
 	if( getTextCallback ) {
 		JSValueUnprotect(EJApp::instance()->jsGlobalContext, getTextCallback);
 	}

@@ -38,7 +38,6 @@ EJCanvasContext::EJCanvasContext(short widthp, short heightp) : viewFrameBuffer(
 	state->textAlign = kEJTextAlignStart;
 	//state->font = [[UIFont fontWithName:@"Helvetica" size:10] retain];
 	state->font = new UIFont(NSStringMake("simsun.ttc"),32);
-	state->font->retain();
 	state->clipPath = NULL;
 	
 	setScreenSize(widthp, heightp);
@@ -61,7 +60,7 @@ EJCanvasContext::~EJCanvasContext()
 	// Release all fonts and clip paths from the stack
 	for( int i = 0; i < stateIndex + 1; i++ ) {
 		stateStack[i].font->release();
-		stateStack[i].clipPath->release();
+		//stateStack[i].clipPath->release();
 	}
 
 #ifdef _WINDOWS
@@ -449,7 +448,7 @@ void EJCanvasContext::fillRect(float x, float y, float w, float h)
 {
 	setTexture(NULL);
 	
-	EJColorRGBA color = state->fillColor;
+	EJColorRGBA color = state->fillColor;	
 	color.rgba.a = (unsigned char)(color.rgba.a * state->globalAlpha);
 	pushRect(x, y, w, h, 0, 0, 0, 0, color, state->transform);
 }
@@ -479,7 +478,7 @@ void EJCanvasContext::clearRect(float x, float y, float w, float h)
 	EJCompositeOperation oldOp = state->globalCompositeOperation;
 	globalCompositeOperation = kEJCompositeOperationDestinationOut;
 	
-	static EJColorRGBA white = {0xffffffff};
+	static EJColorRGBA white = {0x00000000};
 	pushRect(x, y, w, h, 0, 0, 0, 0, white, state->transform);
 	
 	globalCompositeOperation = oldOp;
@@ -572,15 +571,15 @@ void EJCanvasContext::arc(float x, float y, float radius, float startAngle, floa
 	path->arc(x, y, radius, startAngle, endAngle, antiClockwise);
 }
 
-EJFont* EJCanvasContext::acquireFont(NSString* fontName , float pointSize ,BOOL fill ,float contentScale) {
-	NSString * cacheKey = NSString::createWithFormat("%s_%.2f_%d_%.2f", fontName->getCString(), pointSize, fill, contentScale);
-	EJFont * font = (EJFont *)fontCache->objectForKey(cacheKey->getCString());
-	//EJFont * font = (EJFont *)fontCache->objectForKey(fontName->getCString());
+EJFont* EJCanvasContext::acquireFont(NSString* fontName , float pointSize ,BOOL fill ,float contentScale) {	
+	//NSString * cacheKey = NSString::createWithFormat("%s_%.2f_%d_%.2f", fontName->getCString(), pointSize, fill, contentScale);
+	EJFont * font = (EJFont *)fontCache->objectForKey(fontName->getCString());	
 	if( !font ) {
-		font =new EJFont(fontName,pointSize ,fill ,contentScale);
-		NSLOG("acquireFont  :%s",cacheKey->getCString());
-		fontCache->setObject(font,cacheKey->getCString());
+		font =new EJFont(fontName,pointSize ,fill ,contentScale);		
+		fontCache->setObject(font,fontName->getCString());
 		font->release();
+	}else{
+		font->setFill(fill);
 	}
 	return font;
 }

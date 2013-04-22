@@ -3,6 +3,7 @@
 #include "EJCanvas/EJCanvasContext.h"
 #include "EJCanvas/EJCanvasContextScreen.h"
 #include "EJCocoa/NSObjectFactory.h"
+#include "EJCocoa/NSAutoreleasePool.h"
 #include "EJTimer.h"
 
 JSValueRef ej_global_undefined;
@@ -59,6 +60,8 @@ EJApp* EJApp::ejectaInstance = NULL;
 
 EJApp::EJApp() : currentRenderingContext(0), screenRenderingContext(0)
 {
+	NSPoolManager::sharedPoolManager()->push();
+
 	landscapeMode = true;
 
 	// Show the loading screen - commented out for now.
@@ -77,7 +80,7 @@ EJApp::EJApp() : currentRenderingContext(0), screenRenderingContext(0)
 	timers = new EJTimerCollection();
 
 	// Create the global JS context and attach the 'Ejecta' object
-		jsClasses = NSDictionary::create();
+		jsClasses = new NSDictionary();
 		
 		JSClassDefinition constructorClassDef = kJSClassDefinitionEmpty;
 		constructorClassDef.callAsConstructor = ej_callAsConstructor;
@@ -108,7 +111,8 @@ EJApp::EJApp() : currentRenderingContext(0), screenRenderingContext(0)
 
 EJApp::~EJApp()
 {
-	JSGlobalContextRelease(jsGlobalContext);
+	pause();
+	//JSGlobalContextRelease(jsGlobalContext);
 	currentRenderingContext->release();
 	//[touchDelegate release];
 	jsClasses->release();
@@ -116,6 +120,8 @@ EJApp::~EJApp()
 	timers->release();
 	if(mainBundle)
 		free(mainBundle);
+	NSPoolManager::sharedPoolManager()->pop();
+	NSPoolManager::purgePoolManager();
 }
 
 void EJApp::init(const char* path, int w, int h)
@@ -157,6 +163,7 @@ void EJApp::run(void)
 
 	if( paused ) { return; }
 
+
 	// Check all timers
 	timers->update();
 	
@@ -168,12 +175,14 @@ void EJApp::run(void)
 		
 	}
 
-	if(screenRenderingContext)screenRenderingContext->present();
+	if(screenRenderingContext) {
+		screenRenderingContext->present();
+		NSPoolManager::sharedPoolManager()->pop();
+	}
 }
 
 void EJApp::pause(void)
 {
-
 	screenRenderingContext->finish();
 	paused = true;
 }
@@ -375,8 +384,10 @@ void EJApp::setCurrentRenderingContext(EJCanvasContext * renderingContext)
 			currentRenderingContext->flushBuffers();
 			currentRenderingContext->release();
 		}
-		renderingContext->prepare();
-		renderingContext->retain();
+		if(renderingContext){
+			renderingContext->prepare();
+			renderingContext->retain();
+		}
 		currentRenderingContext = renderingContext;
 	}
 }

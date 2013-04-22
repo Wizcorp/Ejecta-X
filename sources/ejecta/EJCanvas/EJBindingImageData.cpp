@@ -10,6 +10,7 @@ EJBindingImageData::EJBindingImageData(JSContextRef ctx, JSObjectRef obj, EJImag
 
 EJBindingImageData::EJBindingImageData():EJBindingBase() {
 	// EJBindingBase::EJBindingBase();
+	m_imageData = NULL;
 	dataArray = NULL;
 }
 
@@ -25,7 +26,7 @@ EJBindingImageData::~EJBindingImageData() {
 	if (dataArray) {
 		JSValueUnprotect(ctx, dataArray);
 	}
-	m_imageData->release();
+	if(m_imageData)m_imageData->release();
 }
 
 EJImageData* EJBindingImageData::imageData() {

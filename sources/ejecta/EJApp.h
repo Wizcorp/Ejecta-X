@@ -32,8 +32,8 @@ using namespace std;
 #define EJECTA_VERSION "0.99"
 #define EJECTA_APP_FOLDER "files/build/"
 
-#define EJECTA_BOOT_JS "lib/ejecta/ejecta.js"
-#define EJECTA_MAIN_JS "lib/ejecta/index.js"
+#define EJECTA_BOOT_JS "ejecta.js"
+#define EJECTA_MAIN_JS "index.js"
 
 class EJBindingBase;
 class EJTimerCollection;
@@ -81,7 +81,7 @@ public:
 	void resume(void);
 	void clearCaches(void);
 	NSString * pathForResource(NSString * resourcePath);
-	JSValueRef createTimer(JSContextRef ctx, size_t argc, const JSValueRef argv[], bool repeat);
+	JSValueRef createTimer(JSContextRef ctx, size_t argc, const JSValueRef argv[], BOOL repeat);
 	JSValueRef deleteTimer(JSContextRef ctx, size_t argc, const JSValueRef argv[]);
 
 	JSClassRef getJSClassForClass(EJBindingBase* classId);

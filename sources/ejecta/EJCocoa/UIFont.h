@@ -11,6 +11,10 @@ public:
 	float pointSize;
 	NSString* fontName;
 
-	UIFont(NSString* fn,float ps):fontName(fn),pointSize(ps){}
-	~UIFont(){}
+	UIFont(NSString* fn,float ps):fontName(fn),pointSize(ps){
+		if (fontName)fontName->retain();
+	}
+	~UIFont(){
+		if (fontName)fontName->release();
+	}
 };

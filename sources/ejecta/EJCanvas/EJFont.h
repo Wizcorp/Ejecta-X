@@ -43,7 +43,7 @@ public:
 	EJFont();
 	EJFont(NSString* font, NSInteger size, BOOL usefill, float contentScale);
 	~EJFont();
-
+	void setFill(BOOL isFill);
 	void drawString(NSString* string, EJCanvasContext* context, float x, float y);
 	float measureString(NSString* string);
 

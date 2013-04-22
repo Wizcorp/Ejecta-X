@@ -3,12 +3,12 @@
 
 EJBindingEventedBase::EJBindingEventedBase() {
 
-	eventListeners =  new NSDictionary();
+	eventListeners =  NSDictionary::create();
     if (eventListeners != NULL)
     {
         eventListeners->retain();
     }
-	onCallbacks =  new NSDictionary();
+	onCallbacks =  NSDictionary::create();
     if (onCallbacks != NULL)
     {
         onCallbacks->retain();
@@ -19,12 +19,12 @@ EJBindingEventedBase::EJBindingEventedBase() {
 EJBindingEventedBase::EJBindingEventedBase(JSContextRef ctxp, JSObjectRef obj,
 		size_t argc, const JSValueRef argv[]) {
 
-	eventListeners =  new NSDictionary();
+	eventListeners =  NSDictionary::create();
     if (eventListeners != NULL)
     {
         eventListeners->retain();
     }
-	onCallbacks =  new NSDictionary();
+	onCallbacks =  NSDictionary::create();
     if (onCallbacks != NULL)
     {
         onCallbacks->retain();
@@ -45,15 +45,16 @@ EJBindingEventedBase::~EJBindingEventedBase() {
 			JSValueUnprotect(ctx, (JSValueRef) callbackValue->pointerValue());
 		}
 	}
-	delete eventListeners;
+	eventListeners->release();
 
 	// Unprotect all event callbacks
 	NSDictElement* oElement = NULL;
-	NSDICT_FOREACH(eventListeners, oElement) {
+	NSDICT_FOREACH(onCallbacks, oElement) {
 		NSValue * listener = (NSValue *) oElement->getObject()->copy();
+		if(listener)
 		JSValueUnprotect(ctx, (JSValueRef) listener->pointerValue());
 	}
-	delete onCallbacks;
+	onCallbacks->release();
 }
 //
 JSObjectRef EJBindingEventedBase::getCallbackWith(NSString * name,

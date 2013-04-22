@@ -13,8 +13,8 @@ void EJBindingAudio::init(JSContextRef ctx ,JSObjectRef obj, size_t argc, const 
 }
 
 EJBindingAudio::~EJBindingAudio() {
-	source->release();
-	path->release();
+	//source->release();
+	//path->release();
 }
 
 

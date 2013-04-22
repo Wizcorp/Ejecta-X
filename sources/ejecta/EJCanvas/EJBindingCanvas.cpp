@@ -110,7 +110,8 @@ EJ_BIND_GET( EJBindingCanvas, globalAlpha, ctx ) {
 }
 
 EJ_BIND_SET( EJBindingCanvas, globalAlpha, ctx, value) {
-	renderingContext->state->globalAlpha = MIN(1,MAX(JSValueToNumberFast(ctx, value),0));
+	double maxValue = MAX(JSValueToNumberFast(ctx, value),0);
+	renderingContext->state->globalAlpha = MIN(1, maxValue);
 }
 
 EJ_BIND_GET( EJBindingCanvas, lineWidth, ctx) {
@@ -131,8 +132,8 @@ EJ_BIND_SET( EJBindingCanvas, miterLimit, ctx, value) {
 
 EJ_BIND_GET( EJBindingCanvas,font, ctx) {
 	UIFont * font = renderingContext->state->font;
- 	//NSString * name = NSStringMake("16pt simsun");
  	NSString * name = NSString::createWithFormat("%pt %s", (int)font->pointSize, font->fontName->getCString());
+	name->autorelease();
  	return NSStringToJSValue(ctx, name);
 }
 
@@ -146,9 +147,10 @@ EJ_BIND_SET( EJBindingCanvas,font, ctx, value) {
  	char name[64];
  	sscanf( string, "%fp%*[tx] %63s", &size, name); // matches: 10.5p[tx] helvetica
 	
- 	UIFont * newFont = new UIFont(NSStringMake("droidsans.ttf"),size);
+ 	UIFont * newFont = new UIFont(NSStringMake(name),size);
  	if( newFont ) {
-		renderingContext->state->font->release();
+		if(renderingContext->state->font)
+			renderingContext->state->font->release();
  	 	renderingContext->state->font = newFont;
  	}
 
@@ -237,7 +239,7 @@ EJ_BIND_FUNCTION( EJBindingCanvas, getContext, ctx, argc, argv) {
 	};
 	
 	if( renderingContext ) { return jsObject; }
-	ejectaInstance->currentRenderingContext = NULL;
+	ejectaInstance->setCurrentRenderingContext(NULL);
 	if( isScreenCanvas ) {
 		EJCanvasContextScreen * sc = new EJCanvasContextScreen(width, height);
 		sc->useRetinaResolution = useRetinaResolution;

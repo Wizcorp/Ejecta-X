@@ -40,8 +40,8 @@ void EJBindingBase::init(JSContextRef ctxp, JSObjectRef obj, size_t argc, const 
 
 JSClassRef EJBindingBase::getJSClass (EJBindingBase* ej_obj){
 	// Gather all class methods that return C callbacks for this class or it's parents
-	NSDictionary * methods = NSDictionary::create();
-	NSDictionary * properties = NSDictionary::create();
+	NSDictionary * methods = new NSDictionary();
+	NSDictionary * properties = new NSDictionary();
 
 	string base_obj = ej_obj->toString();
 
