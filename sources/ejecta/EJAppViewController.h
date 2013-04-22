@@ -22,7 +22,7 @@ public:
     static void finalize();
 
 	/* data */
-	BOOL landscapeMode;
+	bool landscapeMode;
 
 };
 #endif //__EJ_JAVASCRIPT_VIEW_H__

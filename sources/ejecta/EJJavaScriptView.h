@@ -20,8 +20,8 @@
 //#include "EJCanvasContext.h"
 //#include "EJPresentable.h"
 
-#include "EJSharedOpenALManager.h"
-#include "EJSharedTextureCache.h"
+//#include "EJSharedOpenALManager.h"
+//#include "EJSharedTextureCache.h"
 #include "EJSharedOpenGLContext.h"
 #include "EJNonRetainingProxy.h"
 

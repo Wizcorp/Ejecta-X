@@ -16,7 +16,7 @@ class EJTimerCollection : public NSObject
 
 	EJJavaScriptView *scriptView;
 
-	BOOL simpleMutex;
+	bool simpleMutex;
 	void lock();
 	void unlock();
 
@@ -25,7 +25,7 @@ public:
 	EJTimerCollection(EJJavaScriptView* scriptView);
 	~EJTimerCollection();
 
-	int scheduleCallback(JSObjectRef callback, float interval, BOOL repeat);
+	int scheduleCallback(JSObjectRef callback, float interval, bool repeat);
 	void cancelId(int timerId);
 	void update();
 };
@@ -36,12 +36,12 @@ class EJTimer : public NSObject
 	//NSTimeInterval target;
 	float interval;
 	JSObjectRef callback;
-	BOOL repeat;
+	bool repeat;
 	EJJavaScriptView *scriptView;
 public:
-	BOOL active;
+	bool active;
 	EJTimer();
-	EJTimer(EJJavaScriptView* scriptViewp, JSObjectRef callbackp, float intervalp, BOOL repeatp);
+	EJTimer(EJJavaScriptView* scriptViewp, JSObjectRef callbackp, float intervalp, bool repeatp);
 	~EJTimer();
 
 	void check();

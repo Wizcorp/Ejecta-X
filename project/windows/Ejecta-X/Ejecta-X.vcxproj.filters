@@ -1,185 +1,29 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
-    <Filter Include="源文件">
-      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
-      <Extensions>cpp;c;cc;cxx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
-    </Filter>
-    <Filter Include="头文件">
-      <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
-      <Extensions>h;hpp;hxx;hm;inl;inc;xsd</Extensions>
-    </Filter>
-    <Filter Include="资源文件">
-      <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
-      <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
-    </Filter>
-    <Filter Include="ejecta">
-      <UniqueIdentifier>{eda4d168-5d89-47ea-9f58-25cc45c02810}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="ejecta\EJCanvas">
-      <UniqueIdentifier>{d5fd34d7-452a-4b56-8b31-f769c0d833f9}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="ejecta\EJCocoa">
-      <UniqueIdentifier>{67592d3d-5ee2-477f-9208-c49dc27c0312}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="ejecta\lodepng">
-      <UniqueIdentifier>{8cdf7a5a-2dd4-48c1-87c5-825c5607cacf}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="ejecta\EJCocoa\support">
-      <UniqueIdentifier>{f183ef8c-94eb-432d-a998-f77701d6e0db}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="ejecta\EJAudio">
-      <UniqueIdentifier>{76f38057-6fd4-454f-83a5-9356303b0afe}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="ejecta\EJUtils">
-      <UniqueIdentifier>{5030f7d8-7f86-449f-a0b2-1ebbc5445fda}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="ejecta\lodejpeg">
-      <UniqueIdentifier>{9650e057-f786-4916-add2-99822507ede8}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="ejecta\lodefreetype">
-      <UniqueIdentifier>{d7bf0011-d9e8-4364-af98-25a439321c62}</UniqueIdentifier>
-    </Filter>
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="ReadMe.txt" />
-    <None Include="small.ico">
-      <Filter>资源文件</Filter>
-    </None>
-    <None Include="Ejecta-X.ico">
-      <Filter>资源文件</Filter>
-    </None>
-  </ItemGroup>
-  <ItemGroup>
-    <ClInclude Include="stdafx.h">
-      <Filter>头文件</Filter>
-    </ClInclude>
-    <ClInclude Include="targetver.h">
-      <Filter>头文件</Filter>
-    </ClInclude>
-    <ClInclude Include="Resource.h">
-      <Filter>头文件</Filter>
-    </ClInclude>
-    <ClInclude Include="Ejecta-X.h">
-      <Filter>头文件</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\sources\ejecta\EJCocoa\CGAffineTransform.h">
-      <Filter>ejecta\EJCocoa</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\sources\ejecta\lodepng\lodepng.h">
-      <Filter>ejecta\lodepng</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\sources\ejecta\EJCocoa\NSAutoreleasePool.h">
-      <Filter>ejecta\EJCocoa</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\sources\ejecta\EJCocoa\NSArray.h">
-      <Filter>ejecta\EJCocoa</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\sources\ejecta\EJCocoa\support\nsConfig.h">
-      <Filter>ejecta\EJCocoa\support</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\sources\ejecta\EJCocoa\support\nsCArray.h">
-      <Filter>ejecta\EJCocoa\support</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\sources\ejecta\EJCocoa\NSDictionary.h">
-      <Filter>ejecta\EJCocoa</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\sources\ejecta\EJCocoa\NSGeometry.h">
-      <Filter>ejecta\EJCocoa</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\sources\ejecta\EJCocoa\support\NSEventType.h">
-      <Filter>ejecta\EJCocoa\support</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\sources\ejecta\EJCocoa\NSInteger.h">
-      <Filter>ejecta\EJCocoa</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\sources\ejecta\EJCocoa\NSObject.h">
-      <Filter>ejecta\EJCocoa</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\sources\ejecta\EJCocoa\NSNS.h">
-      <Filter>ejecta\EJCocoa</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\sources\ejecta\EJCocoa\support\nsMacros.h">
-      <Filter>ejecta\EJCocoa\support</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\sources\ejecta\EJCocoa\NSObjectFactory.h">
-      <Filter>ejecta\EJCocoa</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\sources\ejecta\EJCocoa\support\NSPlatformConfig.h">
-      <Filter>ejecta\EJCocoa\support</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\sources\ejecta\EJCocoa\support\NSPlatformDefine.h">
-      <Filter>ejecta\EJCocoa\support</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\sources\ejecta\EJCocoa\support\NSPlatformMacros.h">
-      <Filter>ejecta\EJCocoa\support</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\sources\ejecta\EJCocoa\NSString.h">
-      <Filter>ejecta\EJCocoa</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\sources\ejecta\EJCocoa\NSValue.h">
-      <Filter>ejecta\EJCocoa</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\sources\ejecta\EJCocoa\NSSet.h">
-      <Filter>ejecta\EJCocoa</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\sources\ejecta\EJCocoa\NSZone.h">
-      <Filter>ejecta\EJCocoa</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\sources\ejecta\EJCocoa\support\uthash.h">
-      <Filter>ejecta\EJCocoa\support</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\sources\ejecta\EJCocoa\support\utlist.h">
-      <Filter>ejecta\EJCocoa\support</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\sources\ejecta\lodejpeg\lodejpeg.h">
-      <Filter>ejecta\lodejpeg</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\sources\ejecta\lodefreetype\lodefreetype.h">
-      <Filter>ejecta\lodefreetype</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\sources\ejecta\EJAppViewController.h">
-      <Filter>ejecta</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\sources\ejecta\EJClassLoader.h">
-      <Filter>ejecta</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\sources\ejecta\EJConvert.h">
-      <Filter>ejecta</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\sources\ejecta\EJJavaScriptView.h">
-      <Filter>ejecta</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\sources\ejecta\EJTimer.h">
-      <Filter>ejecta</Filter>
-    <ClInclude Include="..\..\..\sources\ejecta\EJCocoa\NSCache.h">
-      <Filter>ejecta\EJCocoa</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\sources\ejecta\EJCocoa\UIFont.h">
-      <Filter>ejecta\EJCocoa</Filter>
-    </ClInclude>
-  </ItemGroup>
-  <ItemGroup>
-    <ClCompile Include="stdafx.cpp">
-      <Filter>源文件</Filter>
-    </ClCompile>
-    <ClCompile Include="Ejecta-X.cpp">
-      <Filter>源文件</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\..\sources\ejecta\EJCocoa\CGAffineTransform.cpp">
       <Filter>ejecta\EJCocoa</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\..\sources\ejecta\lodefreetype\lodefreetype.cpp">
+      <Filter>ejecta\EJUtils\support</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\sources\ejecta\lodejpeg\lodejpeg.cpp">
+      <Filter>ejecta\EJUtils\support</Filter>
+    </ClCompile>
     <ClCompile Include="..\..\..\sources\ejecta\lodepng\lodepng.cpp">
-      <Filter>ejecta\lodepng</Filter>
+      <Filter>ejecta\EJUtils\support</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\sources\ejecta\EJCocoa\NSArray.cpp">
       <Filter>ejecta\EJCocoa</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\sources\ejecta\EJCocoa\NSZone.cpp">
-      <Filter>ejecta\EJCocoa</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\..\sources\ejecta\EJCocoa\NSAutoreleasePool.cpp">
       <Filter>ejecta\EJCocoa</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\sources\ejecta\EJCocoa\NSCache.cpp">
+      <Filter>ejecta\EJCocoa</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\sources\ejecta\EJCocoa\support\nsCArray.cpp">
+      <Filter>ejecta\EJCocoa\support</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\sources\ejecta\EJCocoa\NSDictionary.cpp">
       <Filter>ejecta\EJCocoa</Filter>
@@ -205,14 +49,11 @@
     <ClCompile Include="..\..\..\sources\ejecta\EJCocoa\NSValue.cpp">
       <Filter>ejecta\EJCocoa</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\sources\ejecta\EJCocoa\support\nsCArray.cpp">
-      <Filter>ejecta\EJCocoa\support</Filter>
+    <ClCompile Include="..\..\..\sources\ejecta\EJCocoa\NSZone.cpp">
+      <Filter>ejecta\EJCocoa</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\sources\ejecta\lodejpeg\lodejpeg.cpp">
-      <Filter>ejecta\lodejpeg</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\sources\ejecta\lodefreetype\lodefreetype.cpp">
-      <Filter>ejecta\lodefreetype</Filter>
+    <ClCompile Include="..\..\..\sources\ejecta\EJAppViewController.cpp">
+      <Filter>ejecta</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\sources\ejecta\EJClassLoader.cpp">
       <Filter>ejecta</Filter>
@@ -226,15 +67,173 @@
     <ClCompile Include="..\..\..\sources\ejecta\EJTimer.cpp">
       <Filter>ejecta</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\sources\ejecta\EJAppViewController.cpp">
-      <Filter>ejecta</Filter>
-    <ClCompile Include="..\..\..\sources\ejecta\EJCocoa\NSCache.cpp">
-      <Filter>ejecta\EJCocoa</Filter>
+    <ClCompile Include="Ejecta-X.cpp">
+      <Filter>WinSupport</Filter>
+    </ClCompile>
+    <ClCompile Include="stdafx.cpp">
+      <Filter>WinSupport</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="..\..\..\sources\ejecta\EJCocoa\CGAffineTransform.h">
+      <Filter>ejecta\EJCocoa</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\sources\ejecta\lodepng\lodepng.h">
+      <Filter>ejecta\EJUtils\support</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\sources\ejecta\lodefreetype\lodefreetype.h">
+      <Filter>ejecta\EJUtils\support</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\sources\ejecta\lodejpeg\lodejpeg.h">
+      <Filter>ejecta\EJUtils\support</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\sources\ejecta\EJCocoa\NSCache.h">
+      <Filter>ejecta\EJCocoa</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\sources\ejecta\EJCocoa\NSArray.h">
+      <Filter>ejecta\EJCocoa</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\sources\ejecta\EJCocoa\NSAutoreleasePool.h">
+      <Filter>ejecta\EJCocoa</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\sources\ejecta\EJCocoa\support\nsConfig.h">
+      <Filter>ejecta\EJCocoa\support</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\sources\ejecta\EJCocoa\support\nsCArray.h">
+      <Filter>ejecta\EJCocoa\support</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\sources\ejecta\EJCocoa\NSZone.h">
+      <Filter>ejecta\EJCocoa</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\sources\ejecta\EJCocoa\NSDictionary.h">
+      <Filter>ejecta\EJCocoa</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\sources\ejecta\EJCocoa\support\NSEventType.h">
+      <Filter>ejecta\EJCocoa</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\sources\ejecta\EJCocoa\NSGeometry.h">
+      <Filter>ejecta\EJCocoa</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\sources\ejecta\EJCocoa\NSInteger.h">
+      <Filter>ejecta\EJCocoa</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\sources\ejecta\EJCocoa\support\nsMacros.h">
+      <Filter>ejecta\EJCocoa</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\sources\ejecta\EJCocoa\NSNS.h">
+      <Filter>ejecta\EJCocoa</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\sources\ejecta\EJCocoa\NSObject.h">
+      <Filter>ejecta\EJCocoa</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\sources\ejecta\EJCocoa\NSObjectFactory.h">
+      <Filter>ejecta\EJCocoa</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\sources\ejecta\EJCocoa\support\NSPlatformConfig.h">
+      <Filter>ejecta\EJCocoa</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\sources\ejecta\EJCocoa\support\NSPlatformDefine.h">
+      <Filter>ejecta\EJCocoa</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\sources\ejecta\EJCocoa\support\NSPlatformMacros.h">
+      <Filter>ejecta\EJCocoa</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\sources\ejecta\EJCocoa\NSSet.h">
+      <Filter>ejecta\EJCocoa</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\sources\ejecta\EJCocoa\NSString.h">
+      <Filter>ejecta\EJCocoa</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\sources\ejecta\EJCocoa\NSValue.h">
+      <Filter>ejecta\EJCocoa</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\sources\ejecta\EJCocoa\UIFont.h">
+      <Filter>ejecta\EJCocoa</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\sources\ejecta\EJCocoa\support\uthash.h">
+      <Filter>ejecta\EJCocoa\support</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\sources\ejecta\EJCocoa\support\utlist.h">
+      <Filter>ejecta\EJCocoa\support</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\sources\ejecta\EJConvert.h">
+      <Filter>ejecta</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\sources\ejecta\EJAppViewController.h">
+      <Filter>ejecta</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\sources\ejecta\EJClassLoader.h">
+      <Filter>ejecta</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\sources\ejecta\EJTimer.h">
+      <Filter>ejecta</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\sources\ejecta\EJJavaScriptView.h">
+      <Filter>ejecta</Filter>
+    </ClInclude>
+    <ClInclude Include="targetver.h">
+      <Filter>WinSupport</Filter>
+    </ClInclude>
+    <ClInclude Include="Ejecta-X.h">
+      <Filter>WinSupport</Filter>
+    </ClInclude>
+    <ClInclude Include="Resource.h">
+      <Filter>WinSupport</Filter>
+    </ClInclude>
+    <ClInclude Include="stdafx.h">
+      <Filter>WinSupport</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="ReadMe.txt" />
+    <None Include="Ejecta-X.ico">
+      <Filter>Resources</Filter>
+    </None>
+    <None Include="small.ico">
+      <Filter>Resources</Filter>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <Filter Include="ejecta">
+      <UniqueIdentifier>{fe01d1a0-6274-4c09-bd67-1724d5834f93}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ejecta\EJUtils">
+      <UniqueIdentifier>{28a986a4-d0a1-464e-afa6-11071dc02fa9}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ejecta\EJUtils\support">
+      <UniqueIdentifier>{d8c7df53-636a-4e5a-959e-4f15c406913e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ejecta\EJAudio">
+      <UniqueIdentifier>{9326c800-5d92-42e1-beb2-8290ad31f31e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ejecta\EJCanvas">
+      <UniqueIdentifier>{3c50d120-7b07-458e-93dc-80d50cf1a2d2}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ejecta\EJCanvas\2D">
+      <UniqueIdentifier>{4eeb851d-c8e5-434a-ab56-71ffd083da5f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ejecta\EJCanvas\2D\Shaders">
+      <UniqueIdentifier>{8ddcf6ef-5195-456b-8354-3ef9ab2acfd5}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ejecta\EJCanvas\WebGL">
+      <UniqueIdentifier>{f74987ae-31b8-4437-a4ab-6a43af0b4583}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ejecta\EJCocoa">
+      <UniqueIdentifier>{0e5a0e85-1e29-4938-96cb-9aca4faf32fd}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ejecta\EJCocoa\support">
+      <UniqueIdentifier>{563e6948-5c0c-48e7-b04b-c1684ee0c4af}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Resources">
+      <UniqueIdentifier>{3caa39a9-e0d0-48ec-b557-1c52533fa162}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="WinSupport">
+      <UniqueIdentifier>{483a3efa-f38d-4759-bec4-8ac204d566ba}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
     <ResourceCompile Include="Ejecta-X.rc">
-      <Filter>资源文件</Filter>
+      <Filter>Resources</Filter>
     </ResourceCompile>
   </ItemGroup>
 </Project>

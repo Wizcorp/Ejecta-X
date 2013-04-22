@@ -32,11 +32,11 @@
 #ifndef INFINITY
 #define INFINITY     0x221E
 #endif
-#endif
-
+#else
 #ifndef BOOL
 #define BOOL         bool
 #endif  // BOOL
+#endif
 
 #include "nsConfig.h"
 
