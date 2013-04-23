@@ -1,31 +1,64 @@
-#import <Foundation/Foundation.h>
-#import "EJGLProgram2D.h"
-#import "EJGLProgram2DRadialGradient.h"
+#ifndef __EJ_SHARED_OPENGL_CONTEXT_H__
+#define __EJ_SHARED_OPENGL_CONTEXT_H__
+
+#include "EJCocoa/NSObject.h"
+// #import "EJGLProgram2D.h"
+// #import "EJGLProgram2DRadialGradient.h"
 
 #define EJ_OPENGL_VERTEX_BUFFER_SIZE (32 * 1024) // 32kb
 
-@interface EJSharedOpenGLContext : NSObject {
-	EJGLProgram2D *glProgram2DFlat;
-	EJGLProgram2D *glProgram2DTexture;
-	EJGLProgram2D *glProgram2DAlphaTexture;
-	EJGLProgram2D *glProgram2DPattern;
-	EJGLProgram2DRadialGradient *glProgram2DRadialGradient;
+class EJSharedOpenGLContext : public NSObject
+{
+	static EJSharedOpenGLContext* sharedOpenGLContext;
+
+public:
+	// EJGLProgram2D *glProgram2DFlat;
+	// EJGLProgram2D *glProgram2DTexture;
+	// EJGLProgram2D *glProgram2DAlphaTexture;
+	// EJGLProgram2D *glProgram2DPattern;
+	// EJGLProgram2DRadialGradient *glProgram2DRadialGradient;
 	
-	EAGLContext *glContext2D;
-	EAGLSharegroup *glSharegroup;
-	NSMutableData *vertexBuffer;
-}
+	// EAGLContext *glContext2D;
+	// EAGLSharegroup *glSharegroup;
+	// NSMutableData *vertexBuffer;
 
-+ (EJSharedOpenGLContext *)instance;
 
-@property (nonatomic, readonly) EJGLProgram2D *glProgram2DFlat;
-@property (nonatomic, readonly) EJGLProgram2D *glProgram2DTexture;
-@property (nonatomic, readonly) EJGLProgram2D *glProgram2DAlphaTexture;
-@property (nonatomic, readonly) EJGLProgram2D *glProgram2DPattern;
-@property (nonatomic, readonly) EJGLProgram2DRadialGradient *glProgram2DRadialGradient;
+	EJSharedOpenGLContext();
+	~EJSharedOpenGLContext();
 
-@property (nonatomic, readonly) EAGLContext *glContext2D;
-@property (nonatomic, readonly) EAGLSharegroup *glSharegroup;
-@property (nonatomic, readonly) NSMutableData *vertexBuffer;
+	static EJSharedOpenGLContext* instance();
+};
 
-@end
+#endif // __EJ_SHARED_OPENGL_CONTEXT_H__
+
+// #import <Foundation/Foundation.h>
+// #import "EJGLProgram2D.h"
+// #import "EJGLProgram2DRadialGradient.h"
+
+// #define EJ_OPENGL_VERTEX_BUFFER_SIZE (32 * 1024) // 32kb
+
+// @interface EJSharedOpenGLContext : NSObject {
+// 	EJGLProgram2D *glProgram2DFlat;
+// 	EJGLProgram2D *glProgram2DTexture;
+// 	EJGLProgram2D *glProgram2DAlphaTexture;
+// 	EJGLProgram2D *glProgram2DPattern;
+// 	EJGLProgram2DRadialGradient *glProgram2DRadialGradient;
+	
+// 	EAGLContext *glContext2D;
+// 	EAGLSharegroup *glSharegroup;
+// 	NSMutableData *vertexBuffer;
+// }
+
+// + (EJSharedOpenGLContext *)instance;
+
+// @property (nonatomic, readonly) EJGLProgram2D *glProgram2DFlat;
+// @property (nonatomic, readonly) EJGLProgram2D *glProgram2DTexture;
+// @property (nonatomic, readonly) EJGLProgram2D *glProgram2DAlphaTexture;
+// @property (nonatomic, readonly) EJGLProgram2D *glProgram2DPattern;
+// @property (nonatomic, readonly) EJGLProgram2DRadialGradient *glProgram2DRadialGradient;
+
+// @property (nonatomic, readonly) EAGLContext *glContext2D;
+// @property (nonatomic, readonly) EAGLSharegroup *glSharegroup;
+// @property (nonatomic, readonly) NSMutableData *vertexBuffer;
+
+// @end

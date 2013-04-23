@@ -1,5 +1,8 @@
-#import "EJBindingEventedBase.h"
-#import <MediaPlayer/MediaPlayer.h>
+#ifndef __EJ_JAVASCRIPT_VIEW_H__
+#define __EJ_JAVASCRIPT_VIEW_H__
+
+#include "EJCocoa/NSString.h"
+// #import <MediaPlayer/MediaPlayer.h>
 
 typedef enum {
 	kEJVideoScalingModeNone,
@@ -8,12 +11,36 @@ typedef enum {
 	kEJVideoScalingModeFill
 } EJVideoScalingMode;
 
-@interface EJBindingVideo : EJBindingEventedBase <UIGestureRecognizerDelegate> {
+class EJBindingVideo : public EJBindingEventedBase
+{
 	NSString *path;
-	BOOL loaded;
-	BOOL showControls;
+	bool loaded;
+	bool showControls;
 	EJVideoScalingMode scalingMode;
-	MPMoviePlayerController *player;
-}
+	//MPMoviePlayerController *player;
 
-@end
+public:
+	EJBindingVideo();
+	~EJBindingVideo();
+};
+
+
+// #import "EJBindingEventedBase.h"
+// #import <MediaPlayer/MediaPlayer.h>
+
+// typedef enum {
+// 	kEJVideoScalingModeNone,
+// 	kEJVideoScalingModeAspectFit,
+// 	kEJVideoScalingModeAspectFill,
+// 	kEJVideoScalingModeFill
+// } EJVideoScalingMode;
+
+// @interface EJBindingVideo : EJBindingEventedBase <UIGestureRecognizerDelegate> {
+// 	NSString *path;
+// 	BOOL loaded;
+// 	BOOL showControls;
+// 	EJVideoScalingMode scalingMode;
+// 	MPMoviePlayerController *player;
+// }
+
+// @end

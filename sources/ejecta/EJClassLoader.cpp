@@ -16,7 +16,7 @@ JSValueRef EJGetNativeClass(JSContextRef ctx, JSObjectRef object, JSStringRef pr
 	size_t classNameSize = JSStringGetMaximumUTF8CStringSize(propertyNameJS);
     char* className = (char*)malloc(classNameSize);
     JSStringGetUTF8CString(propertyNameJS, className, classNameSize);
-    EJJavaScriptView *scriptView = JSObjectGetPrivate(object);
+    EJJavaScriptView *scriptView = (EJJavaScriptView *)JSObjectGetPrivate(object);
 	
  	JSObjectRef obj = NULL;
  	NSString * fullClassName = new NSString();
@@ -28,7 +28,7 @@ JSValueRef EJGetNativeClass(JSContextRef ctx, JSObjectRef object, JSStringRef pr
 		
 		// Pack the class together with the scriptView into a struct, so it can
 		// be put in the constructor's private data
-		EJClassWithScriptView *classWithScriptView = malloc(sizeof(EJClassWithScriptView));
+		EJClassWithScriptView *classWithScriptView = (EJClassWithScriptView *)malloc(sizeof(EJClassWithScriptView));
 		classWithScriptView->classId = pClass;
 		classWithScriptView->scriptView = scriptView;
 		
@@ -44,7 +44,7 @@ JSObjectRef EJCallAsConstructor(JSContextRef ctx, JSObjectRef constructor, size_
 	
 	// Unpack the class and scriptView from the constructor's private data
 	EJClassWithScriptView *classWithScriptView = (EJClassWithScriptView *)JSObjectGetPrivate(constructor);
-	EJBindingBase* pClass = classWithScriptView->classid;
+	EJBindingBase* pClass = classWithScriptView->classId;
 	EJJavaScriptView *scriptView = classWithScriptView->scriptView;
 	
 	// Init the native class and create the JSObject with it
@@ -65,7 +65,7 @@ bool EJConstructorHasInstance(JSContextRef ctx, JSObjectRef constructor, JSValue
 
 	// Unpack the class and instance from private data
 	EJClassWithScriptView *classWithScriptView = (EJClassWithScriptView *)JSObjectGetPrivate(constructor);
-	EJClassWithScriptView *instance = JSObjectGetPrivate((JSObjectRef)possibleInstance);
+	EJClassWithScriptView *instance = (EJClassWithScriptView *)JSObjectGetPrivate((JSObjectRef)possibleInstance);
 	
 	if( !classWithScriptView || !instance ) {
 		return false;
@@ -74,11 +74,22 @@ bool EJConstructorHasInstance(JSContextRef ctx, JSObjectRef constructor, JSValue
 	return true;//[instance isKindOfClass:classWithScriptView->class];
 }
 
+char * NSDataFromString( NSString *str ) {
+	int len = str->length() + 1;
+	char * d = (char *)malloc(len * sizeof(char));
+	memset(d, 0, len);
+#ifdef _WINDOWS
+	_snprintf_s(d, len, len, "%s", str->getCString());
+#else
+	snprintf(d, len, "%s", str->getCString());
+#endif
+	return d;
+}
 
 
 EJClassLoader::EJClassLoader(EJJavaScriptView *scriptView, NSString *name)
 {
-	JSGlobalContextRef context = scriptView.jsGlobalContext;
+	JSGlobalContextRef context = scriptView->jsGlobalContext;
 		
 	// Create or retain the global constructor class
 	if( !EJGlobalConstructorClass ) {
@@ -119,7 +130,8 @@ EJClassLoader::EJClassLoader(EJJavaScriptView *scriptView, NSString *name)
 	}
 }
 
-EJClassLoader::~EJClassLoader();
+EJClassLoader::~EJClassLoader()
+{
 	// If we are the last Collection to hold on to the Class cache, release it and
 	// set it to nil, so it can be properly re-created if needed.
 	if( EJGlobalJSClassCache->retainCount() == 1 ) {
@@ -163,7 +175,7 @@ JSClassRef EJClassLoader::getJSClass(EJBindingBase* classId)
 	return jsClass;
 }
 
-JSClassRef EJBindingBase::createJSClass (EJBindingBase* ej_obj){
+JSClassRef EJClassLoader::createJSClass (EJBindingBase* ej_obj){
 	// Gather all class methods that return C callbacks for this class or it's parents
 	NSDictionary * methods = NSDictionary::create();
 	NSDictionary * properties = NSDictionary::create();
@@ -276,7 +288,7 @@ JSClassRef EJBindingBase::createJSClass (EJBindingBase* ej_obj){
 	}
 	
 	JSClassDefinition classDef = kJSClassDefinitionEmpty;
-	classDef.finalize = _ej_class_finalize;
+	classDef.finalize = EJBindingBaseFinalize;
 	classDef.staticValues = values;
 	classDef.staticFunctions = functions;
 	JSClassRef js_class = JSClassCreate(&classDef);

@@ -8,14 +8,20 @@
 #pragma mark Ejecta view Implementation
 
 
+
+EJJavaScriptView::EJJavaScriptView() : currentRenderingContext(0), screenRenderingContext(0)
+{
+	init(0, 0, EJECTA_DEFAULT_APP_FOLDER);
+}
+
 EJJavaScriptView::EJJavaScriptView(int w, int h) : currentRenderingContext(0), screenRenderingContext(0)
 {
-	init(int w, int h, EJECTA_DEFAULT_APP_FOLDER);
+	init(w, h, EJECTA_DEFAULT_APP_FOLDER);
 }
 
 EJJavaScriptView::EJJavaScriptView(int w, int h, const char* folder) : currentRenderingContext(0), screenRenderingContext(0)
 {
-	init(int w, int h, folder);
+	init(w, h, folder);
 }
 
 void EJJavaScriptView::setMainBundle(const char* path)
@@ -52,10 +58,10 @@ void EJJavaScriptView::init(int w, int h, const char* folder){
 	// from the outside.
 	// So we're using a "weak proxy" that doesn't retain the scriptView; we can
 	// then just invalidate the CADisplayLink in our dealloc and be done with it.
-	proxy = new EJNonRetainingProxy(this);
+	proxy = new EJNonRetainingProxy();
 	proxy->retain();
 	
-	this.pauseOnEnterBackground = true;
+	this->pauseOnEnterBackground = true;
 	
 	// Limit all background operations (image & sound loading) to one thread
 	//backgroundQueue = [[NSOperationQueue alloc] init];
@@ -73,7 +79,7 @@ void EJJavaScriptView::init(int w, int h, const char* folder){
 	JSValueProtect(jsGlobalContext, jsUndefined);
 	
 	// Attach all native class constructors to 'Ejecta'
-	classLoader = new EJClassLoader(this, "Ejecta");
+	classLoader = new EJClassLoader(this, NSStringMake("Ejecta"));
 	
 	
 	// Retain the caches here, so even if they're currently unused in JavaScript,
@@ -109,7 +115,7 @@ EJJavaScriptView::~EJJavaScriptView()
 	JSGlobalContextRelease(ctxref);
 	
 	// Remove from notification center
-	self.pauseOnEnterBackground = false;
+	this->pauseOnEnterBackground = false;
 	
 	// Remove from display link
 	//[displayLink invalidate];
@@ -135,7 +141,7 @@ EJJavaScriptView::~EJJavaScriptView()
 	if(mainBundle)free(mainBundle);
 }
 
-void EJJavaScriptView::setPauseOnEnterBackground(BOOL pauses);
+void EJJavaScriptView::setPauseOnEnterBackground(bool pauses)
 {
 	// NSArray *pauseN = @[
 	// 	UIApplicationWillResignActiveNotification,
@@ -187,14 +193,14 @@ NSString * EJJavaScriptView::pathForResource(NSString * resourcePath)
 void EJJavaScriptView::loadScriptAtPath(NSString * path)
 {
 	NSString * script = NSString::createWithContentsOfFile(pathForResource(path)->getCString());
-	loadScript(script, path)
+	loadScript(script, path);
 }
 
 void EJJavaScriptView::loadScript(NSString * script, NSString * sourceURL)
 {
 	
 	if( !script || script->length() == 0 ) {
-		NSLOG("Error: No or empty script given : %s", path->getCString() );
+		NSLOG("Error: No or empty script given : %s", sourceURL->getCString() );
 		return;
 	}
 
@@ -311,7 +317,7 @@ void EJJavaScriptView::logException(JSValueRef valueAsexception, JSContextRef ct
 void EJJavaScriptView::run(void)
 {
 
-	if( paused ) { return; }
+	if( isPaused ) { return; }
 	
 	// We rather poll for device motion updates at the beginning of each frame instead of
 	// spamming out updates that will never be seen.
@@ -408,7 +414,7 @@ void EJJavaScriptView::touchesMoved(NSSet * touches, int * event)
 #pragma mark
 #pragma mark Timers
 
-JSValueRef EJJavaScriptView::createTimer(JSContextRef ctxp, size_t argc, const JSValueRef argv[],  BOOL repeat)
+JSValueRef EJJavaScriptView::createTimer(JSContextRef ctxp, size_t argc, const JSValueRef argv[],  bool repeat)
 {
 	if( argc != 2 || !JSValueIsObject(ctxp, argv[0]) || !JSValueIsNumber(jsGlobalContext, argv[1]) ) {
 		return NULL;

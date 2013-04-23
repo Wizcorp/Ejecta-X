@@ -17,11 +17,11 @@
 #include <JavaScriptCore/JavaScriptCore.h>
 
 #include "EJConvert.h"
-//#include "EJCanvasContext.h"
+#include "EJCanvas/EJCanvasContext.h"
 //#include "EJPresentable.h"
 
-//#include "EJSharedOpenALManager.h"
-//#include "EJSharedTextureCache.h"
+#include "EJAudio/EJSharedOpenALManager.h"
+#include "EJCanvas/EJSharedTextureCache.h"
 #include "EJSharedOpenGLContext.h"
 #include "EJNonRetainingProxy.h"
 
@@ -41,16 +41,18 @@ using namespace std;
 
 class EJTouchDelegate {
 public:
-	virtual void triggerEvent(NSString * name, NSSet * all, NSSet * changed, NSSet * remaining) = 0;
+	virtual void triggerEvent(NSString * name, NSSet * all, NSSet * changed, NSSet * remaining)=0;
 };
 
 class EJDeviceMotionDelegate {
-	virtual void triggerDeviceMotionEvents() = 0;
+public:
+	virtual void triggerDeviceMotionEvents()=0;
 };
 
 class EJLifecycleDelegate {
-	virtual void resume() = 0;
-	virtual void pause() = 0;
+public:
+	virtual void resume()=0;
+	virtual void pause()=0;
 };
 
 class EJTimerCollection;
@@ -65,7 +67,6 @@ class EJJavaScriptView : NSObject {
 	EJSharedTextureCache *textureCache;
 	EJSharedOpenALManager *openALManager;
 	
-	EJCanvasContext *currentRenderingContext;
 	//EAGLContext *glCurrentContext;
 	
 	//CADisplayLink *displayLink;
@@ -77,26 +78,27 @@ class EJJavaScriptView : NSObject {
 public:
 	NSString *appFolder;
 	
-	BOOL pauseOnEnterBackground;
-	BOOL hasScreenCanvas;
+	bool pauseOnEnterBackground;
+	bool hasScreenCanvas;
 
-	BOOL isPaused;
+	bool isPaused;
 
 	JSGlobalContextRef jsGlobalContext;
 	int height, width;
 	
 	EJSharedOpenGLContext *openGLContext;
 
-	NSObject<EJLifecycleDelegate> *lifecycleDelegate;
-	NSObject<EJTouchDelegate> *touchDelegate;
-	NSObject<EJDeviceMotionDelegate> *deviceMotionDelegate;
+	NSObjectT<EJLifecycleDelegate> *lifecycleDelegate;
+	NSObjectT<EJTouchDelegate> *touchDelegate;
+	NSObjectT<EJDeviceMotionDelegate> *deviceMotionDelegate;
 
 	EJCanvasContext *currentRenderingContext;
-	EJCanvasContext<EJPresentable> *screenRenderingContext;
+	EJCanvasContext *screenRenderingContext;
 
 	// Public for fast access in bound functions
 	JSValueRef jsUndefined;
 
+	EJJavaScriptView();
     EJJavaScriptView(int w, int h);
     EJJavaScriptView(int w, int h, const char* folder);
     virtual ~EJJavaScriptView(void);
@@ -105,7 +107,7 @@ public:
     void setScreenSize(int w, int h);
     void init(int w, int h, const char* folder);
 
-    void setPauseOnEnterBackground(BOOL pauses);
+    void setPauseOnEnterBackground(bool pauses);
     void removeObserverForKeyPaths();
     void observeKeyPaths();
 

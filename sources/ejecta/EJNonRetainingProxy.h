@@ -1,12 +1,27 @@
-#import <Foundation/Foundation.h>
+#ifndef __EJ_NONRETAINING_PROXY_H__
+#define __EJ_NONRETAINING_PROXY_H__
 
-// "Weak proxy" to avoid retain loops.
-// Adapted from http://stackoverflow.com/a/13921278/1525473
+class EJNonRetainingProxy : public NSObject
+{
+	void* target;
+public:
+	EJNonRetainingProxy();
+	~EJNonRetainingProxy();
 
-@interface EJNonRetainingProxy : NSObject {
-	id target;
-}
+	static EJNonRetainingProxy* proxy(void * target);
+};
 
-+ (EJNonRetainingProxy *)proxyWithTarget:(id)target;
+#endif // __EJ_NONRETAINING_PROXY_H__
 
-@end
+// #import <Foundation/Foundation.h>
+
+// // "Weak proxy" to avoid retain loops.
+// // Adapted from http://stackoverflow.com/a/13921278/1525473
+
+// @interface EJNonRetainingProxy : NSObject {
+// 	id target;
+// }
+
+// + (EJNonRetainingProxy *)proxyWithTarget:(id)target;
+
+// @end

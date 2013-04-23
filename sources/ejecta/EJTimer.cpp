@@ -28,7 +28,7 @@ void EJTimerCollection::unlock()
 }
 
 
-int EJTimerCollection::scheduleCallback(JSObjectRef callback, float interval, BOOL repeat)
+int EJTimerCollection::scheduleCallback(JSObjectRef callback, float interval, bool repeat)
 {
 	lastId++;
 	
@@ -80,7 +80,7 @@ EJTimer::EJTimer()
 
 }
 
-EJTimer::EJTimer(EJJavaScriptView* scriptViewp, JSObjectRef callbackp, float intervalp, BOOL repeatp)
+EJTimer::EJTimer(EJJavaScriptView* scriptViewp, JSObjectRef callbackp, float intervalp, bool repeatp)
 {
 	scriptView = scriptViewp;
 	active = true;

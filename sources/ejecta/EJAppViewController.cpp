@@ -2,7 +2,7 @@
 #include "EJJavaScriptView.h"
 #include "EJCocoa/NSAutoreleasePool.h"
 
-static EJAppViewController* EJAppViewController::ejectaInstance = NULL
+EJAppViewController* EJAppViewController::ejectaInstance = NULL;
 
 EJAppViewController::EJAppViewController()
 {
@@ -19,7 +19,7 @@ EJAppViewController::~EJAppViewController()
 
 void EJAppViewController::didReceiveMemoryWarning()
 {
-	((EJJavaScriptView *)(this.view))->clearCaches();
+	((EJJavaScriptView *)(this->view))->clearCaches();
 }
 
 void EJAppViewController::init(const char* path, int w, int h)
@@ -34,7 +34,7 @@ void EJAppViewController::init(const char* path, int w, int h)
 
 void EJAppViewController::setScreenSize(int w, int h)
 {
-	view->setScreenSize(int w, int h);
+	view->setScreenSize(w, h);
 }
 
 void EJAppViewController::run(void)

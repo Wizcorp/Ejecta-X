@@ -1,5 +1,5 @@
-#ifndef __EJ_JAVASCRIPT_VIEW_H__
-#define __EJ_JAVASCRIPT_VIEW_H__
+#ifndef __EJ_APP_VIEW_CONTROLLER_H__
+#define __EJ_APP_VIEW_CONTROLLER_H__
 
 #include "EJCocoa/NSObject.h"
 
@@ -8,6 +8,7 @@ class EJJavaScriptView;
 class EJAppViewController : public NSObject
 {
 	EJJavaScriptView *view;
+	static EJAppViewController* ejectaInstance;
 public:
 	EJAppViewController();
 	~EJAppViewController();
@@ -25,7 +26,7 @@ public:
 	bool landscapeMode;
 
 };
-#endif //__EJ_JAVASCRIPT_VIEW_H__
+#endif //__EJ_APP_VIEW_CONTROLLER_H__
 
 
 // #import <Foundation/Foundation.h>

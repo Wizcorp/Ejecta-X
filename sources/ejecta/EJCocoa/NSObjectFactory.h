@@ -69,7 +69,7 @@ struct NSObjectRegister : NSObjectFactory {
 };
 
 #define REFECTION_CLASS_IMPLEMENT_DEFINE(NAME) \
-    virtual string toString(){return #NAME;}; \
+    virtual std::string toString(){return #NAME;}; \
     static NSObjectRegister<NAME> registerNSObject
 
 #define REFECTION_CLASS_IMPLEMENT(NAME) \

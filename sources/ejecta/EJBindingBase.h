@@ -1,6 +1,10 @@
-//#import <Foundation/Foundation.h>
+#ifndef __EJ_BINDING_BASE_H__
+#define __EJ_BINDING_BASE_H__
+
+#include "EJCocoa/NSObject.h"
 #include "EJAppViewController.h"
 #include "EJJavaScriptView.h"
+#include "EJConvert.h"
 
 //#include <objc/message.h>
 
@@ -23,18 +27,21 @@
 
 // The class method that returns a pointer to the static C callback function
 #define __EJ_GET_POINTER_TO(NAME) \
-	+ (void *)_ptr_to##NAME { \
-		return (void *)&NAME; \
-	}
+	SEL _ptr_to##NAME() { \
+		return (SEL)NAME; \
+	} \
+	REFECTION_FUNCTION_IMPLEMENT(_ptr_to##NAME);
 
 
 // ------------------------------------------------------------------------------------
 // Function - use with EJ_BIND_FUNCTION( functionName, ctx, argc, argv ) { ... }
+#define EJ_BIND_FUNCTION_DEFINE(NAME, CTX_NAME, ARGC_NAME, ARGV_NAME) \
+	JSValueRef _func_##NAME(JSContextRef CTX_NAME, size_t ARGC_NAME, const JSValueRef* ARGV_NAME)
 
-#define EJ_BIND_FUNCTION(NAME, CTX_NAME, ARGC_NAME, ARGV_NAME) \
+#define EJ_BIND_FUNCTION(CLASS, NAME, CTX_NAME, ARGC_NAME, ARGV_NAME) \
 	\
 	/* The C callback function for the exposed method and class method that returns it */ \
-	static JSValueRef _func_##NAME( \
+	static JSValueRef _##CLASS##_func_##NAME( \
 		JSContextRef ctx, \
 		JSObjectRef function, \
 		JSObjectRef object, \
@@ -42,88 +49,89 @@
 		const JSValueRef argv[], \
 		JSValueRef* exception \
 	) { \
-		id instance = (id)JSObjectGetPrivate(object); \
-		JSValueRef ret = (JSValueRef)objc_msgSend(instance, @selector(_func_##NAME:argc:argv:), ctx, argc, argv); \
+		CLASS* instance = (CLASS*)(JSObjectGetPrivate(object)); \
+		JSValueRef ret = (JSValueRef)instance->_func_##NAME(ctx, argc, argv); \
 		return ret ? ret : ((EJBindingBase *)instance)->scriptView->jsUndefined; \
 	} \
-	__EJ_GET_POINTER_TO(_func_##NAME)\
+	__EJ_GET_POINTER_TO(_##CLASS##_func_##NAME)\
 	\
 	/* The actual implementation for this method */ \
-	- (JSValueRef)_func_##NAME:(JSContextRef)CTX_NAME argc:(size_t)ARGC_NAME argv:(const JSValueRef [])ARGV_NAME
+	JSValueRef CLASS::_func_##NAME(JSContextRef CTX_NAME, size_t ARGC_NAME, const JSValueRef* ARGV_NAME)
 
 
 // ------------------------------------------------------------------------------------
 // Getter - use with EJ_BIND_GET( propertyName, ctx ) { ... }
+#define EJ_BIND_GET_DEFINE(NAME, CTX_NAME) \
+	JSValueRef _get_##NAME( JSContextRef CTX_NAME)
 
-#define EJ_BIND_GET(NAME, CTX_NAME) \
+#define EJ_BIND_GET(CLASS, NAME, CTX_NAME) \
 	\
 	/* The C callback function for the exposed getter and class method that returns it */ \
-	static JSValueRef _get_##NAME( \
+ 	static JSValueRef _##CLASS##_get_##NAME( \
 		JSContextRef ctx, \
 		JSObjectRef object, \
 		JSStringRef propertyName, \
 		JSValueRef* exception \
 	) { \
-		id instance = (id)JSObjectGetPrivate(object); \
-		return (JSValueRef)objc_msgSend(instance, @selector(_get_##NAME:), ctx); \
+		CLASS* instance = (CLASS*)(JSObjectGetPrivate(object)); \
+		return (JSValueRef)instance->_get_##NAME(ctx); \
 	} \
-	__EJ_GET_POINTER_TO(_get_##NAME)\
+	__EJ_GET_POINTER_TO(_##CLASS##_get_##NAME)\
 	\
 	/* The actual implementation for this getter */ \
-	- (JSValueRef)_get_##NAME:(JSContextRef)CTX_NAME
+	JSValueRef CLASS::_get_##NAME(JSContextRef CTX_NAME)
 
 
 // ------------------------------------------------------------------------------------
 // Setter - use with EJ_BIND_SET( propertyName, ctx, value ) { ... }
+#define EJ_BIND_SET_DEFINE(NAME, CTX_NAME, VALUE_NAME) \
+		void _set_##NAME( JSContextRef CTX_NAME,JSValueRef VALUE_NAME)
 
-#define EJ_BIND_SET(NAME, CTX_NAME, VALUE_NAME) \
+#define EJ_BIND_SET(CLASS, NAME, CTX_NAME, VALUE_NAME) \
 	\
 	/* The C callback function for the exposed setter and class method that returns it */ \
-	static bool _set_##NAME( \
+	static bool _##CLASS##_set_##NAME( \
 		JSContextRef ctx, \
 		JSObjectRef object, \
 		JSStringRef propertyName, \
 		JSValueRef value, \
 		JSValueRef* exception \
 	) { \
-		id instance = (id)JSObjectGetPrivate(object); \
-		objc_msgSend(instance, @selector(_set_##NAME:value:), ctx, value); \
-		return true; \
+ 		CLASS* instance = (CLASS*)(JSObjectGetPrivate(object)); \
+ 		instance->_set_##NAME(ctx,value); \
+ 		return true; \
 	} \
-	__EJ_GET_POINTER_TO(_set_##NAME) \
+ 	__EJ_GET_POINTER_TO(_##CLASS##_set_##NAME) \
 	\
 	/* The actual implementation for this setter */ \
-	- (void)_set_##NAME:(JSContextRef)CTX_NAME value:(JSValueRef)VALUE_NAME
+ 	void CLASS::_set_##NAME(JSContextRef CTX_NAME,JSValueRef VALUE_NAME)
 		
 
 
 // ------------------------------------------------------------------------------------
 // Shorthand to define a function that logs a "not implemented" warning
 
+#define EJ_BIND_FUNCTION_NOT_IMPLEMENTED_DEFINE(NAME) \
+ 	EJ_BIND_FUNCTION_DEFINE( NAME, ctx, argc, argv ) 
+
 #define EJ_BIND_FUNCTION_NOT_IMPLEMENTED(NAME) \
-	static JSValueRef _func_##NAME( \
-		JSContextRef ctx, \
-		JSObjectRef function, \
-		JSObjectRef object, \
-		size_t argc, \
-		const JSValueRef argv[], \
-		JSValueRef* exception \
-	) { \
+	EJ_BIND_FUNCTION( CALSS, NAME, ctx, argc, argv ) { \
 		static bool didShowWarning; \
 		if( !didShowWarning ) { \
-			NSLog(@"Warning: method " @ #NAME @" is not yet implemented!"); \
+			NSLOG("Warning: method %s() is not yet implemented!", #NAME); \
 			didShowWarning = true; \
 		} \
-		id instance = (id)JSObjectGetPrivate(object); \
+		CLASS* instance = (CLASS*)(JSObjectGetPrivate(object)); \
 		return ((EJBindingBase *)instance)->scriptView->jsUndefined; \
-	} \
-	__EJ_GET_POINTER_TO(_func_##NAME)
+	}
 
 
 // ------------------------------------------------------------------------------------
 // Shorthand to bind enums with name tables - use with
 // EJ_BIND_ENUM( name, target, "name1", "name2", ...) );
-
+#define EJ_BIND_ENUM_DEFINE( NAME, TARGET, ...) \
+ 	EJ_BIND_GET_DEFINE( NAME, ctx ); \
+ 	EJ_BIND_SET_DEFINE( NAME, ctx, value ) 
 
 #define EJ_BIND_ENUM(NAME, TARGET, ...) \
 	static const char *_##NAME##EnumNames[] = {__VA_ARGS__}; \
@@ -231,23 +239,30 @@ static inline bool JSStrIsEqualToStr( const JSChar *s1, const char *s2, int leng
 #define _EJ_UNPACK_NUMBER(INDEX, NAME) NAME = JSValueToNumberFast(ctx, argv[INDEX])
 
 
-@class EJJavaScriptView;
-@interface EJBindingBase : NSObject {
-	JSObjectRef jsObject;
-	
-	// Puplic for fast access to instance->scriptView->jsUndefined in bound functions
-	@public	EJJavaScriptView *scriptView;
-}
+class EJJavaScriptView;
 
-- (id)initWithContext:(JSContextRef)ctxp argc:(size_t)argc argv:(const JSValueRef [])argv;
-- (void)createWithJSObject:(JSObjectRef)obj scriptView:(EJJavaScriptView *)view;
-- (void)prepareGarbageCollection;
-+ (JSObjectRef)createJSObjectWithContext:(JSContextRef)ctx
-	scriptView:(EJJavaScriptView *)scriptView
-	instance:(EJBindingBase *)instance;
+class EJBindingBase: public NSObject {
+protected:
+	JSObjectRef jsObject;
+public:
+	EJJavaScriptView *scriptView;
+
+	EJBindingBase();
+	EJBindingBase(JSContextRef ctxp, size_t argc, const JSValueRef argv[]);
+	virtual ~EJBindingBase();
+
+	virtual std::string superclass(){return 0;};
+
+	virtual void init(JSContextRef ctxp, size_t argc, const JSValueRef argv[]);
+	virtual void create(JSObjectRef obj, EJJavaScriptView * view);
+	virtual void prepareGarbageCollection();
+
+	static JSObjectRef createJSObject(JSContextRef ctx, EJJavaScriptView * scriptViewp, EJBindingBase * instance);
+	void EJBindingBaseFinalize(JSObjectRef object);
+
+	REFECTION_CLASS_IMPLEMENT_DEFINE(EJBindingBase);
+};
+
 void EJBindingBaseFinalize(JSObjectRef object);
 
-@property (nonatomic, readonly) EJJavaScriptView *scriptView;
-
-@end
-
+#endif // __EJ_BINDING_BASE_H_

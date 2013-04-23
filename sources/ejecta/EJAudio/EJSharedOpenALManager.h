@@ -1,15 +1,40 @@
-#import <Foundation/Foundation.h>
+#ifndef __EJ_SHARED_OPENAL_MANAGER_H__
+#define __EJ_SHARED_OPENAL_MANAGER_H__
 
-#import <OpenAL/al.h>
-#import <OpenAL/alc.h>
+#include "EJCocoa/NSObject.h"
+#include "EJCocoa/NSDictionary.h"
 
-@interface EJSharedOpenALManager : NSObject {
-	ALCcontext *context;
-	ALCdevice *device;
-	NSMutableDictionary *buffers;
-}
+// #import <OpenAL/al.h>
+// #import <OpenAL/alc.h>
 
-+ (EJSharedOpenALManager *)instance;
-@property (readonly, nonatomic) NSMutableDictionary *buffers;
+class EJSharedOpenALManager : public NSObject
+{
+	// ALCcontext *context;
+	// ALCdevice *device;
+	NSDictionary *buffers;
 
-@end
+	static EJSharedOpenALManager* sharedOpenALManager;
+public:
+	EJSharedOpenALManager();
+	~EJSharedOpenALManager();
+
+	static EJSharedOpenALManager* instance();
+};
+
+#endif // __EJ_SHARED_OPENAL_MANAGER_H__
+
+// #import <Foundation/Foundation.h>
+
+// #import <OpenAL/al.h>
+// #import <OpenAL/alc.h>
+
+// @interface EJSharedOpenALManager : NSObject {
+// 	ALCcontext *context;
+// 	ALCdevice *device;
+// 	NSMutableDictionary *buffers;
+// }
+
+// + (EJSharedOpenALManager *)instance;
+// @property (readonly, nonatomic) NSMutableDictionary *buffers;
+
+// @end

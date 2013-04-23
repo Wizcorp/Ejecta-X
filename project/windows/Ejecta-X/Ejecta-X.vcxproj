@@ -98,6 +98,10 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\..\sources\ejecta\EJAppViewController.h" />
+    <ClInclude Include="..\..\..\sources\ejecta\EJAudio\EJSharedOpenALManager.h" />
+    <ClInclude Include="..\..\..\sources\ejecta\EJBindingBase.h" />
+    <ClInclude Include="..\..\..\sources\ejecta\EJCanvas\EJCanvasContext.h" />
+    <ClInclude Include="..\..\..\sources\ejecta\EJCanvas\EJSharedTextureCache.h" />
     <ClInclude Include="..\..\..\sources\ejecta\EJClassLoader.h" />
     <ClInclude Include="..\..\..\sources\ejecta\EJCocoa\CGAffineTransform.h" />
     <ClInclude Include="..\..\..\sources\ejecta\EJCocoa\NSArray.h" />
@@ -125,6 +129,7 @@
     <ClInclude Include="..\..\..\sources\ejecta\EJCocoa\UIFont.h" />
     <ClInclude Include="..\..\..\sources\ejecta\EJConvert.h" />
     <ClInclude Include="..\..\..\sources\ejecta\EJJavaScriptView.h" />
+    <ClInclude Include="..\..\..\sources\ejecta\EJSharedOpenGLContext.h" />
     <ClInclude Include="..\..\..\sources\ejecta\EJTimer.h" />
     <ClInclude Include="..\..\..\sources\ejecta\lodefreetype\lodefreetype.h" />
     <ClInclude Include="..\..\..\sources\ejecta\lodejpeg\lodejpeg.h" />
@@ -136,6 +141,18 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\..\sources\ejecta\EJAppViewController.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">NotUsing</PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="..\..\..\sources\ejecta\EJAudio\EJSharedOpenALManager.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">NotUsing</PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="..\..\..\sources\ejecta\EJBindingBase.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">NotUsing</PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="..\..\..\sources\ejecta\EJCanvas\EJCanvasContext.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">NotUsing</PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="..\..\..\sources\ejecta\EJCanvas\EJSharedTextureCache.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">NotUsing</PrecompiledHeader>
     </ClCompile>
     <ClCompile Include="..\..\..\sources\ejecta\EJClassLoader.cpp">
@@ -200,6 +217,9 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">NotUsing</PrecompiledHeader>
     </ClCompile>
     <ClCompile Include="..\..\..\sources\ejecta\EJJavaScriptView.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">NotUsing</PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="..\..\..\sources\ejecta\EJSharedOpenGLContext.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">NotUsing</PrecompiledHeader>
     </ClCompile>
     <ClCompile Include="..\..\..\sources\ejecta\EJTimer.cpp">

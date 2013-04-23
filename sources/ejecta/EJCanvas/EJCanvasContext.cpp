@@ -1,13 +1,13 @@
-#import "EJCanvasContext.h"
+// #import "EJCanvasContext.h"
 
-@implementation EJCanvasContext
+// @implementation EJCanvasContext
 
-@synthesize glContext;
-@synthesize width, height;
-@synthesize msaaEnabled, msaaSamples;
+// @synthesize glContext;
+// @synthesize width, height;
+// @synthesize msaaEnabled, msaaSamples;
 
-- (void)create {}
-- (void)flushBuffers {}
-- (void)prepare {}
+// - (void)create {}
+// - (void)flushBuffers {}
+// - (void)prepare {}
 
-@end
+// @end
