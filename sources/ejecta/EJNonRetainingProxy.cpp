@@ -1,3 +1,16 @@
+#include "EJNonRetainingProxy.h"
+
+
+EJNonRetainingProxy::EJNonRetainingProxy ()
+{
+
+}
+
+EJNonRetainingProxy::~EJNonRetainingProxy()
+{
+
+}
+
 // #import "EJNonRetainingProxy.h"
 
 // @implementation EJNonRetainingProxy

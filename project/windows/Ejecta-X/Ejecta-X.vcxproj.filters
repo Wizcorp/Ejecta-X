@@ -88,6 +88,15 @@
     <ClCompile Include="..\..\..\sources\ejecta\EJCanvas\EJCanvasContext.cpp">
       <Filter>ejecta\EJCanvas</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\..\sources\ejecta\EJNonRetainingProxy.cpp">
+      <Filter>ejecta</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\sources\ejecta\EJBindingEventedBase.cpp">
+      <Filter>ejecta</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\sources\ejecta\EJBindingEjectaCore.cpp">
+      <Filter>ejecta</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\..\sources\ejecta\EJCocoa\CGAffineTransform.h">
@@ -212,6 +221,15 @@
     </ClInclude>
     <ClInclude Include="..\..\..\sources\ejecta\EJCanvas\EJCanvasContext.h">
       <Filter>ejecta\EJCanvas</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\sources\ejecta\EJNonRetainingProxy.h">
+      <Filter>ejecta</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\sources\ejecta\EJBindingEjectaCore.h">
+      <Filter>ejecta</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\sources\ejecta\EJBindingEventedBase.h">
+      <Filter>ejecta</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

@@ -122,7 +122,7 @@ public:
 
 	void setCurrentRenderingContext(EJCanvasContext * renderingContext);
 
-	JSValueRef loadModuleWithId(NSString * moduleId, JSValueRef module, JSValueRef exports);
+	JSValueRef loadModule(NSString * moduleId, JSValueRef module, JSValueRef exports);
  	JSValueRef invokeCallback(JSObjectRef callback, JSObjectRef thisObject, size_t argc, const JSValueRef argv[]);
 	void logException(JSValueRef exception, JSContextRef ctxp);
 

@@ -3,6 +3,16 @@
 
 EJSharedTextureCache* EJSharedTextureCache::sharedTextureCache = NULL;
 
+
+EJSharedTextureCache::EJSharedTextureCache()
+{
+
+}
+
+EJSharedTextureCache::~EJSharedTextureCache()
+{
+
+}
 // + (EJSharedTextureCache *)instance {
 // 	if( !sharedTextureCache ) {
 // 		sharedTextureCache = [[[EJSharedTextureCache alloc] init] autorelease];

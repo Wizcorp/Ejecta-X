@@ -1,41 +1,49 @@
-#import "EJBindingBase.h"
+#include "EJBindingBase.h"
 
 
 // ------------------------------------------------------------------------------------
 // Events; shorthand for EJ_BIND_GET/SET - use with EJ_BIND_EVENT( eventname );
 
-#define EJ_BIND_EVENT(NAME) \
-	static JSValueRef _get_on##NAME( \
+#define EJ_BIND_EVENT(CLASS,NAME) \
+	static JSValueRef _##CLASS##_get_on##NAME( \
 		JSContextRef ctx, \
 		JSObjectRef object, \
 		JSStringRef propertyName, \
 		JSValueRef* exception \
 	) { \
-		id instance = (id)JSObjectGetPrivate(object); \
-		return (JSValueRef)objc_msgSend(instance, @selector(getCallbackWith:ctx:), ( @ #NAME), ctx); \
+		CLASS* instance = (CLASS*)(JSObjectGetPrivate(object)); \
+		return (JSValueRef)instance->getCallbackWith(NSStringMake(#NAME),ctx); \
 	} \
-	__EJ_GET_POINTER_TO(_get_on##NAME) \
+	__EJ_GET_POINTER_TO(_##CLASS##_get_on##NAME) \
 	\
-	static bool _set_on##NAME( \
+	static bool _##CLASS##_set_on##NAME( \
 		JSContextRef ctx, \
 		JSObjectRef object, \
 		JSStringRef propertyName, \
 		JSValueRef value, \
 		JSValueRef* exception \
 	) { \
-		id instance = (id)JSObjectGetPrivate(object); \
-		objc_msgSend(instance, @selector(setCallbackWith:ctx:callback:), ( @ #NAME), ctx, value); \
+		CLASS* instance = (CLASS*)(JSObjectGetPrivate(object)); \
+		instance->setCallbackWith(NSStringMake(#NAME),ctx, value); \
 		return true; \
 	} \
-	__EJ_GET_POINTER_TO(_set_on##NAME)
+	__EJ_GET_POINTER_TO(_##CLASS##_set_on##NAME)
 	
-@interface EJBindingEventedBase : EJBindingBase {
-	NSMutableDictionary *eventListeners; // for addEventListener
-	NSMutableDictionary *onCallbacks; // for on* setters
-}
+class EJBindingEventedBase : public EJBindingBase {
+	NSDictionary * eventListeners; // for addEventListener
+	NSDictionary * onCallbacks; // for on* setters
+public:
+	EJBindingEventedBase();
+	EJBindingEventedBase(JSContextRef ctxp,size_t argc ,const JSValueRef argv[]);
+	~EJBindingEventedBase();
+	REFECTION_CLASS_IMPLEMENT_DEFINE(EJBindingEventedBase);
 
-- (JSObjectRef)getCallbackWith:(NSString *)name ctx:(JSContextRef)ctx;
-- (void)setCallbackWith:(NSString *)name ctx:(JSContextRef)ctx callback:(JSValueRef)callback;
-- (void)triggerEvent:(NSString *)name argc:(int)argc argv:(JSValueRef[])argv;
+	virtual string superclass(){return EJBindingBase::toString();};
 
-@end
+	JSObjectRef getCallbackWith(NSString * name, JSContextRef ctx);
+	void setCallbackWith(NSString * name, JSContextRef ctx, JSValueRef callback);
+	void triggerEvent(NSString * name, int argc, JSValueRef argv[]);
+
+	EJ_BIND_FUNCTION_DEFINE( addEventListener, ctx, argc, argv );
+	EJ_BIND_FUNCTION_DEFINE(removeEventListener, ctx, argc, argv);
+};

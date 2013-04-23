@@ -1,7 +1,6 @@
 #include "EJFont.h"
 #include "EJCanvasContext.h"
 #include "lodefreetype/lodefreetype.h"
-#include "../EJApp.h"
 
 #define PT_TO_PX(pt) ceilf((pt)*(1.0f+(1.0f/3.0f)))
 
@@ -17,7 +16,7 @@ EJFont::EJFont(NSString* font, NSInteger size, BOOL usefill, float contentScale)
 
 	fontName = font ;	
 	fill = usefill;
-	NSString * fullPath = EJApp::instance()->pathForResource(fontName);
+	NSString * fullPath = NULL;//EJApp::instance()->pathForResource(fontName);
 	NSLOG("EJFont path :   %s",fullPath->getCString());
 	width = 0;
 	height = PT_TO_PX(font_size);

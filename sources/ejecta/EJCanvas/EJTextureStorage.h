@@ -1,7 +1,10 @@
-#import <Foundation/Foundation.h>
-#import <OpenGLES/EAGL.h>
-#import <OpenGLES/ES1/gl.h>
-#import <OpenGLES/ES1/glext.h>
+#ifndef __EJ_TEXTURE_STORAGE_H__
+#define __EJ_TEXTURE_STORAGE_H__
+
+// #import <Foundation/Foundation.h>
+// #import <OpenGLES/EAGL.h>
+// #import <OpenGLES/ES1/gl.h>
+// #import <OpenGLES/ES1/glext.h>
 
 typedef enum {
 	kEJTextureParamMinFilter,
@@ -14,16 +17,22 @@ typedef enum {
 typedef EJTextureParam EJTextureParams[kEJTextureParamLast];
 
 
-@interface EJTextureStorage : NSObject {
+class EJTextureStorage : public NSObject
+{
+
 	EJTextureParams params;
+
+public:
+
 	GLuint textureId;
 	BOOL immutable;
-}
-- (id)init;
-- (id)initImmutable;
-- (void)bindToTarget:(GLenum)target withParams:(EJTextureParam *)newParams;
 
-@property (readonly, nonatomic) GLuint textureId;
-@property (readonly, nonatomic) BOOL immutable;
+	EJTextureStorage();
+	EJTextureStorage(bool immut);
+	~EJTextureStorage();
 
-@end
+	void bindToTarget(GLenum target, EJTextureParam * newParams);
+
+};
+
+#endif // __EJ_TEXTURE_STORAGE_H__

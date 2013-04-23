@@ -222,7 +222,7 @@ void EJJavaScriptView::loadScript(NSString * script, NSString * sourceURL)
 	}
 }
 
-JSValueRef EJJavaScriptView::loadModuleWithId(NSString * moduleId, JSValueRef module, JSValueRef exports)
+JSValueRef EJJavaScriptView::loadModule(NSString * moduleId, JSValueRef module, JSValueRef exports)
 {
 	NSString * path = NSStringMake(moduleId->getCString() + string(".js"));
 	NSString * script = NSString::createWithContentsOfFile(pathForResource(path)->getCString());

@@ -1,6 +1,8 @@
 #ifndef __EJ_NONRETAINING_PROXY_H__
 #define __EJ_NONRETAINING_PROXY_H__
 
+#include "EJCocoa/NSObject.h"
+
 class EJNonRetainingProxy : public NSObject
 {
 	void* target;

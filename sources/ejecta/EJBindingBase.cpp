@@ -36,7 +36,9 @@ void EJBindingBase::prepareGarbageCollection()
 JSObjectRef EJBindingBase::createJSObject(JSContextRef ctx, EJJavaScriptView * scriptViewp, EJBindingBase * instance)
 {
 	// Create JSObject with the JSClass for this ObjC-Class
-	JSObjectRef obj = JSObjectMake( ctx, EJClassLoader::getJSClass(this), NULL );
+	EJBindingBase* tmp = new EJBindingBase();
+	tmp->autorelease();
+	JSObjectRef obj = JSObjectMake( ctx, EJClassLoader::getJSClass(tmp), NULL );
 	
 	// The JSObject retains the instance; it will be released by EJBindingBaseFinalize
 	instance->retain();

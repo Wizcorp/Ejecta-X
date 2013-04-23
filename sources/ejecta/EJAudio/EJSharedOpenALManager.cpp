@@ -1,3 +1,15 @@
+#include "EJSharedOpenALManager.h"
+
+EJSharedOpenALManager::EJSharedOpenALManager()
+{
+
+}
+
+EJSharedOpenALManager::~EJSharedOpenALManager()
+{
+
+}
+
 //#import "EJSharedOpenALManager.h"
 //
 //@implementation EJSharedOpenALManager
