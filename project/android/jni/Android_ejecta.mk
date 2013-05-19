@@ -26,6 +26,7 @@ LOCAL_C_INCLUDES := \
                     $(LOCAL_PATH)/../../../sources/ejecta/EJCanvas \
                     $(LOCAL_PATH)/../../../sources/ejecta/EJCocoa \
                     $(LOCAL_PATH)/../../../sources/ejecta/EJCocoa/support \
+                    $(LOCAL_PATH)/../../../sources/ejecta/EJUtils \
                     $(LOCAL_PATH)/../../../library/android/libfreetype/include \
                     $(LOCAL_PATH)/../../../library/android/libpng/include \
                     $(LOCAL_PATH)/../../../library/android/libjpeg/include \
@@ -66,7 +67,9 @@ LOCAL_SRC_FILES := \
                     ../../../sources/ejecta/EJCanvas/EJTexture.cpp \
                     ../../../sources/ejecta/EJCanvas/EJFont.cpp \
                     ../../../sources/ejecta/EJCanvas/EJImageData.cpp \
+                    ../../../sources/ejecta/EJUtils/EJBindingHttpRequest.cpp \
                     ../../../sources/ejecta/EJUtils/EJBindingLocalStorage.cpp \
+                    ../../../sources/ejecta/EJUtils/EJBindingTouchInput.cpp \
                     ejecta.cpp \
 
 LOCAL_LDLIBS :=  -lz -llog -lGLESv1_CM \

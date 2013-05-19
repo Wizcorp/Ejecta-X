@@ -40,10 +40,7 @@ class EJTimerCollection;
 class EJCanvasContext;
 class EJCanvasContextScreen;
 
-class EJTouchDelegate {
-public:
-	virtual void triggerEvent(NSString * name, NSSet * all, NSSet * changed, NSSet * remaining) = 0;
-};
+class EJBindingTouchInput;
 
 
 class EJApp : public NSObject {
@@ -51,7 +48,6 @@ class EJApp : public NSObject {
 	BOOL paused;
 
 	NSDictionary * jsClasses;
-	
 	EJTimerCollection * timers;
 	long currentTime;
 
@@ -60,13 +56,13 @@ class EJApp : public NSObject {
 	char* mainBundle;
 
 	
-
 public:
 
 	BOOL landscapeMode;
 	JSGlobalContextRef jsGlobalContext;
 	int height, width;
 
+	EJBindingTouchInput * touchDelegate;
 	EJCanvasContext * currentRenderingContext;
 	EJCanvasContextScreen * screenRenderingContext;
 	float internalScaling;
@@ -90,6 +86,11 @@ public:
 	JSValueRef loadModuleWithId(NSString * moduleId, JSValueRef module, JSValueRef exports);
  	JSValueRef invokeCallback(JSObjectRef callback, JSObjectRef thisObject, size_t argc, const JSValueRef argv[]);
 	void logException(JSValueRef exception, JSContextRef ctxp);
+
+	void touchesBegan(int x, int y);
+	void touchesEnded(int x, int y);
+	void touchesCancelled(int x, int y);
+	void touchesMoved(int x, int y);
 
     static EJApp* instance();
     static void finalize();

@@ -62,25 +62,24 @@ extern "C" {
 
     JNIEXPORT void JNICALL Java_com_impactjs_ejecta_EjectaRenderer_nativeTouch(JNIEnv* env, jobject thiz, jint action, jint x, jint y)
     {
-        // switch (action)
-        // {
-        // case 0: // ACTION_DOWN
-        //     (*s_mouse_event_handler)(static_cast<s16>(x), static_cast<s16>(y));
-        //     (*s_key_event_handler)(KEY_LBUTTON, true);
-        //     break;
+        switch (action)
+        {
+        case 0: // ACTION_DOWN
+            EJApp::instance()->touchesBegan(x, y);
+            break;
 
-        // case 1: // ACTION_UP:
-        //     (*s_mouse_event_handler)(static_cast<s16>(x), static_cast<s16>(y));
-        //     (*s_key_event_handler)(KEY_LBUTTON, false);
-        //     break;
+        case 1: // ACTION_UP:
+            EJApp::instance()->touchesEnded(x, y);
+            break;
 
-        // case 2: // ACTION_MOVE:
-        //     (*s_mouse_event_handler)(static_cast<s16>(x), static_cast<s16>(y));
-        //     break;
+        case 2: // ACTION_MOVE:
+            EJApp::instance()->touchesMoved(x, y);
+            break;
 
-        // default:
-        //     break;
-        // }
+        default:
+            EJApp::instance()->touchesCancelled(x, y);
+            break;
+        }
     }
 
     JNIEXPORT void JNICALL Java_com_impactjs_ejecta_EjectaRenderer_nativeOnKeyDown(JNIEnv* env, jobject thiz, jint key_code)

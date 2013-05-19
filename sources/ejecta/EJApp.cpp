@@ -1,5 +1,6 @@
 #include "EJApp.h"
 #include "EJBindingBase.h"
+#include "EJUtils/EJBindingTouchInput.h"
 #include "EJCanvas/EJCanvasContext.h"
 #include "EJCanvas/EJCanvasContextScreen.h"
 #include "EJCocoa/NSObjectFactory.h"
@@ -58,7 +59,7 @@ JSObjectRef ej_callAsConstructor(JSContextRef ctx, JSObjectRef constructor, size
 EJApp* EJApp::ejectaInstance = NULL;
 
 
-EJApp::EJApp() : currentRenderingContext(0), screenRenderingContext(0)
+EJApp::EJApp() : currentRenderingContext(0), screenRenderingContext(0), touchDelegate(0)
 {
 	NSPoolManager::sharedPoolManager()->push();
 
@@ -76,7 +77,7 @@ EJApp::EJApp() : currentRenderingContext(0), screenRenderingContext(0)
 	internalScaling = 1.0f;
 	
 	mainBundle = 0;
-	
+
 	timers = new EJTimerCollection();
 
 	// Create the global JS context and attach the 'Ejecta' object
@@ -114,7 +115,7 @@ EJApp::~EJApp()
 	pause();
 	//JSGlobalContextRelease(jsGlobalContext);
 	currentRenderingContext->release();
-	//[touchDelegate release];
+	if(touchDelegate)touchDelegate->release();
 	jsClasses->release();
 	
 	timers->release();
@@ -349,6 +350,35 @@ void EJApp::logException(JSValueRef valueAsexception, JSContextRef ctxp)
 	JSStringRelease( jsLinePropertyName );
 	JSStringRelease( jsFilePropertyName );
 }
+
+
+// ---------------------------------------------------------------------------------
+// Touch handlers
+
+
+void EJApp::touchesBegan(int x, int y)
+{
+	touchDelegate->triggerEvent(NSStringMake("touchstart"), x, y);
+}
+
+void EJApp::touchesEnded(int x, int y)
+{
+	touchDelegate->triggerEvent(NSStringMake("touchend"), x, y);
+}
+
+void EJApp::touchesCancelled(int x, int y)
+{
+	touchesEnded(x, y);
+}
+
+void EJApp::touchesMoved(int x, int y)
+{
+	touchDelegate->triggerEvent(NSStringMake("touchmove"), x, y);
+}
+
+
+// ---------------------------------------------------------------------------------
+// Timers
 
 
 JSValueRef EJApp::createTimer(JSContextRef ctxp, size_t argc, const JSValueRef argv[],  BOOL repeat)

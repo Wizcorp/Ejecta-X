@@ -1,3 +1,6 @@
+#ifndef __EJ_BINDING_EVENTED_BASE_H__
+#define __EJ_BINDING_EVENTED_BASE_H__
+
 #include "EJBindingBase.h"
 
 // ------------------------------------------------------------------------------------
@@ -48,3 +51,6 @@ public:
 	EJ_BIND_FUNCTION_DEFINE( addEventListener, ctx, argc, argv );
 	EJ_BIND_FUNCTION_DEFINE(removeEventListener, ctx, argc, argv);
 };
+
+
+#endif // __EJ_BINDING_EVENTED_BASE_H__

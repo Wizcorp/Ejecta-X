@@ -1,4 +1,6 @@
-//#import <Foundation/Foundation.h>
+#ifndef __EJ_BINDING_LOCALSTORAGE_H__
+#define __EJ_BINDING_LOCALSTORAGE_H__
+
 #include "../EJBindingBase.h"
 
 
@@ -17,3 +19,5 @@ public:
 	EJ_BIND_FUNCTION_DEFINE(removeItem, ctx, argc, argv );
 	EJ_BIND_FUNCTION_DEFINE(clear, ctx, argc, argv );
 };
+
+#endif // __EJ_BINDING_LOCALSTORAGE_H__
