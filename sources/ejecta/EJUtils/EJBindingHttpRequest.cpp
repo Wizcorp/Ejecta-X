@@ -1,4 +1,445 @@
 #include "EJBindingHttpRequest.h"
+#include <queue>
+#include <pthread.h>
+#include <errno.h>
+
+#include "curl/curl.h"
+
+static pthread_t        s_networkThread;
+static pthread_mutex_t  s_requestQueueMutex;
+static pthread_mutex_t  s_responseQueueMutex;
+
+static pthread_mutex_t		s_SleepMutex;
+static pthread_cond_t		s_SleepCondition;
+
+static unsigned long    s_asyncRequestCount = 0;
+
+#ifdef _WINDOWS
+typedef int int32_t;
+#endif
+
+static bool need_quit = false;
+
+static NSArray* s_requestQueue = NULL;
+static NSArray* s_responseQueue = NULL;
+
+static EJHttpClient *s_pHttpClient = NULL; // pointer to singleton
+
+static char s_errorBuffer[CURL_ERROR_SIZE];
+
+typedef size_t (*write_callback)(void *ptr, size_t size, size_t nmemb, void *stream);
+
+// Callback function used by libcurl for collect response data
+size_t writeData(void *ptr, size_t size, size_t nmemb, void *stream)
+{
+    std::vector<char> *recvBuffer = (std::vector<char>*)stream;
+    size_t sizes = size * nmemb;
+    
+    // add data to the end of recvBuffer
+    // write data maybe called more than once in a single request
+    recvBuffer->insert(recvBuffer->end(), (char*)ptr, (char*)ptr+sizes);
+    
+    return sizes;
+}
+
+// Prototypes
+bool configureCURL(CURL *handle);
+int processGetTask(EJHttpRequest *request, write_callback callback, void *stream, int32_t *errorCode);
+int processPostTask(EJHttpRequest *request, write_callback callback, void *stream, int32_t *errorCode);
+int processPutTask(EJHttpRequest *request, write_callback callback, void *stream, int32_t *errorCode);
+int processDeleteTask(EJHttpRequest *request, write_callback callback, void *stream, int32_t *errorCode);
+// int processDownloadTask(HttpRequest *task, write_callback callback, void *stream, int32_t *errorCode);
+
+
+// Worker thread
+static void* networkThread(void *data)
+{    
+    EJHttpRequest *request = NULL;
+    
+    while (true) 
+    {
+        if (need_quit)
+        {
+            break;
+        }
+        
+        // step 1: send http request if the requestQueue isn't empty
+        request = NULL;
+        
+        pthread_mutex_lock(&s_requestQueueMutex); //Get request task from queue
+        if (0 != s_requestQueue->count())
+        {
+            request = dynamic_cast<EJHttpRequest*>(s_requestQueue->objectAtIndex(0));
+            s_requestQueue->removeObjectAtIndex(0);  
+            // request's refcount = 1 here
+        }
+        pthread_mutex_unlock(&s_requestQueueMutex);
+        
+        if (NULL == request)
+        {
+        	// Wait for http request tasks from main thread
+        	pthread_cond_wait(&s_SleepCondition, &s_SleepMutex);
+            continue;
+        }
+        
+        // step 2: libcurl sync access
+        
+        // Create a HttpResponse object, the default setting is http access failed
+        EJHttpResponse *response = new EJHttpResponse(request);
+        
+        // request's refcount = 2 here, it's retained by HttpRespose constructor
+        request->release();
+        // ok, refcount = 1 now, only HttpResponse hold it.
+        
+        int32_t responseCode = -1;
+        int retValue = 0;
+
+        // Process the request -> get response packet
+        switch (request->getRequestType())
+        {
+            case EJHttpRequest::kHttpGet: // HTTP GET
+                retValue = processGetTask(request, 
+                                          writeData, 
+                                          response->getResponseData(), 
+                                          &responseCode);
+                break;
+            
+            case EJHttpRequest::kHttpPost: // HTTP POST
+                retValue = processPostTask(request, 
+                                           writeData, 
+                                           response->getResponseData(), 
+                                           &responseCode);
+                break;
+
+            case EJHttpRequest::kHttpPut:
+                retValue = processPutTask(request,
+                                          writeData,
+                                          response->getResponseData(),
+                                          &responseCode);
+                break;
+
+            case EJHttpRequest::kHttpDelete:
+                retValue = processDeleteTask(request,
+                                             writeData,
+                                             response->getResponseData(),
+                                             &responseCode);
+                break;
+            
+            default:
+                NSAssert(true, "EJHttpClient: unkown request type, only GET and POSt are supported");
+                break;
+        }
+                
+        // write data to HttpResponse
+        response->setResponseCode(responseCode);
+        
+        if (retValue != 0) 
+        {
+            response->setSucceed(false);
+            response->setErrorBuffer(s_errorBuffer);
+        }
+        else
+        {
+            response->setSucceed(true);
+        }
+
+        
+        // add response packet into queue
+        pthread_mutex_lock(&s_responseQueueMutex);
+        s_responseQueue->addObject(response);
+        pthread_mutex_unlock(&s_responseQueueMutex);
+        
+        // resume dispatcher selector
+        //EJDirector::sharedDirector()->getScheduler()->resumeTarget(EJHttpClient::getInstance());
+    }
+    
+    // cleanup: if worker thread received quit signal, clean up un-completed request queue
+    pthread_mutex_lock(&s_requestQueueMutex);
+    s_requestQueue->removeAllObjects();
+    pthread_mutex_unlock(&s_requestQueueMutex);
+    s_asyncRequestCount -= s_requestQueue->count();
+    
+    if (s_requestQueue != NULL) {
+        
+        pthread_mutex_destroy(&s_requestQueueMutex);
+        pthread_mutex_destroy(&s_responseQueueMutex);
+        
+        pthread_mutex_destroy(&s_SleepMutex);
+        pthread_cond_destroy(&s_SleepCondition);
+
+        s_requestQueue->release();
+        s_requestQueue = NULL;
+        s_responseQueue->release();
+        s_responseQueue = NULL;
+    }
+
+    pthread_exit(NULL);
+    
+    return 0;
+}
+
+//Configure curl's timeout property
+bool configureCURL(CURL *handle)
+{
+    if (!handle) {
+        return false;
+    }
+    
+    int32_t code;
+    code = curl_easy_setopt(handle, CURLOPT_ERRORBUFFER, s_errorBuffer);
+    if (code != CURLE_OK) {
+        return false;
+    }
+    code = curl_easy_setopt(handle, CURLOPT_TIMEOUT, EJHttpClient::getInstance()->getTimeoutForRead());
+    if (code != CURLE_OK) {
+        return false;
+    }
+    code = curl_easy_setopt(handle, CURLOPT_CONNECTTIMEOUT, EJHttpClient::getInstance()->getTimeoutForConnect());
+    if (code != CURLE_OK) {
+        return false;
+    }
+    
+    return true;
+}
+
+class CURLRaii
+{
+    /// Instance of CURL
+    CURL *m_curl;
+    /// Keeps custom header data
+    curl_slist *m_headers;
+public:
+    CURLRaii()
+        : m_curl(curl_easy_init())
+        , m_headers(NULL)
+    {
+    }
+
+    ~CURLRaii()
+    {
+        if (m_curl)
+            curl_easy_cleanup(m_curl);
+        /* free the linked list for header data */
+        if (m_headers)
+            curl_slist_free_all(m_headers);
+    }
+
+    template <class T>
+    bool setOption(CURLoption option, T data)
+    {
+        return CURLE_OK == curl_easy_setopt(m_curl, option, data);
+    }
+
+    /**
+     * @brief Inits CURL instance for common usage
+     * @param request Null not allowed
+     * @param callback Response write callback
+     * @param stream Response write stream
+     */
+    bool init(EJHttpRequest *request, write_callback callback, void *stream)
+    {
+        if (!m_curl)
+            return false;
+        if (!configureCURL(m_curl))
+            return false;
+
+        /* get custom header data (if set) */
+       	std::vector<std::string> headers=request->getHeaders();
+        if(!headers.empty())
+        {
+            /* append custom headers one by one */
+            for (std::vector<std::string>::iterator it = headers.begin(); it != headers.end(); ++it)
+                m_headers = curl_slist_append(m_headers,it->c_str());
+            /* set custom headers for curl */
+            if (!setOption(CURLOPT_HTTPHEADER, m_headers))
+                return false;
+        }
+
+        return setOption(CURLOPT_URL, request->getUrl())
+                && setOption(CURLOPT_WRITEFUNCTION, callback)
+                && setOption(CURLOPT_WRITEDATA, stream);
+    }
+
+    /// @param responseCode Null not allowed
+    bool perform(int *responseCode)
+    {
+        if (CURLE_OK != curl_easy_perform(m_curl))
+            return false;
+        CURLcode code = curl_easy_getinfo(m_curl, CURLINFO_RESPONSE_CODE, responseCode);
+        if (code != CURLE_OK || *responseCode != 200)
+            return false;
+        return true;
+    }
+};
+
+//Process Get Request
+int processGetTask(EJHttpRequest *request, write_callback callback, void *stream, int32_t *responseCode)
+{
+    CURLRaii curl;
+    bool ok = curl.init(request, callback, stream)
+            && curl.setOption(CURLOPT_FOLLOWLOCATION, true)
+            && curl.perform(responseCode);
+    return ok ? 0 : 1;
+}
+
+//Process POST Request
+int processPostTask(EJHttpRequest *request, write_callback callback, void *stream, int32_t *responseCode)
+{
+    CURLRaii curl;
+    bool ok = curl.init(request, callback, stream)
+            && curl.setOption(CURLOPT_POST, 1)
+            && curl.setOption(CURLOPT_POSTFIELDS, request->getRequestData())
+            && curl.setOption(CURLOPT_POSTFIELDSIZE, request->getRequestDataSize())
+            && curl.perform(responseCode);
+    return ok ? 0 : 1;
+}
+
+//Process PUT Request
+int processPutTask(EJHttpRequest *request, write_callback callback, void *stream, int32_t *responseCode)
+{
+    CURLRaii curl;
+    bool ok = curl.init(request, callback, stream)
+            && curl.setOption(CURLOPT_CUSTOMREQUEST, "PUT")
+            && curl.setOption(CURLOPT_POSTFIELDS, request->getRequestData())
+            && curl.setOption(CURLOPT_POSTFIELDSIZE, request->getRequestDataSize())
+            && curl.perform(responseCode);
+    return ok ? 0 : 1;
+}
+
+//Process DELETE Request
+int processDeleteTask(EJHttpRequest *request, write_callback callback, void *stream, int32_t *responseCode)
+{
+    CURLRaii curl;
+    bool ok = curl.init(request, callback, stream)
+            && curl.setOption(CURLOPT_CUSTOMREQUEST, "DELETE")
+            && curl.setOption(CURLOPT_FOLLOWLOCATION, true)
+            && curl.perform(responseCode);
+    return ok ? 0 : 1;
+}
+// HttpClient implementation
+EJHttpClient* EJHttpClient::getInstance()
+{
+    if (s_pHttpClient == NULL) {
+        s_pHttpClient = new EJHttpClient();
+    }
+    
+    return s_pHttpClient;
+}
+
+void EJHttpClient::destroyInstance()
+{
+    NSAssert(s_pHttpClient, "");
+    s_pHttpClient->release();
+}
+
+EJHttpClient::EJHttpClient()
+: _timeoutForConnect(30)
+, _timeoutForRead(60)
+{
+}
+
+EJHttpClient::~EJHttpClient()
+{
+    need_quit = true;
+    
+    if (s_requestQueue != NULL) {
+    	pthread_cond_signal(&s_SleepCondition);
+    }
+    
+    s_pHttpClient = NULL;
+}
+
+//Lazy create semaphore & mutex & thread
+bool EJHttpClient::lazyInitThreadSemphore()
+{
+    if (s_requestQueue != NULL) {
+        return true;
+    } else {
+        
+        s_requestQueue = new NSArray();
+        s_requestQueue->init();
+        
+        s_responseQueue = new NSArray();
+        s_responseQueue->init();
+        
+        pthread_mutex_init(&s_requestQueueMutex, NULL);
+        pthread_mutex_init(&s_responseQueueMutex, NULL);
+        
+        pthread_mutex_init(&s_SleepMutex, NULL);
+        pthread_cond_init(&s_SleepCondition, NULL);
+
+        pthread_create(&s_networkThread, NULL, networkThread, NULL);
+        pthread_detach(s_networkThread);
+        
+        need_quit = false;
+    }
+    
+    return true;
+}
+
+//Add a get task to queue
+void EJHttpClient::send(EJHttpRequest* request)
+{    
+    if (false == lazyInitThreadSemphore()) 
+    {
+        return;
+    }
+    
+    if (!request)
+    {
+        return;
+    }
+        
+    ++s_asyncRequestCount;
+    
+    request->retain();
+        
+    pthread_mutex_lock(&s_requestQueueMutex);
+    s_requestQueue->addObject(request);
+    pthread_mutex_unlock(&s_requestQueueMutex);
+    
+    // Notify thread start to work
+    pthread_cond_signal(&s_SleepCondition);
+}
+
+// Poll and notify main thread if responses exists in queue
+void EJHttpClient::dispatchResponseCallbacks(float delta)
+{
+    
+    if (0 == s_asyncRequestCount) 
+    {
+        return;
+    }
+
+    NSLOG("EJHttpClient::dispatchResponseCallbacks is running");
+    
+    EJHttpResponse* response = NULL;
+    
+    pthread_mutex_lock(&s_responseQueueMutex);
+    if (s_responseQueue->count())
+    {
+        response = dynamic_cast<EJHttpResponse*>(s_responseQueue->objectAtIndex(0));
+        s_responseQueue->removeObjectAtIndex(0);
+    }
+    pthread_mutex_unlock(&s_responseQueueMutex);
+    
+    if (response)
+    {
+        --s_asyncRequestCount;
+        
+        EJHttpRequest *request = response->getHttpRequest();
+        NSObject *pTarget = request->getTarget();
+        SEL_HttpResponse pSelector = request->getSelector();
+
+        if (pTarget && pSelector) 
+        {
+            (pTarget->*pSelector)(this, response);
+        }
+        
+        response->release();
+    }
+    
+}
 
 EJBindingHttpRequest::EJBindingHttpRequest() {
 	requestHeaders = new NSDictionary();
@@ -148,8 +589,8 @@ EJ_BIND_FUNCTION(EJBindingHttpRequest, send, ctx, argc, argv) {
 	// 	[request setTimeoutInterval:timeoutSeconds];
 	// }	
 
-	// NSLog(@"XHR: %@ %@", method, url);
-	// [self triggerEvent:@"loadstart" argc:0 argv:NULL];
+	NSLOG("XHR: %s %s", method->getCString(), url->getCString());
+	EJBindingEventedBase::triggerEvent(NSStringMake("loadstart"), 0, NULL);
 
 	// if( async ) {
 	// 	state = kEJHttpRequestStateLoading;

@@ -1,6 +1,7 @@
 #include "EJApp.h"
 #include "EJBindingBase.h"
 #include "EJUtils/EJBindingTouchInput.h"
+#include "EJUtils/EJBindingHttpRequest.h"
 #include "EJCanvas/EJCanvasContext.h"
 #include "EJCanvas/EJCanvasContextScreen.h"
 #include "EJCocoa/NSObjectFactory.h"
@@ -113,6 +114,7 @@ EJApp::EJApp() : currentRenderingContext(0), screenRenderingContext(0), touchDel
 EJApp::~EJApp()
 {
 	pause();
+	EJHttpClient::destroyInstance();
 	//JSGlobalContextRelease(jsGlobalContext);
 	currentRenderingContext->release();
 	if(touchDelegate)touchDelegate->release();
@@ -164,6 +166,7 @@ void EJApp::run(void)
 
 	if( paused ) { return; }
 
+	EJHttpClient::getInstance()->dispatchResponseCallbacks(0);
 
 	// Check all timers
 	timers->update();

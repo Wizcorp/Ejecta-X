@@ -30,6 +30,7 @@ LOCAL_C_INCLUDES := \
                     $(LOCAL_PATH)/../../../library/android/libfreetype/include \
                     $(LOCAL_PATH)/../../../library/android/libpng/include \
                     $(LOCAL_PATH)/../../../library/android/libjpeg/include \
+                    $(LOCAL_PATH)/../../../library/android/libcurl/include \
                     $(LOCAL_PATH)/../../../library/android/JavaScriptCore/include 
 
 LOCAL_SRC_FILES := \
@@ -76,6 +77,7 @@ LOCAL_LDLIBS :=  -lz -llog -lGLESv1_CM \
                     -L$(LOCAL_PATH)/../../../library/android/libfreetype/libs/$(TARGET_ARCH_ABI) -lfreetype \
                     -L$(LOCAL_PATH)/../../../library/android/libpng/libs/$(TARGET_ARCH_ABI) -lpng \
                     -L$(LOCAL_PATH)/../../../library/android/libjpeg/libs/$(TARGET_ARCH_ABI) -ljpeg \
+                    -L$(LOCAL_PATH)/../../../library/android/libcurl/libs/$(TARGET_ARCH_ABI) -lcurl \
 
 LOCAL_SHARED_LIBRARIES := libJavaScriptCore
 
