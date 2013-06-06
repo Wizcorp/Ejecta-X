@@ -62,10 +62,10 @@ var animate = function() {
 // The vertical touch position controls the number of curves;
 // horizontal controls the line width
 var maxCurves = 70;
-// document.addEventListener( 'touchmove', function( ev ) {
-// 	ctx.lineWidth = (ev.touches[0].pageX/w) * 20;
-// 	maxCurves = Math.floor((ev.touches[0].pageY/h) * curves.length);
-// }, false );
+document.addEventListener( 'touchmove', function( ev ) {
+	ctx.lineWidth = (ev.touches[0].pageX/w) * 20;
+	maxCurves = Math.floor((ev.touches[0].pageY/h) * curves.length);
+}, false );
 
 
 ctx.fillStyle = '#000000';

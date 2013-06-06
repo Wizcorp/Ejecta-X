@@ -19,6 +19,10 @@ bool g_ContinueRendering;
 TCHAR szTitle[MAX_LOADSTRING];					// 标题栏文本
 TCHAR szWindowClass[MAX_LOADSTRING];			// 主窗口类名
 
+BOOL g_lbutton_down;
+BOOL g_lbutton_move;
+BOOL g_lbutton_up;
+
 // 此代码模块中包含的函数的前向声明:
 ATOM				MyRegisterClass(HINSTANCE hInstance);
 BOOL				InitInstance(HINSTANCE, int);
@@ -88,6 +92,9 @@ int APIENTRY _tWinMain(HINSTANCE hInstance,
 
 
 	// 初始化全局字符串
+	g_lbutton_down = false;
+	g_lbutton_move = false;
+	g_lbutton_up = false;
 	LoadString(hInstance, IDS_APP_TITLE, szTitle, MAX_LOADSTRING);
 	LoadString(hInstance, IDC_EJECTAX, szWindowClass, MAX_LOADSTRING);
 	MyRegisterClass(hInstance);
@@ -113,6 +120,37 @@ int APIENTRY _tWinMain(HINSTANCE hInstance,
 		{
 			TranslateMessage(&msg);
 			DispatchMessage(&msg);
+		}
+
+		if (g_lbutton_down)
+		{
+			g_lbutton_move = g_lbutton_down;
+			g_lbutton_down = false;
+			POINT pos;
+
+			GetCursorPos(&pos);
+			ScreenToClient(g_hWnd, &pos);
+			EJApp::instance()->touchesBegan(pos.x, pos.y);
+		}
+
+		if(g_lbutton_move)
+		{
+			POINT pos;
+
+			GetCursorPos(&pos);
+			ScreenToClient(g_hWnd, &pos);
+			EJApp::instance()->touchesMoved(pos.x, pos.y);
+		}
+
+		if (g_lbutton_up)
+		{
+			POINT pos;
+
+			GetCursorPos(&pos);
+			ScreenToClient(g_hWnd, &pos);
+			EJApp::instance()->touchesEnded(pos.x, pos.y);
+			g_lbutton_up = false;
+			g_lbutton_move = false;
 		}
 
 		// Call update function if registered
@@ -366,6 +404,17 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 		//		(int) point.x, (int) point.y );
 		//}
 		break;
+
+	case WM_LBUTTONDOWN:
+		SetCapture(hWnd);
+		g_lbutton_down = true;
+		break;
+
+	case WM_LBUTTONUP:
+		g_lbutton_up = true;
+		ReleaseCapture();
+		break;
+
 	default:
 		return DefWindowProc(hWnd, message, wParam, lParam);
 	}
