@@ -11,6 +11,7 @@ Ejecta is published under the [MIT Open Source License](http://opensource.org/li
 
 Windows:
 
+Corefoundation.dll is associated with Apple products, require install QuickTime
 run Ejecta-X.sln with vs2010 in `project` folder.
 
 Android:

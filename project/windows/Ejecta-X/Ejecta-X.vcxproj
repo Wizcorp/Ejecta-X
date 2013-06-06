@@ -49,13 +49,13 @@
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
       <PreprocessorDefinitions>WIN32;_DEBUG;EJECTA_DEBUG;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>$(ProjectDir)\..\..\..\sources\ejecta;$(ProjectDir)\..\..\..\library\win32\libjpeg;$(ProjectDir)\..\..\..\library\win32;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir)\..\..\..\sources\ejecta;$(ProjectDir)\..\..\..\library\win32\pthread;$(ProjectDir)\..\..\..\library\win32\libjpeg;$(ProjectDir)\..\..\..\library\win32;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <AdditionalLibraryDirectories>$(ProjectDir)\..\..\..\library\win32\libraries;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-      <AdditionalDependencies>freetype.lib;libjpeg.lib;libpng.lib;glew32.lib;OpenGL32.lib;glu32.lib;glaux.lib;JavaScriptCore.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>freetype.lib;libjpeg.lib;libpng.lib;glew32.lib;OpenGL32.lib;glu32.lib;glaux.lib;JavaScriptCore.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;pthreadVCE2.lib;libcurl_imp.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <IgnoreAllDefaultLibraries>false</IgnoreAllDefaultLibraries>
       <IgnoreSpecificDefaultLibraries>
       </IgnoreSpecificDefaultLibraries>
@@ -139,7 +139,9 @@
     <ClInclude Include="..\..\..\sources\ejecta\EJCocoa\UIFont.h" />
     <ClInclude Include="..\..\..\sources\ejecta\EJConvert.h" />
     <ClInclude Include="..\..\..\sources\ejecta\EJTimer.h" />
+    <ClInclude Include="..\..\..\sources\ejecta\EJUtils\EJBindingHttpRequest.h" />
     <ClInclude Include="..\..\..\sources\ejecta\EJUtils\EJBindingLocalStorage.h" />
+    <ClInclude Include="..\..\..\sources\ejecta\EJUtils\EJBindingTouchInput.h" />
     <ClInclude Include="..\..\..\sources\ejecta\lodefreetype\lodefreetype.h" />
     <ClInclude Include="..\..\..\sources\ejecta\lodejpeg\lodejpeg.h" />
     <ClInclude Include="..\..\..\sources\ejecta\lodepng\lodepng.h" />
@@ -272,9 +274,15 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">NotUsing</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">NotUsing</PrecompiledHeader>
     </ClCompile>
+    <ClCompile Include="..\..\..\sources\ejecta\EJUtils\EJBindingHttpRequest.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">NotUsing</PrecompiledHeader>
+    </ClCompile>
     <ClCompile Include="..\..\..\sources\ejecta\EJUtils\EJBindingLocalStorage.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">NotUsing</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">NotUsing</PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="..\..\..\sources\ejecta\EJUtils\EJBindingTouchInput.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">NotUsing</PrecompiledHeader>
     </ClCompile>
     <ClCompile Include="..\..\..\sources\ejecta\lodefreetype\lodefreetype.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">NotUsing</PrecompiledHeader>

@@ -201,6 +201,12 @@
     <ClInclude Include="..\..\..\sources\ejecta\EJCocoa\UIFont.h">
       <Filter>ejecta\EJCocoa</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\..\sources\ejecta\EJUtils\EJBindingHttpRequest.h">
+      <Filter>ejecta\EJUtils</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\sources\ejecta\EJUtils\EJBindingTouchInput.h">
+      <Filter>ejecta\EJUtils</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="stdafx.cpp">
@@ -313,6 +319,12 @@
     </ClCompile>
     <ClCompile Include="..\..\..\sources\ejecta\EJCocoa\NSCache.cpp">
       <Filter>ejecta\EJCocoa</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\sources\ejecta\EJUtils\EJBindingHttpRequest.cpp">
+      <Filter>ejecta\EJUtils</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\sources\ejecta\EJUtils\EJBindingTouchInput.cpp">
+      <Filter>ejecta\EJUtils</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
