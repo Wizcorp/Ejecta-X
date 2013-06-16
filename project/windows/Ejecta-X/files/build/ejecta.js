@@ -62,9 +62,9 @@ self = window = this;
  
  // The native Image, Audio, HttpRequest and LocalStorage class mimic the real elements
  window.Image = Ejecta.Image;
- //window.Audio = Ejecta.Audio;
- //window.XMLHttpRequest = Ejecta.HttpRequest;
- //window.localStorage = new Ejecta.LocalStorage();
+ window.Audio = Ejecta.Audio;
+ window.XMLHttpRequest = Ejecta.HttpRequest;
+ window.localStorage = new Ejecta.LocalStorage();
  
  
  // Set up a "fake" HTMLElement

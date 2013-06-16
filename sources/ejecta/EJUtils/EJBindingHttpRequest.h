@@ -431,7 +431,7 @@ class EJBindingHttpRequest : public EJBindingEventedBase {
 	EJHttpRequestState state;	
 	EJHttpClient * connection;
 	EJHttpResponse * response;
-	unsigned char * responseBody;
+	char * responseBody;
 	
 public:
 
@@ -447,6 +447,7 @@ public:
 	void clearRequest();
 	int getStatusCode();
 	NSString * getResponseText();
+	void onHttpRequestCompleted(NSObject *sender, void *data);
 
 	EJ_BIND_FUNCTION_DEFINE(open, ctx, argc, argv);
 	EJ_BIND_FUNCTION_DEFINE(setRequestHeader, ctx, argc, argv);

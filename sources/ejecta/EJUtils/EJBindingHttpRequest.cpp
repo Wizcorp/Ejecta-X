@@ -411,7 +411,7 @@ void EJHttpClient::dispatchResponseCallbacks(float delta)
         return;
     }
 
-    NSLOG("EJHttpClient::dispatchResponseCallbacks is running");
+    //NSLOG("EJHttpClient::dispatchResponseCallbacks is running");
     
     EJHttpResponse* response = NULL;
     
@@ -441,7 +441,8 @@ void EJHttpClient::dispatchResponseCallbacks(float delta)
     
 }
 
-EJBindingHttpRequest::EJBindingHttpRequest() {
+EJBindingHttpRequest::EJBindingHttpRequest() :method(NULL), url(NULL), user(NULL), password(NULL), connection(NULL),response(NULL),responseBody(NULL)
+{
 	requestHeaders = new NSDictionary();
 }
 
@@ -457,7 +458,7 @@ void EJBindingHttpRequest::init(JSContextRef ctx ,JSObjectRef obj, size_t argc, 
 void EJBindingHttpRequest::clearConnection()
 {
 	if(connection)connection->release(); connection = NULL;
-	//if(responseBody)responseBody->release(); responseBody = NULL;
+	if(responseBody)delete [] responseBody; responseBody = NULL;
 	if(response)response->release(); response = NULL;
 }
 
@@ -494,7 +495,52 @@ NSString * EJBindingHttpRequest::getResponseText()
 	// 	}
 	// }
 
-	return NSStringMake("responseBody");
+	return NSStringMake(responseBody);
+}
+
+void EJBindingHttpRequest::onHttpRequestCompleted(NSObject *sender, void *data)
+{
+	response = (EJHttpResponse*)data;
+
+	if (!response)
+	{
+		return;
+	}
+
+	// You can get original request type from: response->request->reqType
+	if (0 != strlen(response->getHttpRequest()->getTag())) 
+	{
+		NSLOG("%s completed", response->getHttpRequest()->getTag());
+	}
+
+	int statusCode = response->getResponseCode();
+	char statusString[64] = {};
+	sprintf(statusString, "HTTP Status Code: %d, tag = %s", statusCode, response->getHttpRequest()->getTag());
+
+	NSLOG("response code: %d", statusCode);
+
+	if (!response->isSucceed()) 
+	{
+		NSLOG("response failed");
+		NSLOG("error buffer: %s", response->getErrorBuffer());
+		response->retain();
+		responseBody = NULL;
+		return;
+	}
+
+	// dump data
+	std::vector<char> *buffer = response->getResponseData();
+	printf("Http Test, dump data: ");
+	for (unsigned int i = 0; i < buffer->size(); i++)
+	{
+		printf("%c", (*buffer)[i]);
+	}
+	printf("\n");
+
+	response->retain();
+	std::string buf = std::string(buffer->begin(), buffer->end());
+	responseBody = new char[buffer->size()];
+	sprintf(responseBody, "%s", buf.c_str());
 }
 
 EJ_BIND_FUNCTION(EJBindingHttpRequest, open, ctx, argc, argv) {	
@@ -589,6 +635,34 @@ EJ_BIND_FUNCTION(EJBindingHttpRequest, send, ctx, argc, argv) {
 	// 	[request setTimeoutInterval:timeoutSeconds];
 	// }	
 
+
+	EJHttpRequest* request = new EJHttpRequest();
+	request->setUrl(url->getCString());
+	if (method->isEqual(NSStringMake("GET")))
+	{
+		request->setRequestType(EJHttpRequest::kHttpGet);
+	}
+	else if(method->isEqual(NSStringMake("POST")))
+	{
+		request->setRequestType(EJHttpRequest::kHttpPost);
+	}
+	else if(method->isEqual(NSStringMake("PUT")))
+	{
+		request->setRequestType(EJHttpRequest::kHttpPut);
+	}
+	else if(method->isEqual(NSStringMake("DELETE")))
+	{
+		request->setRequestType(EJHttpRequest::kHttpDelete);
+	}
+	else
+	{
+		request->setRequestType(EJHttpRequest::kHttpUnkown);
+	}
+	request->setResponseCallback(this, callfuncND_selector(EJBindingHttpRequest::onHttpRequestCompleted));
+
+	connection = EJHttpClient::getInstance();
+	connection->setTimeoutForConnect(timeout/1000);
+
 	NSLOG("XHR: %s %s", method->getCString(), url->getCString());
 	EJBindingEventedBase::triggerEvent(NSStringMake("loadstart"), 0, NULL);
 
@@ -615,6 +689,10 @@ EJ_BIND_FUNCTION(EJBindingHttpRequest, send, ctx, argc, argv) {
 	// 	[self triggerEvent:@"readystatechange" argc:0 argv:NULL];
 	// }
 	// [request release];
+
+	connection->send(request);
+	request->release();
+	EJBindingEventedBase::triggerEvent(NSStringMake("load"), 0, NULL);
 
 	return NULL;
 }
