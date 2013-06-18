@@ -361,12 +361,16 @@ void EJApp::logException(JSValueRef valueAsexception, JSContextRef ctxp)
 
 void EJApp::touchesBegan(int x, int y)
 {
-	touchDelegate->triggerEvent(NSStringMake("touchstart"), x, y);
+	NSString* eventName = new NSString("touchstart");
+	touchDelegate->triggerEvent(eventName, x, y);
+	eventName->release();
 }
 
 void EJApp::touchesEnded(int x, int y)
 {
-	touchDelegate->triggerEvent(NSStringMake("touchend"), x, y);
+	NSString* eventName = new NSString("touchend");
+	touchDelegate->triggerEvent(eventName, x, y);
+	eventName->release();
 }
 
 void EJApp::touchesCancelled(int x, int y)
@@ -376,7 +380,9 @@ void EJApp::touchesCancelled(int x, int y)
 
 void EJApp::touchesMoved(int x, int y)
 {
-	touchDelegate->triggerEvent(NSStringMake("touchmove"), x, y);
+	NSString* eventName = new NSString("touchmove");
+	touchDelegate->triggerEvent(eventName, x, y);
+	eventName->release();
 }
 
 
