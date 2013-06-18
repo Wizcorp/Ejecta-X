@@ -66,6 +66,8 @@ public:
 	EJCanvasContext * currentRenderingContext;
 	EJCanvasContextScreen * screenRenderingContext;
 	float internalScaling;
+	BOOL lockTouches;
+	NSArray* touches;
 
     EJApp(void);
     ~EJApp(void);
