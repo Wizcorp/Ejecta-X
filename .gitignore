@@ -21,7 +21,6 @@ local.properties
 bin/
 out/
 gen/
-gradle/
 .idea/
 *.iml
 *.iws
