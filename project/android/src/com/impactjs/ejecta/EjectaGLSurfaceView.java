@@ -67,13 +67,25 @@ public class EjectaGLSurfaceView extends GLSurfaceView {
 		// TODO Auto-generated method stub
 		mRenderer.nativeFinalize();
 	}
-	
+
+    public void setEjectaEventListener(final EjectaRenderer.EjectaEventListener eventListener) {
+        mRenderer.setOnCanvasCreatedListener(new EjectaRenderer.EjectaEventListener() {
+            @Override
+            public void onCanvasCreated() {
+                eventListener.onCanvasCreated();
+            }
+        });
+    }
+
+    public void loadJavaScriptFile(String filename) {
+        mRenderer.nativeLoadJavaScriptFile(filename);
+    }
+
 	@Override
 	protected void onSizeChanged(int w, int h, int oldw, int oldh) {
 		// TODO Auto-generated method stub
 		super.onSizeChanged(w, h, oldw, oldh);
 	}
-	
-	
+
 	private static native void nativeSetPaths();
 }
