@@ -76,7 +76,7 @@ EJApp::EJApp() : currentRenderingContext(0), screenRenderingContext(0), touchDel
 	
 	paused = false;
 	internalScaling = 1.0f;
-	
+
 	mainBundle = 0;
 
 	timers = new EJTimerCollection();
@@ -128,14 +128,19 @@ EJApp::~EJApp()
 	
 	touches->release();
 	timers->release();
+       
 	if(mainBundle)
 		free(mainBundle);
+        
 	NSPoolManager::sharedPoolManager()->pop();
 	NSPoolManager::purgePoolManager();
 }
 
-void EJApp::init(const char* path, int w, int h)
+void EJApp::init(JNIEnv* env, jobject jobj, const char* path, int w, int h)
 {
+        env->GetJavaVM(&jvm);
+        
+        g_obj = jobj;
 
 	if(mainBundle)
 		free(mainBundle);
@@ -222,6 +227,52 @@ void EJApp::clearCaches(void)
 	JSGarbageCollect(jsGlobalContext);
 }
 
+void EJApp::canvasCreated(void) {
+    // Canvas is ready, emit event method in Java
+    JNIEnv *g_env;
+    JavaVMAttachArgs args;
+    args.version = JNI_VERSION_1_6; // choose a JNI version
+    args.name = NULL; // could name this java thread
+    args.group = NULL; // could assign the java thread to a ThreadGroup
+
+    if (jvm == NULL) {
+        NSLOG("ERROR JVM is NULL");
+        return;
+    }
+    
+    // Double check it's all OK
+    int getEnvStat = jvm->GetEnv((void **)&g_env, JNI_VERSION_1_6);
+    if (getEnvStat == JNI_EDETACHED) {
+        NSLOG("GetEnv: not attached");
+        /*
+        if (jvm->AttachCurrentThread((void **) &g_env, NULL) != 0) {
+            NSLOG("Failed to attach");
+        }
+        */
+        return;
+    } else if (getEnvStat == JNI_OK) {
+        // NSLOG("JNI OK");
+    } else if (getEnvStat == JNI_EVERSION) {
+        NSLOG("GetEnv: version not supported");
+        return;
+    }
+    jclass cls = g_env->FindClass("com/impactjs/ejecta/EjectaRenderer");
+    if (g_env->ExceptionCheck()) {
+        NSLOG("ERR_FIND_CLASS_FAILED");
+        return;
+    }
+    jmethodID mid = g_env->GetMethodID(cls, "onCanvasCreated", "()V");
+    if (g_env->ExceptionCheck()) {
+        NSLOG("ERR_GET_METHOD_FAILED");
+        return;
+    }
+       
+    g_env->CallVoidMethod(g_obj, mid);
+    if (g_env->ExceptionCheck()) {
+        NSLOG("ERR_CALL_METHOD_FAILED");
+        return;
+    }
+}
 void EJApp::hideLoadingScreen(void)
 {
 	//[loadingScreen removeFromSuperview];
@@ -237,10 +288,16 @@ NSString * EJApp::pathForResource(NSString * resourcePath)
 
 // ---------------------------------------------------------------------------------
 // Script loading and execution
+void EJApp::loadJavaScriptFile(const char *filename) {
+        // char to NSString
+        string filenameString = string(filename);
+        NSString *convertedFilename = NSStringMake(filenameString);
+        loadScriptAtPath(convertedFilename);
+}
 
 void EJApp::loadScriptAtPath(NSString * path)
 {
-
+    
 	NSString * script = NSString::createWithContentsOfFile(pathForResource(path)->getCString());
 	
 	if( !script ) {

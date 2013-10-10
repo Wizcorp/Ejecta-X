@@ -47,6 +47,9 @@ class EJApp : public NSObject {
 
 	BOOL paused;
 
+        JavaVM *jvm;
+        jobject g_obj;
+        
 	NSDictionary * jsClasses;
 	EJTimerCollection * timers;
 	long currentTime;
@@ -72,7 +75,7 @@ public:
     EJApp(void);
     ~EJApp(void);
 
-	void init(const char* path, int w, int h);
+	void init(JNIEnv* env, jobject jobj, const char* path, int w, int h);
 	void setScreenSize(int w, int h);
 	void run(void);
 	void pause(void);
@@ -83,8 +86,10 @@ public:
 	JSValueRef deleteTimer(JSContextRef ctx, size_t argc, const JSValueRef argv[]);
 
 	JSClassRef getJSClassForClass(EJBindingBase* classId);
-	void hideLoadingScreen(void);
-	void loadScriptAtPath(NSString * path);
+	void canvasCreated(void);
+        void hideLoadingScreen(void);
+	void loadJavaScriptFile(const char *filename);
+        void loadScriptAtPath(NSString * path);
 	JSValueRef loadModuleWithId(NSString * moduleId, JSValueRef module, JSValueRef exports);
  	JSValueRef invokeCallback(JSObjectRef callback, JSObjectRef thisObject, size_t argc, const JSValueRef argv[]);
 	void logException(JSValueRef exception, JSContextRef ctxp);
