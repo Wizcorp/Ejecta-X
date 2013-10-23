@@ -3,6 +3,26 @@
 
 #include "../EJBindingEventedBase.h"
 
+class EJTouchEvent : public NSObject {
+public:
+	EJTouchEvent(){
+		eventName = new NSString("");
+		posX = 0;
+		posY = 0;
+	};
+	EJTouchEvent(const char* name, int x, int y){
+		eventName = new NSString(name);
+		posX = x;
+		posY = y;
+	};
+	~EJTouchEvent(){
+		eventName->release();
+	};
+
+	NSString* eventName;
+	int posX;
+	int posY;
+};
 
 class EJBindingTouchInput : public EJBindingEventedBase {
 

@@ -60,7 +60,7 @@ JSObjectRef ej_callAsConstructor(JSContextRef ctx, JSObjectRef constructor, size
 EJApp* EJApp::ejectaInstance = NULL;
 
 
-EJApp::EJApp() : currentRenderingContext(0), screenRenderingContext(0), touchDelegate(0)
+EJApp::EJApp() : currentRenderingContext(0), screenRenderingContext(0), touchDelegate(0), touches(0)
 {
 	NSPoolManager::sharedPoolManager()->push();
 
@@ -80,6 +80,12 @@ EJApp::EJApp() : currentRenderingContext(0), screenRenderingContext(0), touchDel
 	mainBundle = 0;
 
 	timers = new EJTimerCollection();
+	lockTouches = false;
+	touches = NSArray::create();
+	if (touches != NULL)
+	{
+		touches->retain();
+	}
 
 	// Create the global JS context and attach the 'Ejecta' object
 		jsClasses = new NSDictionary();
@@ -120,6 +126,7 @@ EJApp::~EJApp()
 	if(touchDelegate)touchDelegate->release();
 	jsClasses->release();
 	
+	touches->release();
 	timers->release();
 	if(mainBundle)
 		free(mainBundle);
@@ -167,6 +174,20 @@ void EJApp::run(void)
 	if( paused ) { return; }
 
 	EJHttpClient::getInstance()->dispatchResponseCallbacks(0);
+
+
+	if (!lockTouches)
+	{
+		lockTouches = true;
+		if (touchDelegate&&touches&&touches->count()>0)
+		{
+			EJTouchEvent* event = (EJTouchEvent*)touches->objectAtIndex(0);
+			NSLOG("event count %d %s(%d, %d)", touches->count(), event->eventName->getCString(), event->posX, event->posY);
+			touchDelegate->triggerEvent(event->eventName, event->posX, event->posY);
+			touches->removeObjectAtIndex(0);
+		}
+		lockTouches = false;
+	}
 
 	// Check all timers
 	timers->update();
@@ -361,28 +382,48 @@ void EJApp::logException(JSValueRef valueAsexception, JSContextRef ctxp)
 
 void EJApp::touchesBegan(int x, int y)
 {
-	NSString* eventName = new NSString("touchstart");
-	touchDelegate->triggerEvent(eventName, x, y);
-	eventName->release();
+	if (!lockTouches)
+	{
+		lockTouches = true;
+		EJTouchEvent* event = new EJTouchEvent("touchstart", x, y);
+		touches->addObject(event);
+		event->release();
+		lockTouches = false;
+	}
 }
 
 void EJApp::touchesEnded(int x, int y)
 {
-	NSString* eventName = new NSString("touchend");
-	touchDelegate->triggerEvent(eventName, x, y);
-	eventName->release();
+	if (!lockTouches)
+	{
+		lockTouches = true;
+		EJTouchEvent* event = new EJTouchEvent("touchend", x, y);
+		touches->addObject(event);
+		event->release();
+		lockTouches = false;
+	}
 }
 
 void EJApp::touchesCancelled(int x, int y)
 {
-	touchesEnded(x, y);
+	if (!lockTouches)
+	{
+		lockTouches = true;
+		touchesEnded(x, y);
+		lockTouches = false;
+	}
 }
 
 void EJApp::touchesMoved(int x, int y)
 {
-	NSString* eventName = new NSString("touchmove");
-	touchDelegate->triggerEvent(eventName, x, y);
-	eventName->release();
+	if (!lockTouches)
+	{
+		lockTouches = true;
+		EJTouchEvent* event = new EJTouchEvent("touchmove", x, y);
+		touches->addObject(event);
+		event->release();
+		lockTouches = false;
+	}
 }
 
 
