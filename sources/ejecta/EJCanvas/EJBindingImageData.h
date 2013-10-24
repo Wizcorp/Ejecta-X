@@ -7,8 +7,8 @@
 class EJBindingImageData : public EJBindingBase {
 private:
 	JSObjectRef dataArray;
-public:
 	EJImageData* m_imageData;
+public:
 
 	EJBindingImageData(JSContextRef ctx, JSObjectRef obj, EJImageData* imageData);
 	EJBindingImageData();
