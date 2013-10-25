@@ -12,16 +12,16 @@
 
 void EJCanvasContextTexture::create() 
 {
-	m_texture = new EJTexture(width, height);
+	texture = new EJTexture(width, height);
 
-	bufferWidth = m_texture->realWidth;
-	bufferHeight = m_texture->realHeight;
+	bufferWidth = texture->realWidth;
+	bufferHeight = texture->realHeight;
 
 	EJCanvasContext::create();
 #ifdef _WINDOWS
-	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, m_texture->textureId, 0);
+	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, texture->textureId, 0);
 #else
-	glFramebufferTexture2DOES(GL_FRAMEBUFFER_OES, GL_COLOR_ATTACHMENT0_OES, GL_TEXTURE_2D, m_texture->textureId, 0);
+	glFramebufferTexture2DOES(GL_FRAMEBUFFER_OES, GL_COLOR_ATTACHMENT0_OES, GL_TEXTURE_2D, texture->textureId, 0);
 #endif
 	prepare();
 
@@ -41,7 +41,7 @@ EJCanvasContextTexture::EJCanvasContextTexture(short widthp, short heightp) : EJ
 
 EJCanvasContextTexture::~EJCanvasContextTexture() 
 {
-	m_texture->release();
+	texture->release();
 }
 
 const char* EJCanvasContextTexture::getClassName() 
@@ -49,7 +49,7 @@ const char* EJCanvasContextTexture::getClassName()
 	return "EJCanvasContextTexture";
 }
 
-EJTexture* EJCanvasContextTexture::texture() 
+EJTexture* EJCanvasContextTexture::getTexture() 
 {
 	if( msaaNeedsResolving ) {	
 		GLint boundFrameBuffer;
@@ -76,7 +76,7 @@ EJTexture* EJCanvasContextTexture::texture()
 		msaaNeedsResolving = false;
 	}
 	
-	return m_texture;
+	return texture;
 }
 
 void EJCanvasContextTexture::prepare() 

@@ -2,7 +2,7 @@
 #include "../EJApp.h"
 
 
-EJBindingImage::EJBindingImage() : texture(0), path(0), loading(false) {
+EJBindingImage::EJBindingImage() : EJDrawable(0), path(0), loading(false) {
 }
 
 EJBindingImage::~EJBindingImage() {
@@ -41,6 +41,10 @@ void EJBindingImage::endLoad(EJTexture * tex) {
 	else {
 		EJBindingEventedBase::triggerEvent(NSStringMake("error") ,0 ,NULL);
 	}
+}
+
+EJTexture* EJBindingImage::getTexture() {
+	return texture;
 }
 
 EJ_BIND_GET( EJBindingImage, src, ctx ) { 
