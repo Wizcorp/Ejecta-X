@@ -5,6 +5,7 @@ import android.content.res.Configuration;
 import android.opengl.GLSurfaceView;
 import android.view.KeyEvent;
 import android.view.MotionEvent;
+import android.view.View;
 
 public class EjectaGLSurfaceView extends GLSurfaceView {
 	
@@ -19,6 +20,25 @@ public class EjectaGLSurfaceView extends GLSurfaceView {
 		// TODO Auto-generated constructor stub
 		mRenderer = new EjectaRenderer(context, width, height);
         setRenderer(mRenderer);
+
+        super.setOnTouchListener(new OnTouchListener() {
+            @Override
+            public boolean onTouch(View view, MotionEvent motionEvent) {
+                switch (motionEvent.getAction() & MotionEvent.ACTION_MASK) {
+                    case MotionEvent.ACTION_DOWN:
+                        mRenderer.nativeTouch(motionEvent.getAction(), (int)motionEvent.getX(), (int)motionEvent.getY());
+                        break;
+                    case MotionEvent.ACTION_UP:
+                        mRenderer.nativeTouch(motionEvent.getAction(), (int)motionEvent.getX(), (int)motionEvent.getY());
+                        break;
+                    case MotionEvent.ACTION_MOVE:
+                        mRenderer.nativeTouch(motionEvent.getAction(), (int)motionEvent.getX(), (int)motionEvent.getY());
+                        break;
+                }
+                // Get all touches, return true
+                return true;
+            }
+        });
 	}
 	
 	@Override
@@ -34,14 +54,7 @@ public class EjectaGLSurfaceView extends GLSurfaceView {
 		super.onPause();
 		mRenderer.nativePause();
 	}
-	
-	@Override
-	public boolean onTouchEvent(MotionEvent event) {
-		// TODO Auto-generated method stub
-		mRenderer.nativeTouch(event.getAction(), (int)event.getX(), (int)event.getY());
-		return super.onTouchEvent(event);
-	}
-	
+
 	@Override
 	public boolean onKeyDown(int keyCode, KeyEvent event) {
 		// TODO Auto-generated method stub
