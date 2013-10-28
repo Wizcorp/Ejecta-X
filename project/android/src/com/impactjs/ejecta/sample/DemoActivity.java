@@ -23,7 +23,8 @@ public class DemoActivity extends Activity {
             @Override
             public void onCanvasCreated() {
                 Log.d("ejecta", "Event: Canvas was created");
-                ((EjectaGLSurfaceView)mGLView).loadJavaScriptFile("loadme.js");
+                ((EjectaGLSurfaceView)mGLView).loadJavaScriptFile("ejecta.js");
+                ((EjectaGLSurfaceView)mGLView).loadJavaScriptFile("index.js");
             }
         });
 	}

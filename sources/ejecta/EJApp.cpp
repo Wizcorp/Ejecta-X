@@ -1,6 +1,7 @@
 #include "EJApp.h"
 #include "EJBindingBase.h"
 #include "EJUtils/EJBindingTouchInput.h"
+#include "EJUtils/EJBindingWizCanvasMessenger.h"
 #include "EJUtils/EJBindingHttpRequest.h"
 #include "EJCanvas/EJCanvasContext.h"
 #include "EJCanvas/EJCanvasContextScreen.h"
@@ -60,7 +61,7 @@ JSObjectRef ej_callAsConstructor(JSContextRef ctx, JSObjectRef constructor, size
 EJApp* EJApp::ejectaInstance = NULL;
 
 
-EJApp::EJApp() : currentRenderingContext(0), screenRenderingContext(0), touchDelegate(0), touches(0)
+EJApp::EJApp() : currentRenderingContext(0), screenRenderingContext(0), touchDelegate(0), messengerDelegate(0), touches(0)
 {
 	NSPoolManager::sharedPoolManager()->push();
 
@@ -89,7 +90,7 @@ EJApp::EJApp() : currentRenderingContext(0), screenRenderingContext(0), touchDel
 
 	// Create the global JS context and attach the 'Ejecta' object
 		jsClasses = new NSDictionary();
-		
+	
 		JSClassDefinition constructorClassDef = kJSClassDefinitionEmpty;
 		constructorClassDef.callAsConstructor = ej_callAsConstructor;
 		ej_constructorClass = JSClassCreate(&constructorClassDef);
@@ -124,6 +125,9 @@ EJApp::~EJApp()
 	//JSGlobalContextRelease(jsGlobalContext);
 	currentRenderingContext->release();
 	if(touchDelegate)touchDelegate->release();
+        if(messengerDelegate) {
+            messengerDelegate->release();
+        }
 	jsClasses->release();
 	
 	touches->release();
@@ -158,8 +162,9 @@ void EJApp::init(JNIEnv* env, jobject jobj, const char* path, int w, int h)
 	width = w;
 
 	// Load the initial JavaScript source files
-	loadScriptAtPath(NSStringMake(EJECTA_BOOT_JS));
-	loadScriptAtPath(NSStringMake(EJECTA_MAIN_JS));
+	// loadScriptAtPath(NSStringMake(EJECTA_BOOT_JS));
+	// loadScriptAtPath(NSStringMake(EJECTA_MAIN_JS));
+        canvasCreated();
 }
 
 
@@ -266,7 +271,6 @@ void EJApp::canvasCreated(void) {
         NSLOG("ERR_GET_METHOD_FAILED");
         return;
     }
-       
     g_env->CallVoidMethod(g_obj, mid);
     if (g_env->ExceptionCheck()) {
         NSLOG("ERR_CALL_METHOD_FAILED");
@@ -295,6 +299,25 @@ void EJApp::loadJavaScriptFile(const char *filename) {
         loadScriptAtPath(convertedFilename);
 }
 
+void EJApp::triggerMessage(const char *script) {
+    // TODO convert script to NSString
+	messengerDelegate->triggerEvent(NULL);
+}
+void EJApp::evaluateScript(const char *script) {
+        // char to NSString
+        string scriptString = string(script);
+        NSString *convertedscript = NSStringMake(scriptString);
+        NSLOG("Evaluating script...");
+
+        JSStringRef scriptJS = JSStringCreateWithUTF8CString(convertedscript->getCString());
+        
+        JSValueRef exception = NULL;
+	JSEvaluateScript( jsGlobalContext, scriptJS, NULL, NULL, 0, &exception );
+	logException(exception, jsGlobalContext);
+        
+        JSStringRelease( scriptJS );
+}
+
 void EJApp::loadScriptAtPath(NSString * path)
 {
     
@@ -305,7 +328,7 @@ void EJApp::loadScriptAtPath(NSString * path)
 		return;
 	}
 	
-	NSLOG("Loading Script: %s", path->getCString() );
+	NSLOG("Loading file: %s", path->getCString() );
 
 	JSStringRef scriptJS = JSStringCreateWithUTF8CString(script->getCString());
 	JSStringRef pathJS = JSStringCreateWithUTF8CString(path->getCString());
