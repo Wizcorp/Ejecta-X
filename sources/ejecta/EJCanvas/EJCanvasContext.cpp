@@ -497,7 +497,7 @@ EJImageData* EJCanvasContext::getImageData(float sx, float sy, float sw, float s
 
 void EJCanvasContext::putImageData(EJImageData* imageData, float dx, float dy)
 {
-	EJTexture * texture = imageData->m_texture;
+	EJTexture * texture = imageData->texture();
 	setTexture(texture);
 	
 	short tw = texture->realWidth;
@@ -507,7 +507,6 @@ void EJCanvasContext::putImageData(EJImageData* imageData, float dx, float dy)
 	
 	pushRect(dx, dy, tw, th, 0, 0, 1, 1, white, CGAffineTransformIdentity);
 	flushBuffers();
-
 }
 
 void EJCanvasContext::beginPath()

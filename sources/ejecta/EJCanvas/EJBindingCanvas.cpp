@@ -520,7 +520,7 @@ EJ_BIND_FUNCTION(EJBindingCanvas, drawImage, ctx, argc, argv) {
  	//ejectaInstance->currentRenderingContext = renderingContext;
 
 	ejectaInstance->setCurrentRenderingContext(renderingContext);
- 	renderingContext->putImageData(jsImageData->m_imageData ,dx ,dy);
+ 	renderingContext->putImageData(jsImageData->imageData(), dx, dy);
  	return NULL;
  }
 

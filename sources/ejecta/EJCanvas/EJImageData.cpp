@@ -1,10 +1,11 @@
 #include "EJImageData.h"
 
 EJImageData::EJImageData(int widthp, int heightp, GLubyte * pixelsp):
-width(widthp),height(heightp),pixels(pixelsp){
+width(widthp), height(heightp), pixels(pixelsp), m_texture(NULL) {
 	//- (EJTexture *)texture {
 	//	return [[[EJTexture alloc] initWithWidth:width height:height pixels:pixels] autorelease];
 	//}
+    //texture();
 }
 
 EJImageData::~EJImageData()
