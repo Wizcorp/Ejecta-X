@@ -128,6 +128,7 @@ void EJCanvasContextScreen::create()
     glClear(GL_COLOR_BUFFER_BIT);
 
 // 	// Append the OpenGL view to Impact's main view
+    EJApp::instance()->canvasCreated();
     EJApp::instance()->hideLoadingScreen();
 }
 
