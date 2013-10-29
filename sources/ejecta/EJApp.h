@@ -87,9 +87,9 @@ public:
 
 	JSClassRef getJSClassForClass(EJBindingBase* classId);
 	void canvasCreated(void);
-        void hideLoadingScreen(void);
+    void hideLoadingScreen(void);
 	void loadJavaScriptFile(const char *filename);
-        void loadScriptAtPath(NSString * path);
+    void loadScriptAtPath(NSString * path);
 	JSValueRef loadModuleWithId(NSString * moduleId, JSValueRef module, JSValueRef exports);
  	JSValueRef invokeCallback(JSObjectRef callback, JSObjectRef thisObject, size_t argc, const JSValueRef argv[]);
 	void logException(JSValueRef exception, JSContextRef ctxp);

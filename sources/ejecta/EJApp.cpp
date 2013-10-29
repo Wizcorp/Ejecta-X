@@ -128,10 +128,8 @@ EJApp::~EJApp()
 	
 	touches->release();
 	timers->release();
-       
 	if(mainBundle)
 		free(mainBundle);
-        
 	NSPoolManager::sharedPoolManager()->pop();
 	NSPoolManager::purgePoolManager();
 }
