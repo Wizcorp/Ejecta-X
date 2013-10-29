@@ -94,10 +94,11 @@ extern "C" {
         EJApp::instance()->evaluateScript(scriptAsChar);
     }
     
-    JNIEXPORT void JNICALL Java_com_impactjs_ejecta_EjectaRenderer_nativeTriggerMessage(JNIEnv* env, jobject thiz, jstring script)
+    JNIEXPORT void JNICALL Java_com_impactjs_ejecta_EjectaRenderer_nativeTriggerMessage(JNIEnv* env, jobject thiz, jstring message, jstring type)
     {
-        const char *scriptAsChar = (env)->GetStringUTFChars(script, 0);
-        EJApp::instance()->triggerMessage(scriptAsChar);
+        const char *messageAsChar = (env)->GetStringUTFChars(message, 0);
+        const char *typeAsChar = (env)->GetStringUTFChars(type, 0);
+        EJApp::instance()->triggerMessage(messageAsChar, typeAsChar);
     }
     
     JNIEXPORT void JNICALL Java_com_impactjs_ejecta_EjectaRenderer_nativeOnKeyDown(JNIEnv* env, jobject thiz, jint key_code)

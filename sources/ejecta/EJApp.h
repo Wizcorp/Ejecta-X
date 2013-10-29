@@ -65,12 +65,14 @@ public:
 	int height, width;
 
 	EJBindingTouchInput * touchDelegate;
-	EJBindingWizCanvasMessenger * messengerDelegate;
+	EJBindingWizCanvasMessenger *messengerDelegate;
 	EJCanvasContext * currentRenderingContext;
 	EJCanvasContextScreen * screenRenderingContext;
 	float internalScaling;
 	BOOL lockTouches;
 	NSArray* touches;
+        BOOL lockMessages;
+        NSArray *messages;
 
     EJApp(void);
     ~EJApp(void);
@@ -88,7 +90,7 @@ public:
 	JSClassRef getJSClassForClass(EJBindingBase* classId);
 	void canvasCreated(void);
         void hideLoadingScreen(void);
-        void triggerMessage(const char *script);
+        void triggerMessage(const char *message, const char *type);
         void evaluateScript(const char *script);
 	void loadJavaScriptFile(const char *filename);
         void loadScriptAtPath(NSString * path);
