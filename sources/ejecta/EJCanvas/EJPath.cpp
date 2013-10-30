@@ -5,6 +5,9 @@
 #include "../EJCocoa/support/nsMacros.h"
 #include "EJCanvasContext.h"
 
+//Necessary for call to OpenGLES 1 functions such as glDisableClientState
+#include <GLES/gl.h>
+
 EJPath::EJPath() :
 		transform(CGAffineTransformIdentity), 
 		stencilMask(0x1) {
@@ -284,6 +287,7 @@ void EJPath::arc(float x, float y, float radius, float startAngle, float endAngl
 
 void EJPath::drawPolygonsToContext(EJCanvasContext * context,
 		EJPathPolygonTarget target) {
+	//TODO: Should be removed? endSubPath commented in Ejecta iOS
 	endSubPath();
 	if( longestSubpath < 3 ) { return; }
 	
@@ -330,8 +334,11 @@ void EJPath::drawPolygonsToContext(EJCanvasContext * context,
 	
 	glEnable(GL_CULL_FACE);
 	for( path_t::iterator sp = paths.begin(); sp != paths.end(); ++sp ) {
-		glVertexPointer(2, GL_FLOAT, sizeof(EJVector2), &(sp->points).front());
+		subpath_t &path = sp==paths.end()?currentPath:*sp;
 		
+		glVertexAttribPointer(kEJGLProgram2DAttributePos, 2, GL_FLOAT, GL_FALSE, 0, &(path.points).front());
+		
+		//TODO: Windows and Android implementations differ	
 #ifdef _WINDOWS
 		glCullFace(GL_BACK);
 		glStencilOp(GL_INCR_WRAP_EXT, GL_KEEP, GL_INCR_WRAP_EXT);
@@ -342,12 +349,14 @@ void EJPath::drawPolygonsToContext(EJCanvasContext * context,
 		glDrawArrays(GL_TRIANGLE_FAN, 0, sp->points.size());
 #else
 		glCullFace(GL_BACK);
-		glStencilOp(GL_INCR_WRAP_OES, GL_KEEP, GL_INCR_WRAP_OES);
-		glDrawArrays(GL_TRIANGLE_FAN, 0, sp->points.size());
+		glStencilOp(GL_INCR_WRAP, GL_KEEP, GL_INCR_WRAP);
+		glDrawArrays(GL_TRIANGLE_FAN, 0, path.points.size());
 
 		glCullFace(GL_FRONT);
-		glStencilOp(GL_DECR_WRAP_OES, GL_KEEP, GL_DECR_WRAP_OES);
-		glDrawArrays(GL_TRIANGLE_FAN, 0, sp->points.size());
+		glStencilOp(GL_DECR_WRAP, GL_KEEP, GL_DECR_WRAP);
+		glDrawArrays(GL_TRIANGLE_FAN, 0, path.points.size());
+
+		if(sp==paths.end()) break;
 #endif
 	}
 	glDisable(GL_CULL_FACE);
@@ -370,10 +379,34 @@ void EJPath::drawPolygonsToContext(EJCanvasContext * context,
 	
 	glStencilFunc(GL_NOTEQUAL, 0x00, 0xff);
     glStencilOp(GL_ZERO, GL_ZERO, GL_ZERO);
+
+    //TODO: Should be implemented?
+ 	//	if( state->fillObject && target == kEJPathPolygonTargetColor ) {
+	// 	// If we have a fill pattern or gradient, we have to do some extra work to unproject the
+	// 	// Quad we're drawing, so we can then project it _with_ the pattern/gradient again
+		
+	// 	CGAffineTransform inverse = CGAffineTransformInvert(transform);
+	// 	EJVector2 p1 = EJVector2ApplyTransform(minPos, inverse);
+	// 	EJVector2 p2 = EJVector2ApplyTransform(EJVector2Make(maxPos.x, minPos.y), inverse);
+	// 	EJVector2 p3 = EJVector2ApplyTransform(EJVector2Make(minPos.x, maxPos.y), inverse);
+	// 	EJVector2 p4 = EJVector2ApplyTransform(maxPos, inverse);
+		
+	// 	// Find the unprojected min/max
+	// 	EJVector2 tmin = { MIN(p1.x, MIN(p2.x,MIN(p3.x, p4.x))), MIN(p1.y, MIN(p2.y,MIN(p3.y, p4.y))) };
+	// 	EJVector2 tmax = { MAX(p1.x, MAX(p2.x,MAX(p3.x, p4.x))), MAX(p1.y, MAX(p2.y,MAX(p3.y, p4.y))) };
+		
+	// 	[context
+	// 		pushFilledRectX:tmin.x y:tmin.y w:tmax.x-tmin.x h:tmax.y-tmin.y
+	// 		fillable:state->fillObject
+	// 		color:EJCanvasBlendWhiteColor(state) withTransform:transform];
+	// }
+	// else {
 	 context->
 	 	pushRect(minPos.x,minPos.y ,maxPos.x-minPos.x ,maxPos.y-minPos.y
 	 	,0 ,0 ,0 ,0
 	 	,color	,CGAffineTransformIdentity);
+	// }
+
 	context->flushBuffers();
 	glDisable(GL_STENCIL_TEST);
 	

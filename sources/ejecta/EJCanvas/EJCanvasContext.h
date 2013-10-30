@@ -10,23 +10,24 @@
 #include <GL/glew.h>
 #include <GL/gl.h>
 #else
-#include <GLES/gl.h>
+#include <GLES2/gl2.h>
 #endif
 
 #include "../EJCocoa/support/nsMacros.h"
 #include "EJTexture.h"
 #include "EJImageData.h"
 #include "EJPath.h"
-#include "EJCanvasTypes.h"
+#include "EJCanvas2DTypes.h"
 #include "EJFont.h"
 #include "../EJCocoa/NSDictionary.h"
 #include "../EJCocoa/NSCache.h"
 #include "../EJCocoa/UIFont.h"
+#include "EJSharedOpenGLContext.h"
 
 #define EJ_CANVAS_STATE_STACK_SIZE 16
-#define EJ_CANVAS_VERTEX_BUFFER_SIZE 2048
+//#define EJ_CANVAS_VERTEX_BUFFER_SIZE 2048
 
-extern EJVertex CanvasVertexBuffer[EJ_CANVAS_VERTEX_BUFFER_SIZE];
+//extern EJVertex CanvasVertexBuffer[EJ_CANVAS_VERTEX_BUFFER_SIZE];
 
 class EJPath;
 
@@ -114,11 +115,20 @@ protected:
 	
 	EJPath * path;
 	
+	EJVertex *vertexBuffer;
+	int vertexBufferSize;
 	int vertexBufferIndex;
 	
 	int stateIndex;
 	EJCanvasState stateStack[EJ_CANVAS_STATE_STACK_SIZE];
-		
+	
+	bool upsideDown;
+
+	EJGLProgram2D *currentProgram;
+	EJSharedOpenGLContext *sharedGLContext;
+
+	void setProgram(EJGLProgram2D *program);
+
 public:
 	NSCache * fontCache;
 
