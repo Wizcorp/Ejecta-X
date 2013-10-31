@@ -21,6 +21,7 @@ EJCanvasContextScreen::~EJCanvasContextScreen()
 //TODO: present method completely different from Ejecta iOS, reimplement it?
 void EJCanvasContextScreen::present()
 {
+	NSLOG("Entering present");
 	//TODO: Should be implemented here?
 	//EJCanvasContext::flushBuffers();
 
@@ -124,13 +125,35 @@ void EJCanvasContextScreen::create()
 // 	glFramebufferRenderbuffer(GL_FRAMEBUFFER_EXT, GL_COLOR_ATTACHMENT0, GL_RENDERBUFFER_EXT, viewRenderBuffer);
 	
 
-    //TODO: Right place?
+	glDisable(GL_CULL_FACE);
+	glDisable(GL_DITHER);
+
+	glEnable(GL_BLEND);
+	glEnable(GL_DEPTH_TEST);
+	glDepthFunc(GL_ALWAYS);
+	//TODO: Right place?
     upsideDown = true;
 
 	prepare();
 	
+	GLenum error = glGetError();
+	NSLOG("Before glClearColor, error: %d", error);
 	glClearColor(0.0f, 1.0f, 0.0f, 1.0f);
-    glClear(GL_COLOR_BUFFER_BIT);
+	error = glGetError();
+	NSLOG("glClearColor passed, error: %d", error);
+	GLenum status = glCheckFramebufferStatus(GL_FRAMEBUFFER);
+	if(status != GL_FRAMEBUFFER_COMPLETE) {
+		NSLOG("------ Framebuffer not complete, %d", status);
+		error = glGetError();
+		NSLOG("glCheckFramebufferStatus passed, error: %d", error);
+	} else {
+		NSLOG("------ Framebuffer complete, %d", status);
+		error = glGetError();
+		NSLOG("glCheckFramebufferStatus passed, error: %d", error);
+	    glClear(GL_COLOR_BUFFER_BIT);
+		error = glGetError();
+		NSLOG("glClear passed, error: %d", error);
+	}
 
 
 // 	// Append the OpenGL view to Impact's main view

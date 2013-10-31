@@ -116,16 +116,13 @@ void EJCanvasContext::create()
 #ifdef _WINDOWS
 	if( msaaEnabled ) {
 		glGenFramebuffersEXT(1, &msaaFrameBuffer);
-		//TODO: Removed since not appearing in Ejecta iOS
-		//glBindFramebufferEXT(GL_FRAMEBUFFER_EXT, msaaFrameBuffer);
+		glBindFramebufferEXT(GL_FRAMEBUFFER_EXT, msaaFrameBuffer);
 
 		glGenRenderbuffersEXT(1, &msaaRenderBuffer);
-		//TODO: Removed since not appearing in Ejecta iOS
-		//glBindRenderbufferEXT(GL_RENDERBUFFER_EXT, msaaRenderBuffer);
+		glBindRenderbufferEXT(GL_RENDERBUFFER_EXT, msaaRenderBuffer);
 
 		//glRenderbufferStorageMultisampleIMG(GL_RENDERBUFFER, msaaSamples, GL_RGBA8, bufferWidth, bufferHeight);
-		//TODO: Removed since not appearing in Ejecta iOS
-		//glFramebufferRenderbufferEXT(GL_FRAMEBUFFER_EXT, GL_COLOR_ATTACHMENT0, GL_RENDERBUFFER_EXT, msaaRenderBuffer);
+		glFramebufferRenderbufferEXT(GL_FRAMEBUFFER_EXT, GL_COLOR_ATTACHMENT0, GL_RENDERBUFFER_EXT, msaaRenderBuffer);
 	}
 
 	glGenFramebuffersEXT(1, &viewFrameBuffer);
@@ -137,16 +134,13 @@ void EJCanvasContext::create()
 #else
 	if( msaaEnabled ) {
 		glGenFramebuffers(1, &msaaFrameBuffer);
-		//TODO: Removed since not appearing in Ejecta iOS
-		//glBindFramebuffer(GL_FRAMEBUFFER, msaaFrameBuffer);
+		glBindFramebuffer(GL_FRAMEBUFFER, msaaFrameBuffer);
 
 		glGenRenderbuffers(1, &msaaRenderBuffer);
-		//TODO: Removed since not appearing in Ejecta iOS
-		//glBindRenderbuffer(GL_RENDERBUFFER, msaaRenderBuffer);
+		glBindRenderbuffer(GL_RENDERBUFFER, msaaRenderBuffer);
 
 		//glRenderbufferStorageMultisampleIMG(GL_RENDERBUFFER_OES, msaaSamples, GL_RGBA8_OES, bufferWidth, bufferHeight);
-		//TODO: Removed since not appearing in Ejecta iOS
-		//glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_RENDERBUFFER, msaaRenderBuffer);
+		glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_RENDERBUFFER, msaaRenderBuffer);
 	}
 
 	 glGenFramebuffers(1, &viewFrameBuffer);
@@ -156,11 +150,6 @@ void EJCanvasContext::create()
 	 glBindRenderbuffer(GL_RENDERBUFFER, viewRenderBuffer);
 #endif
 
-	glDisable(GL_CULL_FACE);
-	glDisable(GL_DITHER);
-	
-	glEnable(GL_BLEND);
-	glDepthFunc(GL_ALWAYS);
 }
 
 void EJCanvasContext::setScreenSize(int widthp, int heightp)
@@ -206,7 +195,6 @@ void EJCanvasContext::createStencilBufferOnce()
 #endif
 
 	glClear(GL_STENCIL_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-	glEnable(GL_DEPTH_TEST);
 }
 
 void EJCanvasContext::bindVertexBuffer()
@@ -225,39 +213,52 @@ void EJCanvasContext::prepare()
 {
 	//Bind the frameBuffer and vertexBuffer array
 
+	GLenum error = glGetError();
 #ifdef _WINDOWS
 	glBindFramebufferEXT(GL_FRAMEBUFFER_EXT, msaaEnabled ? msaaFrameBuffer : viewFrameBuffer );
 	glBindRenderbufferEXT(GL_RENDERBUFFER_EXT, msaaEnabled ? msaaRenderBuffer : viewRenderBuffer );
 #else
+	NSLOG("Enter prepare, error: %d", error);
 	glBindFramebuffer(GL_FRAMEBUFFER, msaaEnabled ? msaaFrameBuffer : viewFrameBuffer );
+	error = glGetError();
+	NSLOG("glBindFramebuffer passed, error: %d", error);
 	glBindRenderbuffer(GL_RENDERBUFFER, msaaEnabled ? msaaRenderBuffer : viewRenderBuffer );
+	error = glGetError();
+	NSLOG("glBindRenderbuffer passed, error: %d", error);
 #endif	
-	glViewport(0, 0, bufferWidth, bufferHeight);
+	NSLOG("Before glViewport call, width: %d, height: %d", width, height);
+	glViewport(0, 0, viewportWidth, viewportHeight);
+	error = glGetError();
+	NSLOG("glViewport passed, error: %d", error);
 	
 	
 	EJCompositeOperation op = state->globalCompositeOperation;
 	glBlendFunc( EJCompositeOperationFuncs[op].source, EJCompositeOperationFuncs[op].destination );
-	//TODO: Removed since not appearing in Ejecta iOS
+	error = glGetError();
+	NSLOG("glBlendFunc passed, error: %d", error);
 	//glDisable(GL_TEXTURE_2D);
+	//error = glGetError();
+	//NSLOG("glDisable passed, error: %d", error);
 	currentTexture = NULL;
 	currentProgram = NULL;
 	//TODO: Should be removed? implemented differently?
 	EJTexture::setSmoothScaling(imageSmoothingEnabled);
+	error = glGetError();
+	NSLOG("setSmoothScaling passed, error: %d", error);
 	
 	bindVertexBuffer();
+	error = glGetError();
+	NSLOG("bindVertexBuffer passed, error: %d", error);
 		
-	if(stencilBuffer) {
-		glEnable(GL_DEPTH_TEST);
-	}
-	else {
-		glDisable(GL_DEPTH_TEST);
-	}
-
 	if( state->clipPath ) {
 		glDepthFunc(GL_EQUAL);
+		error = glGetError();
+		NSLOG("glDepthFunc passed, error: %d", error);
 	}
 	else {
 		glDepthFunc(GL_ALWAYS);
+		error = glGetError();
+		NSLOG("glDepthFunc passed, error: %d", error);
 	}
 
 	//TODO: Should be implemented?	
@@ -287,11 +288,14 @@ void EJCanvasContext::setTexture(EJTexture * newTexture) {
 }
 
 void EJCanvasContext::setProgram(EJGLProgram2D *newProgram) {
+	NSLOG("Entering setProgram");
     if( currentProgram == newProgram ) { return; }
+	NSLOG("setProgram - New program");
     
     flushBuffers();
     currentProgram = newProgram;
     
+	NSLOG("setProgram - Before getting program");
     glUseProgram(currentProgram->getProgram());
     glUniform2f(currentProgram->getScreen(), width, height * (upsideDown ? -1 : 1));
 }
@@ -378,6 +382,49 @@ void EJCanvasContext::pushRect(float x, float y, float w, float h, float tx, flo
 	
 	EJVertex * vb = &vertexBuffer[vertexBufferIndex];
 
+	EJVertex vb_0 = { d11, {0, 0}, color };	// top left
+	EJVertex vb_1 = { d21, {0, 0}, color };	// top right
+	EJVertex vb_2 = { d12, {0, 0}, color };	// bottom left
+
+	EJVertex vb_3 = { d21, {0, 0}, color };	// top right
+	EJVertex vb_4 = { d12, {0, 0}, color };	// bottom left
+	EJVertex vb_5 = { d22, {0, 0}, color };// bottom right
+
+	vb[0] = vb_0;	// top left
+	vb[1] = vb_1;	// top right
+	vb[2] = vb_2;	// bottom left
+		
+	vb[3] = vb_3;	// top right
+	vb[4] = vb_4;	// bottom left
+	vb[5] = vb_5;// bottom right
+	
+	vertexBufferIndex += 6;
+}
+
+//TODO: Should be implemented?
+//pushFilledRect, pushGradientRect, pushPatternedRect methods
+
+void EJCanvasContext::pushTexturedRect(float x, float y, float w, float h, float tx, float ty, float tw, float th, EJColorRGBA color, CGAffineTransform transform)
+{
+
+	if( vertexBufferIndex >= vertexBufferSize - 6 ) {
+		flushBuffers();
+	}
+	
+	EJVector2 d11 = { x, y };
+	EJVector2 d21 = { x+w, y };
+	EJVector2 d12 = { x, y+h };
+	EJVector2 d22 = { x+w, y+h };
+	
+	if( !CGAffineTransformIsIdentity(transform) ) {
+		d11 = EJVector2ApplyTransform( d11, transform );
+		d21 = EJVector2ApplyTransform( d21, transform );
+		d12 = EJVector2ApplyTransform( d12, transform );
+		d22 = EJVector2ApplyTransform( d22, transform );
+	}
+	
+	EJVertex * vb = &vertexBuffer[vertexBufferIndex];
+
 	EJVertex vb_0 = { d11, {tx, ty}, color };	// top left
 	EJVertex vb_1 = { d21, {tx+tw, ty}, color };	// top right
 	EJVertex vb_2 = { d12, {tx, ty+th}, color };	// bottom left
@@ -397,14 +444,12 @@ void EJCanvasContext::pushRect(float x, float y, float w, float h, float tx, flo
 	vertexBufferIndex += 6;
 }
 
-//TODO: Should be implemented?
-//pushFilledRect, pushGradientRect, pushPatternedRect, pushTexturedRect? methods
-
-
 void EJCanvasContext::flushBuffers()
 {
+	NSLOG("Entering flushBuffers - Flushing: %d", vertexBufferIndex);
 	if( vertexBufferIndex == 0 ) { return; }
 
+	NSLOG("flushBuffers - Drawing");
 	glDrawArrays(GL_TRIANGLES, 0, vertexBufferIndex);
 	//TODO: Should be implemented?
 	//needsPresenting = YES;
@@ -514,12 +559,13 @@ void EJCanvasContext::drawImage(EJTexture * texture, float sx, float sy, float s
 		setTexture(texture);
 		//TODO: Should be implemented: EJCanvasBlendWhiteColor(state)
 		//pushTexturedRect(dx, dy, dw, dh, sx/tw, sy/th, sw/tw, sh/th, EJCanvasBlendWhiteColor(state), state->transform);
-		pushRect(dx, dy, dw, dh, sx/tw, sy/th, sw/tw, sh/th, color, state->transform);
+		pushTexturedRect(dx, dy, dw, dh, sx/tw, sy/th, sw/tw, sh/th, color, state->transform);
 	}
 }
 
 void EJCanvasContext::fillRect(float x, float y, float w, float h)
 {
+	NSLOG("Entering fillRect: %d, %d, %d, %d", x, y, w, h);
 	//TODO: Should be implemented?
 	// if( state->fillObject ) {
 	// 	[self pushFilledRectX:x y:y w:w h:h fillable:state->fillObject
@@ -599,7 +645,7 @@ void EJCanvasContext::putImageData(EJImageData* imageData, float dx, float dy)
 	static EJColorRGBA white = {0xffffffff};
 	
 	//TODO: reimplement it with pushTexturedRect
-	pushRect(dx, dy, tw, th, 0, 0, 1, 1, white, CGAffineTransformIdentity);
+	pushTexturedRect(dx, dy, tw, th, 0, 0, 1, 1, white, CGAffineTransformIdentity);
 	flushBuffers();
 }
 

@@ -219,6 +219,14 @@ void EJApp::run(void)
 		screenRenderingContext->present();
 		NSPoolManager::sharedPoolManager()->pop();
 	}
+
+	GLenum status = glCheckFramebufferStatus(GL_FRAMEBUFFER);
+	if(status != GL_FRAMEBUFFER_COMPLETE) {
+		NSLOG("------ Framebuffer not complete, %d", status);
+	} else {
+		NSLOG("------ Framebuffer complete, %d", status);
+	}
+
 }
 
 void EJApp::pause(void)
@@ -526,17 +534,29 @@ JSValueRef EJApp::deleteTimer(JSContextRef ctxp, size_t argc, const JSValueRef a
 
 void EJApp::setCurrentRenderingContext(EJCanvasContext * renderingContext)
 {
+	NSLOG("Entering setCurrentRenderingContext");
 	if( renderingContext != currentRenderingContext ) {
+		NSLOG("The new renderingContext is different thant the current one");
 		if(currentRenderingContext) {
+			NSLOG("The current renderingContext exists");
+			NSLOG("We flush it");
 			currentRenderingContext->flushBuffers();
+			NSLOG("We release it");
 			currentRenderingContext->release();
+			NSLOG("Release done");
 		}
 		if(renderingContext){
+			NSLOG("The new renderingContext exists");
+			NSLOG("We prepare it");
 			renderingContext->prepare();
+			NSLOG("We retain it");
 			renderingContext->retain();
+			NSLOG("Retain done");
 		}
+		NSLOG("We set the current renderingContext as the new one");
 		currentRenderingContext = renderingContext;
 	}
+	NSLOG("Exiting setCurrentRenderingContext");
 }
 
 EJApp* EJApp::instance()

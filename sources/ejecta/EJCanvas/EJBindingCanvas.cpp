@@ -234,6 +234,7 @@ EJ_BIND_GET(EJBindingCanvas, MSAASamples, ctx) {
 //
 
 EJ_BIND_FUNCTION( EJBindingCanvas, getContext, ctx, argc, argv) {
+	NSLOG("Call to getContext");
 	if( argc < 1 || !JSValueToNSString(ctx, argv[0])->isEqual(NSStringMake("2d")) ) { 
 		return NULL; 
 	};
@@ -255,9 +256,13 @@ EJ_BIND_FUNCTION( EJBindingCanvas, getContext, ctx, argc, argv) {
 	renderingContext->msaaEnabled = msaaEnabled;
 	renderingContext->msaaSamples = msaaSamples;
 	
+	NSLOG("Before creating context");
 	renderingContext->create();
+	NSLOG("After creating context");
 	//ejectaInstance->currentRenderingContext = renderingContext;
+	NSLOG("Before setting context");
 	ejectaInstance->setCurrentRenderingContext(renderingContext);
+	NSLOG("After setting context");
 
 	// Context and canvas are one and the same object, so getContext just
 	// returns itself
@@ -410,6 +415,8 @@ EJ_BIND_FUNCTION(EJBindingCanvas, drawImage, ctx, argc, argv) {
  EJ_BIND_FUNCTION(EJBindingCanvas,fillRect, ctx, argc, argv) {
  	if( argc < 4 ) { return NULL; }
 	
+	NSLOG("Entering binding fillRect");
+
  	float
  		dx = JSValueToNumberFast(ctx, argv[0]),
  		dy = JSValueToNumberFast(ctx, argv[1]),
