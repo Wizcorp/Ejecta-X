@@ -3,6 +3,7 @@
 
 #include "stdafx.h"
 #include "Ejecta-X.h"
+#include <pthread.h>
 
 #define MAX_LOADSTRING 100
 #define SCREEN_WIDTH 960
@@ -29,6 +30,16 @@ BOOL				InitInstance(HINSTANCE, int);
 LRESULT CALLBACK	WndProc(HWND, UINT, WPARAM, LPARAM);
 INT_PTR CALLBACK	About(HWND, UINT, WPARAM, LPARAM);
 
+static pthread_t        s_networkThread;
+
+static void* networkThread(void *data)
+{
+	while (true) 
+	{
+		Sleep(10);
+		EJApp::instance()->touchesBegan(100, 100);
+	}
+}
 void SetupRC()
 {
 	//glShadeModel(GL_SMOOTH);// Enable Smooth Shading
@@ -90,6 +101,8 @@ int APIENTRY _tWinMain(HINSTANCE hInstance,
 	MSG msg;
 	HACCEL hAccelTable;
 
+	pthread_create(&s_networkThread, NULL, networkThread, NULL);
+	pthread_detach(s_networkThread);
 
 	// 初始化全局字符串
 	g_lbutton_down = false;

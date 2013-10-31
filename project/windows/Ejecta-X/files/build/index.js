@@ -63,6 +63,7 @@ var animate = function() {
 // horizontal controls the line width
 var maxCurves = 70;
 document.addEventListener( 'touchmove', function( ev ) {
+	console.log('event [' + ev.touches[0].pageX + ', ' + ev.touches[0].pageY + ']');
 	ctx.lineWidth = (ev.touches[0].pageX/w) * 20;
 	maxCurves = Math.floor((ev.touches[0].pageY/h) * curves.length);
 }, false );

@@ -4,9 +4,8 @@
 #include "EJTexture.h"
 
 class EJImageData: public NSObject {
-
-public:
 	EJTexture * m_texture;
+public:
 	int width;
 	int height;
 	GLubyte * pixels;
