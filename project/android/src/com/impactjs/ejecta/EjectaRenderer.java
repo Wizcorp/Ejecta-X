@@ -43,6 +43,7 @@ public class EjectaRenderer implements Renderer {
 	public void onSurfaceCreated(GL10 gl, EGLConfig config) {
 		// TODO Auto-generated method stub
 		nativeCreated(mainBundle, screen_width, screen_height);
+        onCanvasCreated();
 	}
 
 	private native void nativeRender();
@@ -63,7 +64,7 @@ public class EjectaRenderer implements Renderer {
 	public native void nativeOnKeyDown(int key_code);
 	public native void nativeOnKeyUp(int key_code);
 
-    // Private interface for JNI method calls from Ejecta
+    // Emit event. Ejecta surface was created and init() has been called in JNI
     private void onCanvasCreated() {
         if (ejectaEventListener != null) {
             // Trigger event
