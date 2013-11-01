@@ -17,6 +17,8 @@ public class EjectaGLSurfaceView extends GLSurfaceView {
 	EjectaRenderer mRenderer;
 	public EjectaGLSurfaceView(Context context, int width, int height) {
 		super(context);
+		//Sets OpenGLES 2.0 to be used
+        setEGLContextClientVersion(2);
 		// TODO Auto-generated constructor stub
 		mRenderer = new EjectaRenderer(context, width, height);
         setRenderer(mRenderer);

@@ -13,7 +13,7 @@
 #else
 #include <jni.h>
 #include <android/log.h>
-#include <GLES/gl.h>
+#include <GLES2/gl2.h>
 #endif
 
 #include <string>
@@ -26,6 +26,8 @@
 #include "EJCocoa/NSString.h"
 #include "EJCocoa/NSSet.h"
 #include "EJCocoa/NSValue.h"
+
+#include "EJSharedOpenGLContext.h"
 
 using namespace std;
 
@@ -42,14 +44,17 @@ class EJBindingTouchInput;
 
 class EJApp : public NSObject {
 
+private:
 	BOOL paused;
 
-        JavaVM *jvm;
-        jobject g_obj;
+	JavaVM *jvm;
+	jobject g_obj;
         
 	NSDictionary * jsClasses;
 	EJTimerCollection * timers;
 	long currentTime;
+
+	EJSharedOpenGLContext *openGLContext;
 
 	static EJApp* ejectaInstance;
 
@@ -98,6 +103,8 @@ public:
     static EJApp* instance();
     static void finalize();
     void setCurrentRenderingContext(EJCanvasContext * renderingContext);
+
+	EJSharedOpenGLContext *getOpenGLContext() const { return openGLContext; }
 
 };
 

@@ -60,7 +60,7 @@ JSObjectRef ej_callAsConstructor(JSContextRef ctx, JSObjectRef constructor, size
 EJApp* EJApp::ejectaInstance = NULL;
 
 
-EJApp::EJApp() : currentRenderingContext(0), screenRenderingContext(0), touchDelegate(0), touches(0)
+EJApp::EJApp() : currentRenderingContext(0), screenRenderingContext(0), touchDelegate(0), touches(0), openGLContext(NULL)
 {
 	NSPoolManager::sharedPoolManager()->push();
 
@@ -111,9 +111,12 @@ EJApp::EJApp() : currentRenderingContext(0), screenRenderingContext(0), touchDel
 			kJSPropertyAttributeDontDelete | kJSPropertyAttributeReadOnly, NULL
 		);
 		
-		// Create the OpenGL ES1 Context
+		// Create the OpenGL ES2 Context
 		// Android init GLView on java framework
-		
+		openGLContext = EJSharedOpenGLContext::getInstance();
+		if(openGLContext != NULL) {
+			openGLContext->retain();
+		}
 }
 
 
@@ -130,6 +133,11 @@ EJApp::~EJApp()
 	timers->release();
 	if(mainBundle)
 		free(mainBundle);
+
+	if(openGLContext != NULL) {
+		openGLContext->release();
+	}
+
 	NSPoolManager::sharedPoolManager()->pop();
 	NSPoolManager::purgePoolManager();
 }
