@@ -89,6 +89,7 @@ public:
     void triggerMessage(const char *message, const char *type);
 
     void loadJavaScriptFile(const char *filename);
+    void evaluateScript(const char *script);
     void loadScriptAtPath(NSString * path);
     JSValueRef loadModuleWithId(NSString * moduleId, JSValueRef module, JSValueRef exports);
     JSValueRef invokeCallback(JSObjectRef callback, JSObjectRef thisObject, size_t argc, const JSValueRef argv[]);
