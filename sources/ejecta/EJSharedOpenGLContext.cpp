@@ -53,7 +53,7 @@ EJVertex *EJSharedOpenGLContext::getVertexBuffer() {
 		if(glProgram2D##NAME == NULL) { \
 			glProgram2D##NAME = new TYPE(); \
 			if(glProgram2D##NAME != NULL) { \
-				bool shaderInitialization = glProgram2D##NAME->initWithVertexShader(NSString::createWithFormat("%s.vsh", #VERTEX_SHADER), NSString::createWithFormat("%s.fsh", #FRAGMENT_SHADER)); \
+				bool shaderInitialization = glProgram2D##NAME->initWithVertexShader(NSString::createWithFormat("shaders/%s.vsh", #VERTEX_SHADER), NSString::createWithFormat("shaders/%s.fsh", #FRAGMENT_SHADER)); \
 				if(!shaderInitialization) { \
 					delete glProgram2D##NAME; \
 					glProgram2D##NAME = NULL; \

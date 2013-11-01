@@ -13,7 +13,6 @@ EJGLProgram2D::~EJGLProgram2D() {
 }
 
 bool EJGLProgram2D::initWithVertexShader(NSString *vertexShaderFile, NSString *fragmentShaderFile) {
-	NSLOG("Entering initWithVertexShader");
 	program = glCreateProgram();
 	GLuint vertexShader = compileShaderFile(vertexShaderFile, GL_VERTEX_SHADER);
 	GLuint fragmentShader = compileShaderFile(fragmentShaderFile, GL_FRAGMENT_SHADER);
@@ -67,7 +66,6 @@ GLint EJGLProgram2D::compileShaderSource(NSString *source, GLenum type) {
 	GLint status;
 	glGetShaderiv(shader, GL_COMPILE_STATUS, &status);
 	if(status == 0) {
-		NSLOG("initWithVertexShader - Shader compilation failed");
 		GLint logLength;
 		glGetShaderiv(shader, GL_INFO_LOG_LENGTH, &logLength);
 		if(logLength > 0) {
@@ -79,7 +77,6 @@ GLint EJGLProgram2D::compileShaderSource(NSString *source, GLenum type) {
 		glDeleteShader(shader);
 		return 0;
 	}
-	NSLOG("initWithVertexShader - Shader compilation succeeded");
 
 	return shader;
 }
@@ -90,7 +87,6 @@ void EJGLProgram2D::linkProgram(GLuint program) {
 
 	glGetProgramiv(program, GL_LINK_STATUS, &status);
 	if(status == 0) {
-		NSLOG("linkProgram - Shader program linking failed");
 		GLint logLength;
 		glGetProgramiv(program, GL_INFO_LOG_LENGTH, &logLength);
 		if(logLength > 0) {
@@ -100,5 +96,4 @@ void EJGLProgram2D::linkProgram(GLuint program) {
 			free(log);
 		}
 	}
-	NSLOG("linkProgram - Shader program linking succeeded");
 }

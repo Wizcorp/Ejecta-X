@@ -25,9 +25,6 @@
 #include "EJSharedOpenGLContext.h"
 
 #define EJ_CANVAS_STATE_STACK_SIZE 16
-//#define EJ_CANVAS_VERTEX_BUFFER_SIZE 2048
-
-//extern EJVertex CanvasVertexBuffer[EJ_CANVAS_VERTEX_BUFFER_SIZE];
 
 class EJPath;
 

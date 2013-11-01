@@ -18,23 +18,14 @@ EJCanvasContextScreen::~EJCanvasContextScreen()
 
 }
 
-//TODO: present method completely different from Ejecta iOS, reimplement it?
 void EJCanvasContextScreen::present()
 {
-	NSLOG("Entering present");
-	//TODO: Should be implemented here?
-	//EJCanvasContext::flushBuffers();
-
-	//TODO: Should be removed?
 	glViewport(0, 0, viewportWidth, viewportHeight);
 
-	//TODO: Should be implemented?
-	//if( !needsPresenting ) { return; }
 #ifdef _WINDOWS
 	glBindFramebufferEXT(GL_FRAMEBUFFER_EXT, 0 );
 	glBindRenderbufferEXT(GL_RENDERBUFFER_EXT, 0 );
 #else
-	//TODO: 0?? Android specific, bind first single buffer?
 	glBindFramebuffer(GL_FRAMEBUFFER, 0 );
 	glBindRenderbuffer(GL_RENDERBUFFER, 0 );
 #endif	
@@ -76,7 +67,6 @@ void EJCanvasContextScreen::finish()
 	glFinish();	
 }
 
-//TODO: create method completely different from Ejecta iOS, reimplement it?
 void EJCanvasContextScreen::create()
 {
 
@@ -131,30 +121,14 @@ void EJCanvasContextScreen::create()
 	glEnable(GL_BLEND);
 	glEnable(GL_DEPTH_TEST);
 	glDepthFunc(GL_ALWAYS);
-	//TODO: Right place?
+
     upsideDown = true;
 
 	prepare();
 	
-	GLenum error = glGetError();
-	NSLOG("Before glClearColor, error: %d", error);
 	glClearColor(0.0f, 1.0f, 0.0f, 1.0f);
-	error = glGetError();
-	NSLOG("glClearColor passed, error: %d", error);
-	GLenum status = glCheckFramebufferStatus(GL_FRAMEBUFFER);
-	if(status != GL_FRAMEBUFFER_COMPLETE) {
-		NSLOG("------ Framebuffer not complete, %d", status);
-		error = glGetError();
-		NSLOG("glCheckFramebufferStatus passed, error: %d", error);
-	} else {
-		NSLOG("------ Framebuffer complete, %d", status);
-		error = glGetError();
-		NSLOG("glCheckFramebufferStatus passed, error: %d", error);
-	    glClear(GL_COLOR_BUFFER_BIT);
-		error = glGetError();
-		NSLOG("glClear passed, error: %d", error);
-	}
-
+    //Removed because Framebuffer doesn't seem to be ready, causing an error
+    //glClear(GL_COLOR_BUFFER_BIT);
 
 // 	// Append the OpenGL view to Impact's main view
     EJApp::instance()->canvasCreated();

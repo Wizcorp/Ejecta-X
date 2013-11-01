@@ -11,7 +11,6 @@
 #include "../EJApp.h"
 #include "EJCanvasContext.h"
 
-//EJVertex CanvasVertexBuffer[EJ_CANVAS_VERTEX_BUFFER_SIZE];
 
 EJCanvasContext::EJCanvasContext() :
 	viewFrameBuffer(0),
@@ -19,12 +18,12 @@ EJCanvasContext::EJCanvasContext() :
 	msaaFrameBuffer(0),
 	msaaRenderBuffer(0),
 	stencilBuffer(0),
+	vertexBuffer(NULL),
 	vertexBufferSize(0),
 	vertexBufferIndex(0),
-	sharedGLContext(NULL),
-	vertexBuffer(NULL),
 	upsideDown(false),
-	currentProgram(NULL)
+	currentProgram(NULL),
+	sharedGLContext(NULL)
 {
 }
 
@@ -181,7 +180,6 @@ void EJCanvasContext::createStencilBufferOnce()
 	glGenRenderbuffers(1, &stencilBuffer);
 	glBindRenderbuffer(GL_RENDERBUFFER, stencilBuffer);
 	if( msaaEnabled ) {
-		//TODO: Find Android specific solution
 		//glRenderbufferStorageMultisampleAPPLE(GL_RENDERBUFFER, msaaSamples, GL_DEPTH24_STENCIL8_OES, bufferWidth, bufferHeight);
 	}
 	else {
@@ -213,67 +211,39 @@ void EJCanvasContext::prepare()
 {
 	//Bind the frameBuffer and vertexBuffer array
 
-	GLenum error = glGetError();
 #ifdef _WINDOWS
 	glBindFramebufferEXT(GL_FRAMEBUFFER_EXT, msaaEnabled ? msaaFrameBuffer : viewFrameBuffer );
 	glBindRenderbufferEXT(GL_RENDERBUFFER_EXT, msaaEnabled ? msaaRenderBuffer : viewRenderBuffer );
 #else
-	NSLOG("Enter prepare, error: %d", error);
 	glBindFramebuffer(GL_FRAMEBUFFER, msaaEnabled ? msaaFrameBuffer : viewFrameBuffer );
-	error = glGetError();
-	NSLOG("glBindFramebuffer passed, error: %d", error);
 	glBindRenderbuffer(GL_RENDERBUFFER, msaaEnabled ? msaaRenderBuffer : viewRenderBuffer );
-	error = glGetError();
-	NSLOG("glBindRenderbuffer passed, error: %d", error);
 #endif	
-	NSLOG("Before glViewport call, width: %d, height: %d", width, height);
 	glViewport(0, 0, viewportWidth, viewportHeight);
-	error = glGetError();
-	NSLOG("glViewport passed, error: %d", error);
 	
 	
 	EJCompositeOperation op = state->globalCompositeOperation;
 	glBlendFunc( EJCompositeOperationFuncs[op].source, EJCompositeOperationFuncs[op].destination );
-	error = glGetError();
-	NSLOG("glBlendFunc passed, error: %d", error);
+	//Removed because glGetError() was returning an error after this call
 	//glDisable(GL_TEXTURE_2D);
-	//error = glGetError();
-	//NSLOG("glDisable passed, error: %d", error);
 	currentTexture = NULL;
 	currentProgram = NULL;
-	//TODO: Should be removed? implemented differently?
 	EJTexture::setSmoothScaling(imageSmoothingEnabled);
-	error = glGetError();
-	NSLOG("setSmoothScaling passed, error: %d", error);
 	
 	bindVertexBuffer();
-	error = glGetError();
-	NSLOG("bindVertexBuffer passed, error: %d", error);
 		
 	if( state->clipPath ) {
 		glDepthFunc(GL_EQUAL);
-		error = glGetError();
-		NSLOG("glDepthFunc passed, error: %d", error);
 	}
 	else {
 		glDepthFunc(GL_ALWAYS);
-		error = glGetError();
-		NSLOG("glDepthFunc passed, error: %d", error);
 	}
-
-	//TODO: Should be implemented?	
-	//needsPresenting = YES;
 }
-
-//TODO: Should be implemented?
-//setWidth, setHeight methods
 
 void EJCanvasContext::setTexture(EJTexture * newTexture) {
 	if( currentTexture == newTexture ) { return; }
 	
 	flushBuffers();
 	
-	//TODO: Keep? not appearing in Ejecta iOS
 	if( !newTexture && currentTexture ) {
 		// Was enabled; should be disabled
 		glDisable(GL_TEXTURE_2D);
@@ -288,14 +258,11 @@ void EJCanvasContext::setTexture(EJTexture * newTexture) {
 }
 
 void EJCanvasContext::setProgram(EJGLProgram2D *newProgram) {
-	NSLOG("Entering setProgram");
     if( currentProgram == newProgram ) { return; }
-	NSLOG("setProgram - New program");
     
     flushBuffers();
     currentProgram = newProgram;
     
-	NSLOG("setProgram - Before getting program");
     glUseProgram(currentProgram->getProgram());
     glUniform2f(currentProgram->getScreen(), width, height * (upsideDown ? -1 : 1));
 }
@@ -401,9 +368,6 @@ void EJCanvasContext::pushRect(float x, float y, float w, float h, float tx, flo
 	vertexBufferIndex += 6;
 }
 
-//TODO: Should be implemented?
-//pushFilledRect, pushGradientRect, pushPatternedRect methods
-
 void EJCanvasContext::pushTexturedRect(float x, float y, float w, float h, float tx, float ty, float tw, float th, EJColorRGBA color, CGAffineTransform transform)
 {
 
@@ -446,18 +410,11 @@ void EJCanvasContext::pushTexturedRect(float x, float y, float w, float h, float
 
 void EJCanvasContext::flushBuffers()
 {
-	NSLOG("Entering flushBuffers - Flushing: %d", vertexBufferIndex);
 	if( vertexBufferIndex == 0 ) { return; }
 
-	NSLOG("flushBuffers - Drawing");
 	glDrawArrays(GL_TRIANGLES, 0, vertexBufferIndex);
-	//TODO: Should be implemented?
-	//needsPresenting = YES;
 	vertexBufferIndex = 0;
 }
-
-//TODO: Should be implemented?
-//imageSmoothingEnabled, setImageSmoothingEnabled, setGlobalCompositeOperation, globalCompositeOperation, setFont, font, setFillObject, fillObject methods
 
 void EJCanvasContext::save()
 {
@@ -470,8 +427,6 @@ void EJCanvasContext::save()
 	stateIndex++;
 	state = &stateStack[stateIndex];
 	state->font->retain();
-	//TODO: Should be implemented?
-	//[state->fillObject retain];
 	if(state->clipPath)state->clipPath->retain();
 }
 
@@ -487,8 +442,6 @@ void EJCanvasContext::restore()
 	
 	// Clean up current state
 	state->font->release();
-	//TODO: Should be implemented?
-	//[state->fillObject release];
 
 	if( state->clipPath && state->clipPath != stateStack[stateIndex-1].clipPath ) {
 		resetClip();
@@ -557,32 +510,19 @@ void EJCanvasContext::drawImage(EJTexture * texture, float sx, float sy, float s
 		EJColorRGBA color = {0xffffffff};
 		color.rgba.a = (unsigned char)(255 * state->globalAlpha);
 		setTexture(texture);
-		//TODO: Should be implemented: EJCanvasBlendWhiteColor(state)
-		//pushTexturedRect(dx, dy, dw, dh, sx/tw, sy/th, sw/tw, sh/th, EJCanvasBlendWhiteColor(state), state->transform);
 		pushTexturedRect(dx, dy, dw, dh, sx/tw, sy/th, sw/tw, sh/th, color, state->transform);
 	}
 }
 
 void EJCanvasContext::fillRect(float x, float y, float w, float h)
 {
-	NSLOG("Entering fillRect: %d, %d, %d, %d", x, y, w, h);
-	//TODO: Should be implemented?
-	// if( state->fillObject ) {
-	// 	[self pushFilledRectX:x y:y w:w h:h fillable:state->fillObject
-	// 		color:EJCanvasBlendWhiteColor(state) withTransform:state->transform];
-	// }
-	// else {
-		//TODO: Should be removed? or placed after setProgram?
-		setTexture(NULL);
-		
-		setProgram(sharedGLContext->getGlProgram2DFlat());
+	setTexture(NULL);
+	
+	setProgram(sharedGLContext->getGlProgram2DFlat());
 
-		EJColorRGBA color = state->fillColor;	
-		color.rgba.a = (unsigned char)(color.rgba.a * state->globalAlpha);
-		//TODO: Should be implemented: EJCanvasBlendWhiteColor(state)
-		//pushRect(x, y, w, h, 0, 0, 0, 0, EJCanvasBlendFillColor(state), state->transform);
-		pushRect(x, y, w, h, 0, 0, 0, 0, color, state->transform);
-	// }
+	EJColorRGBA color = state->fillColor;	
+	color.rgba.a = (unsigned char)(color.rgba.a * state->globalAlpha);
+	pushRect(x, y, w, h, 0, 0, 0, 0, color, state->transform);
 }
 
 void EJCanvasContext::strokeRect(float x, float y, float w, float h)
@@ -606,7 +546,6 @@ void EJCanvasContext::strokeRect(float x, float y, float w, float h)
 
 void EJCanvasContext::clearRect(float x, float y, float w, float h)
 {
-	//TODO: Should be removed? or placed after setProgram?
 	setTexture(NULL);
 	
 	setProgram(sharedGLContext->getGlProgram2DFlat());
@@ -621,8 +560,6 @@ void EJCanvasContext::clearRect(float x, float y, float w, float h)
 
 }
 
-//TODO: Reimplement it as Ejecta iOS?
-//getImageDataScaled, getImageDataSx, getImageDataHDSx
 EJImageData* EJCanvasContext::getImageData(float sx, float sy, float sw, float sh)
 {
 	flushBuffers();
@@ -644,13 +581,9 @@ void EJCanvasContext::putImageData(EJImageData* imageData, float dx, float dy)
 	
 	static EJColorRGBA white = {0xffffffff};
 	
-	//TODO: reimplement it with pushTexturedRect
 	pushTexturedRect(dx, dy, tw, th, 0, 0, 1, 1, white, CGAffineTransformIdentity);
 	flushBuffers();
 }
-
-//TODO: Should be implemented?
-//multiple putImageData methods
 
 void EJCanvasContext::beginPath()
 {
@@ -687,8 +620,6 @@ void EJCanvasContext::lineTo(float x, float y)
 void EJCanvasContext::bezierCurveTo(float cpx, float cpy, float cpx2, float cpy2, float x, float y)
 {
 	float scale = CGAffineTransformGetScale( state->transform );
-	//TODO: Should be implemented
-	//path->bezierCurveTo(cpx, cpy, x, y, scale);
 	path->quadraticCurveTo(cpx, cpy, x, y, scale);
 }
 
@@ -717,7 +648,6 @@ void EJCanvasContext::arc(float x, float y, float radius, float startAngle, floa
 	path->arc(x, y, radius, startAngle, endAngle, antiClockwise);
 }
 
-//TODO: Rename/reimplement to match Ejecta iOS
 EJFont* EJCanvasContext::acquireFont(NSString* fontName , float pointSize ,BOOL fill ,float contentScale) {	
 	//NSString * cacheKey = NSString::createWithFormat("%s_%.2f_%d_%.2f", fontName->getCString(), pointSize, fill, contentScale);
 	EJFont * font = (EJFont *)fontCache->objectForKey(fontName->getCString());	
@@ -739,7 +669,6 @@ void EJCanvasContext::fillText(NSString * text, float x, float y)
 	font->drawString(text, this, x, y);
 }
 
-//TODO: Reimplement to match Ejecta iOS
 void EJCanvasContext::strokeText(NSString * text, float x, float y)
 {
 	EJFont *font =acquireFont(state->font->fontName ,state->font->pointSize,false,backingStoreRatio);
