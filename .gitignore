@@ -11,3 +11,21 @@
 *.lai
 *.la
 #*.a
+
+# OSX files
+*.DS_Store
+
+
+# Android Studio Files
+local.properties
+bin/
+out/
+gen/
+.idea/
+*.iml
+*.iws
+*.ipr
+
+# Gradle Files
+.gradle/
+
