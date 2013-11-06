@@ -5,15 +5,25 @@
 #include <GL/gl.h>
 #include <GL/glext.h>
 #else
-#include <GLES/gl.h>
-#include <GLES/glext.h>
+#include <GLES2/gl2.h>
+#include <GLES2/gl2ext.h>
 #endif
 #include "../EJApp.h"
 #include "EJCanvasContext.h"
 
-EJVertex CanvasVertexBuffer[EJ_CANVAS_VERTEX_BUFFER_SIZE];
 
-EJCanvasContext::EJCanvasContext() : viewFrameBuffer(0), viewRenderBuffer(0), msaaFrameBuffer(0), msaaRenderBuffer(0), stencilBuffer(0),vertexBufferIndex(0)
+EJCanvasContext::EJCanvasContext() :
+	viewFrameBuffer(0),
+	viewRenderBuffer(0),
+	msaaFrameBuffer(0),
+	msaaRenderBuffer(0),
+	stencilBuffer(0),
+	vertexBuffer(NULL),
+	vertexBufferSize(0),
+	vertexBufferIndex(0),
+	upsideDown(false),
+	currentProgram(NULL),
+	sharedGLContext(NULL)
 {
 }
 
@@ -22,8 +32,25 @@ const char* EJCanvasContext::getClassName() {
 	return "EJCanvasContext";
 }
 
-EJCanvasContext::EJCanvasContext(short widthp, short heightp) : viewFrameBuffer(0), viewRenderBuffer(0), msaaFrameBuffer(0), msaaRenderBuffer(0), stencilBuffer(0),vertexBufferIndex(0)
+EJCanvasContext::EJCanvasContext(short widthp, short heightp) :
+	viewFrameBuffer(0),
+	viewRenderBuffer(0),
+	msaaFrameBuffer(0),
+	msaaRenderBuffer(0),
+	stencilBuffer(0),
+	vertexBufferIndex(0),
+	upsideDown(false),
+	currentProgram(NULL)
 {
+	sharedGLContext = EJApp::instance()->getOpenGLContext();
+	if(sharedGLContext != NULL) {
+		vertexBuffer = sharedGLContext->getVertexBuffer();
+		vertexBufferSize = EJ_OPENGL_VERTEX_BUFFER_SIZE;
+	} else {
+		vertexBuffer = NULL;
+		vertexBufferSize = 0;
+	}
+
 	memset(stateStack, 0, sizeof(stateStack));
 	stateIndex = 0;
 	state = &stateStack[stateIndex];
@@ -70,15 +97,17 @@ EJCanvasContext::~EJCanvasContext()
 	if( msaaRenderBuffer ) { glDeleteRenderbuffers(1, &msaaRenderBuffer); }
 	if( stencilBuffer ) { glDeleteRenderbuffers(1, &stencilBuffer); }
 #else
-	if( viewFrameBuffer ) { glDeleteFramebuffersOES( 1, &viewFrameBuffer); }
-	if( viewRenderBuffer ) { glDeleteRenderbuffersOES(1, &viewRenderBuffer); }
-	if( msaaFrameBuffer ) {	glDeleteFramebuffersOES( 1, &msaaFrameBuffer); }
-	if( msaaRenderBuffer ) { glDeleteRenderbuffersOES(1, &msaaRenderBuffer); }
-	if( stencilBuffer ) { glDeleteRenderbuffersOES(1, &stencilBuffer); }
+	if( viewFrameBuffer ) { glDeleteFramebuffers( 1, &viewFrameBuffer); }
+	if( viewRenderBuffer ) { glDeleteRenderbuffers(1, &viewRenderBuffer); }
+	if( msaaFrameBuffer ) {	glDeleteFramebuffers( 1, &msaaFrameBuffer); }
+	if( msaaRenderBuffer ) { glDeleteRenderbuffers(1, &msaaRenderBuffer); }
+	if( stencilBuffer ) { glDeleteRenderbuffers(1, &stencilBuffer); }
 #endif
 	
 	path->release();
 
+	sharedGLContext = NULL;
+	vertexBuffer = NULL;
 }
 
 void EJCanvasContext::create()
@@ -103,21 +132,21 @@ void EJCanvasContext::create()
 
 #else
 	if( msaaEnabled ) {
-		glGenFramebuffersOES(1, &msaaFrameBuffer);
-		glBindFramebufferOES(GL_FRAMEBUFFER_OES, msaaFrameBuffer);
+		glGenFramebuffers(1, &msaaFrameBuffer);
+		glBindFramebuffer(GL_FRAMEBUFFER, msaaFrameBuffer);
 
-		glGenRenderbuffersOES(1, &msaaRenderBuffer);
-		glBindRenderbufferOES(GL_RENDERBUFFER_OES, msaaRenderBuffer);
+		glGenRenderbuffers(1, &msaaRenderBuffer);
+		glBindRenderbuffer(GL_RENDERBUFFER, msaaRenderBuffer);
 
 		//glRenderbufferStorageMultisampleIMG(GL_RENDERBUFFER_OES, msaaSamples, GL_RGBA8_OES, bufferWidth, bufferHeight);
-		glFramebufferRenderbufferOES(GL_FRAMEBUFFER_OES, GL_COLOR_ATTACHMENT0_OES, GL_RENDERBUFFER_OES, msaaRenderBuffer);
+		glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_RENDERBUFFER, msaaRenderBuffer);
 	}
 
-	 glGenFramebuffersOES(1, &viewFrameBuffer);
-	 glBindFramebufferOES(GL_FRAMEBUFFER_OES, viewFrameBuffer);
+	 glGenFramebuffers(1, &viewFrameBuffer);
+	 glBindFramebuffer(GL_FRAMEBUFFER, viewFrameBuffer);
 
-	 glGenRenderbuffersOES(1, &viewRenderBuffer);
-	 glBindRenderbufferOES(GL_RENDERBUFFER_OES, viewRenderBuffer);
+	 glGenRenderbuffers(1, &viewRenderBuffer);
+	 glBindRenderbuffer(GL_RENDERBUFFER, viewRenderBuffer);
 #endif
 
 }
@@ -148,34 +177,34 @@ void EJCanvasContext::createStencilBufferOnce()
 
 #else
 
-	glGenRenderbuffersOES(1, &stencilBuffer);
-	glBindRenderbufferOES(GL_RENDERBUFFER_OES, stencilBuffer);
+	glGenRenderbuffers(1, &stencilBuffer);
+	glBindRenderbuffer(GL_RENDERBUFFER, stencilBuffer);
 	if( msaaEnabled ) {
 		//glRenderbufferStorageMultisampleAPPLE(GL_RENDERBUFFER, msaaSamples, GL_DEPTH24_STENCIL8_OES, bufferWidth, bufferHeight);
 	}
 	else {
-		glRenderbufferStorageOES(GL_RENDERBUFFER_OES, GL_DEPTH24_STENCIL8_OES, bufferWidth, bufferHeight);
+		glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH24_STENCIL8_OES, bufferWidth, bufferHeight);
 	}
-	glFramebufferRenderbufferOES(GL_FRAMEBUFFER_OES, GL_DEPTH_ATTACHMENT_OES, GL_RENDERBUFFER_OES, stencilBuffer);
-	glFramebufferRenderbufferOES(GL_FRAMEBUFFER_OES, GL_STENCIL_ATTACHMENT_OES, GL_RENDERBUFFER_OES, stencilBuffer);
+	glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, stencilBuffer);
+	glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_STENCIL_ATTACHMENT, GL_RENDERBUFFER, stencilBuffer);
 
-	glBindRenderbufferOES(GL_RENDERBUFFER_OES, msaaEnabled ? msaaRenderBuffer : viewRenderBuffer );
+	glBindRenderbuffer(GL_RENDERBUFFER, msaaEnabled ? msaaRenderBuffer : viewRenderBuffer );
 
 #endif
-	glClear(GL_STENCIL_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
+	glClear(GL_STENCIL_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 }
 
 void EJCanvasContext::bindVertexBuffer()
 {
-	glVertexPointer(2, GL_FLOAT, sizeof(EJVertex), &CanvasVertexBuffer[0].pos.x);
-	glTexCoordPointer(2, GL_FLOAT, sizeof(EJVertex), &CanvasVertexBuffer[0].uv.x);
-	glColorPointer(4, GL_UNSIGNED_BYTE, sizeof(EJVertex), &CanvasVertexBuffer[0].color);
+	glEnableVertexAttribArray(kEJGLProgram2DAttributePos);
+	glVertexAttribPointer(kEJGLProgram2DAttributePos, 2, GL_FLOAT, GL_FALSE, sizeof(EJVertex), (char *)vertexBuffer + offsetof(EJVertex, pos));
 	
-	glEnableClientState(GL_VERTEX_ARRAY);
-	glEnableClientState(GL_TEXTURE_COORD_ARRAY);
-	glEnableClientState(GL_COLOR_ARRAY);
+	glEnableVertexAttribArray(kEJGLProgram2DAttributeUV);
+	glVertexAttribPointer(kEJGLProgram2DAttributeUV, 2, GL_FLOAT, GL_FALSE, sizeof(EJVertex), (char *)vertexBuffer + offsetof(EJVertex, uv));
 
+	glEnableVertexAttribArray(kEJGLProgram2DAttributeColor);
+	glVertexAttribPointer(kEJGLProgram2DAttributeColor, 4, GL_UNSIGNED_BYTE, GL_TRUE, sizeof(EJVertex), (char *)vertexBuffer + offsetof(EJVertex, color));
 }
 
 void EJCanvasContext::prepare()
@@ -186,31 +215,22 @@ void EJCanvasContext::prepare()
 	glBindFramebufferEXT(GL_FRAMEBUFFER_EXT, msaaEnabled ? msaaFrameBuffer : viewFrameBuffer );
 	glBindRenderbufferEXT(GL_RENDERBUFFER_EXT, msaaEnabled ? msaaRenderBuffer : viewRenderBuffer );
 #else
-	glBindFramebufferOES(GL_FRAMEBUFFER_OES, msaaEnabled ? msaaFrameBuffer : viewFrameBuffer );
-	glBindRenderbufferOES(GL_RENDERBUFFER_OES, msaaEnabled ? msaaRenderBuffer : viewRenderBuffer );
+	glBindFramebuffer(GL_FRAMEBUFFER, msaaEnabled ? msaaFrameBuffer : viewFrameBuffer );
+	glBindRenderbuffer(GL_RENDERBUFFER, msaaEnabled ? msaaRenderBuffer : viewRenderBuffer );
 #endif	
 	glViewport(0, 0, viewportWidth, viewportHeight);
 	
-	glMatrixMode(GL_PROJECTION);
-	glLoadIdentity();
-#ifdef _WINDOWS
-	glOrtho(0, width, 0, height, -1, 1);
-	glMatrixMode(GL_MODELVIEW);
-	glLoadIdentity();
-#else
-	glOrthof(0, width, 0, height, -1, 1);
-	glMatrixMode(GL_MODELVIEW);
-	glLoadIdentity();
-#endif
 	
 	EJCompositeOperation op = state->globalCompositeOperation;
 	glBlendFunc( EJCompositeOperationFuncs[op].source, EJCompositeOperationFuncs[op].destination );
-	glDisable(GL_TEXTURE_2D);
+	//Removed because glGetError() was returning an error after this call
+	//glDisable(GL_TEXTURE_2D);
 	currentTexture = NULL;
+	currentProgram = NULL;
 	EJTexture::setSmoothScaling(imageSmoothingEnabled);
 	
 	bindVertexBuffer();
-	
+		
 	if( state->clipPath ) {
 		glDepthFunc(GL_EQUAL);
 	}
@@ -219,12 +239,11 @@ void EJCanvasContext::prepare()
 	}
 }
 
-void EJCanvasContext::setTexture(EJTexture * newTexture)
-{
+void EJCanvasContext::setTexture(EJTexture * newTexture) {
 	if( currentTexture == newTexture ) { return; }
 	
 	flushBuffers();
-		
+	
 	if( !newTexture && currentTexture ) {
 		// Was enabled; should be disabled
 		glDisable(GL_TEXTURE_2D);
@@ -238,9 +257,19 @@ void EJCanvasContext::setTexture(EJTexture * newTexture)
 	if(currentTexture)currentTexture->bind();
 }
 
+void EJCanvasContext::setProgram(EJGLProgram2D *newProgram) {
+    if( currentProgram == newProgram ) { return; }
+    
+    flushBuffers();
+    currentProgram = newProgram;
+    
+    glUseProgram(currentProgram->getProgram());
+    glUniform2f(currentProgram->getScreen(), width, height * (upsideDown ? -1 : 1));
+}
+
 void EJCanvasContext::pushTri(float x1, float y1, float x2, float y2, float x3, float y3, EJColorRGBA color, CGAffineTransform transform)
 {
-	if( vertexBufferIndex >= EJ_CANVAS_VERTEX_BUFFER_SIZE - 3 ) {
+	if( vertexBufferIndex >= vertexBufferSize - 3 ) {
 		flushBuffers();
 	}
 	
@@ -254,7 +283,7 @@ void EJCanvasContext::pushTri(float x1, float y1, float x2, float y2, float x3, 
 		d3 = EJVector2ApplyTransform( d3, transform );
 	}
 	
-	EJVertex * vb = &CanvasVertexBuffer[vertexBufferIndex];
+	EJVertex * vb = &vertexBuffer[vertexBufferIndex];
 
 	EJVertex vb_0 = {d1, {0.5, 1}, color};
 	EJVertex vb_1 = { d2, {0.5, 0.5}, color };
@@ -269,7 +298,7 @@ void EJCanvasContext::pushTri(float x1, float y1, float x2, float y2, float x3, 
 
 void EJCanvasContext::pushQuad(EJVector2 v1, EJVector2 v2, EJVector2 v3, EJVector2 v4, EJVector2 t1, EJVector2 t2, EJVector2 t3, EJVector2 t4, EJColorRGBA color, CGAffineTransform transform)
 {
-	if( vertexBufferIndex >= EJ_CANVAS_VERTEX_BUFFER_SIZE - 6 ) {
+	if( vertexBufferIndex >= vertexBufferSize - 6 ) {
 		flushBuffers();
 	}
 	
@@ -280,7 +309,7 @@ void EJCanvasContext::pushQuad(EJVector2 v1, EJVector2 v2, EJVector2 v3, EJVecto
 		v4 = EJVector2ApplyTransform( v4, transform );
 	}
 	
-	EJVertex * vb = &CanvasVertexBuffer[vertexBufferIndex];
+	EJVertex * vb = &vertexBuffer[vertexBufferIndex];
 
 	EJVertex vb_0 = { v1, t1, color };
 	EJVertex vb_1 = { v2, t2, color };
@@ -302,7 +331,7 @@ void EJCanvasContext::pushQuad(EJVector2 v1, EJVector2 v2, EJVector2 v3, EJVecto
 void EJCanvasContext::pushRect(float x, float y, float w, float h, float tx, float ty, float tw, float th, EJColorRGBA color, CGAffineTransform transform)
 {
 
-	if( vertexBufferIndex >= EJ_CANVAS_VERTEX_BUFFER_SIZE - 6 ) {
+	if( vertexBufferIndex >= vertexBufferSize - 6 ) {
 		flushBuffers();
 	}
 	
@@ -318,7 +347,47 @@ void EJCanvasContext::pushRect(float x, float y, float w, float h, float tx, flo
 		d22 = EJVector2ApplyTransform( d22, transform );
 	}
 	
-	EJVertex * vb = &CanvasVertexBuffer[vertexBufferIndex];
+	EJVertex * vb = &vertexBuffer[vertexBufferIndex];
+
+	EJVertex vb_0 = { d11, {0, 0}, color };	// top left
+	EJVertex vb_1 = { d21, {0, 0}, color };	// top right
+	EJVertex vb_2 = { d12, {0, 0}, color };	// bottom left
+
+	EJVertex vb_3 = { d21, {0, 0}, color };	// top right
+	EJVertex vb_4 = { d12, {0, 0}, color };	// bottom left
+	EJVertex vb_5 = { d22, {0, 0}, color };// bottom right
+
+	vb[0] = vb_0;	// top left
+	vb[1] = vb_1;	// top right
+	vb[2] = vb_2;	// bottom left
+		
+	vb[3] = vb_3;	// top right
+	vb[4] = vb_4;	// bottom left
+	vb[5] = vb_5;// bottom right
+	
+	vertexBufferIndex += 6;
+}
+
+void EJCanvasContext::pushTexturedRect(float x, float y, float w, float h, float tx, float ty, float tw, float th, EJColorRGBA color, CGAffineTransform transform)
+{
+
+	if( vertexBufferIndex >= vertexBufferSize - 6 ) {
+		flushBuffers();
+	}
+	
+	EJVector2 d11 = { x, y };
+	EJVector2 d21 = { x+w, y };
+	EJVector2 d12 = { x, y+h };
+	EJVector2 d22 = { x+w, y+h };
+	
+	if( !CGAffineTransformIsIdentity(transform) ) {
+		d11 = EJVector2ApplyTransform( d11, transform );
+		d21 = EJVector2ApplyTransform( d21, transform );
+		d12 = EJVector2ApplyTransform( d12, transform );
+		d22 = EJVector2ApplyTransform( d22, transform );
+	}
+	
+	EJVertex * vb = &vertexBuffer[vertexBufferIndex];
 
 	EJVertex vb_0 = { d11, {tx, ty}, color };	// top left
 	EJVertex vb_1 = { d21, {tx+tw, ty}, color };	// top right
@@ -343,10 +412,30 @@ void EJCanvasContext::flushBuffers()
 {
 	if( vertexBufferIndex == 0 ) { return; }
 
-	glVertexPointer(2, GL_FLOAT, sizeof(EJVertex), &CanvasVertexBuffer[0].pos.x);
-
 	glDrawArrays(GL_TRIANGLES, 0, vertexBufferIndex);
 	vertexBufferIndex = 0;
+}
+
+void EJCanvasContext::setGlobalCompositeOperation(EJCompositeOperation op) {
+	// Same composite operation or switching between SourceOver <> Lighter? We don't
+	// have to flush and set the blend mode then, but we still need to update the state,
+	// as the alphaFactor may be different.
+	if(
+		op == state->globalCompositeOperation ||
+		(op == kEJCompositeOperationLighter && state->globalCompositeOperation == kEJCompositeOperationSourceOver) ||
+		(op == kEJCompositeOperationSourceOver && state->globalCompositeOperation == kEJCompositeOperationLighter)
+	) {
+		state->globalCompositeOperation = op;
+		return;
+	}
+	
+	flushBuffers();
+	glBlendFunc(EJCompositeOperationFuncs[op].source, EJCompositeOperationFuncs[op].destination);
+	state->globalCompositeOperation = op;
+}
+
+EJCompositeOperation EJCanvasContext::getGlobalCompositeOperation() const {
+	return state->globalCompositeOperation;
 }
 
 void EJCanvasContext::save()
@@ -389,11 +478,12 @@ void EJCanvasContext::restore()
     
 	// Set Composite op, if different
 	if( state->globalCompositeOperation != oldCompositeOp ) {
-		globalCompositeOperation = state->globalCompositeOperation;
+		setGlobalCompositeOperation(state->globalCompositeOperation);
 	}
 	
 	// Render clip path, if present and different
 	if( state->clipPath && state->clipPath != oldClipPath ) {
+		setProgram(sharedGLContext->getGlProgram2DFlat());
 		state->clipPath->drawPolygonsToContext(this,kEJPathPolygonTargetDepth);
 	}
 }
@@ -435,12 +525,14 @@ void EJCanvasContext::drawImage(EJTexture * texture, float sx, float sy, float s
 	{
 		float tw = texture->realWidth;
 		float th = texture->realHeight;
-	
+
+		setProgram(sharedGLContext->getGlProgram2DTexture());
+
 		//EJColorRGBA color = {{255, 255, 255, 255 * state->globalAlpha}};
 		EJColorRGBA color = {0xffffffff};
 		color.rgba.a = (unsigned char)(255 * state->globalAlpha);
 		setTexture(texture);
-		pushRect(dx, dy, dw, dh, sx/tw, sy/th, sw/tw, sh/th, color, state->transform);
+		pushTexturedRect(dx, dy, dw, dh, sx/tw, sy/th, sw/tw, sh/th, color, state->transform);
 	}
 }
 
@@ -448,6 +540,8 @@ void EJCanvasContext::fillRect(float x, float y, float w, float h)
 {
 	setTexture(NULL);
 	
+	setProgram(sharedGLContext->getGlProgram2DFlat());
+
 	EJColorRGBA color = state->fillColor;	
 	color.rgba.a = (unsigned char)(color.rgba.a * state->globalAlpha);
 	pushRect(x, y, w, h, 0, 0, 0, 0, color, state->transform);
@@ -466,6 +560,7 @@ void EJCanvasContext::strokeRect(float x, float y, float w, float h)
 	tempPath->lineTo(x, y+h);
 	tempPath->close();
 	
+	setProgram(sharedGLContext->getGlProgram2DFlat());
 	tempPath->drawLinesToContext(this);
 	tempPath->release();
 
@@ -475,13 +570,15 @@ void EJCanvasContext::clearRect(float x, float y, float w, float h)
 {
 	setTexture(NULL);
 	
+	setProgram(sharedGLContext->getGlProgram2DFlat());
+
 	EJCompositeOperation oldOp = state->globalCompositeOperation;
-	globalCompositeOperation = kEJCompositeOperationDestinationOut;
+	setGlobalCompositeOperation(kEJCompositeOperationDestinationOut);
 	
 	static EJColorRGBA white = {0x00000000};
 	pushRect(x, y, w, h, 0, 0, 0, 0, white, state->transform);
 	
-	globalCompositeOperation = oldOp;
+	setGlobalCompositeOperation(oldOp);
 
 }
 
@@ -498,6 +595,7 @@ EJImageData* EJCanvasContext::getImageData(float sx, float sy, float sw, float s
 void EJCanvasContext::putImageData(EJImageData* imageData, float dx, float dy)
 {
 	EJTexture * texture = imageData->texture();
+	setProgram(sharedGLContext->getGlProgram2DTexture());
 	setTexture(texture);
 	
 	short tw = texture->realWidth;
@@ -505,7 +603,7 @@ void EJCanvasContext::putImageData(EJImageData* imageData, float dx, float dy)
 	
 	static EJColorRGBA white = {0xffffffff};
 	
-	pushRect(dx, dy, tw, th, 0, 0, 1, 1, white, CGAffineTransformIdentity);
+	pushTexturedRect(dx, dy, tw, th, 0, 0, 1, 1, white, CGAffineTransformIdentity);
 	flushBuffers();
 }
 
@@ -521,11 +619,13 @@ void EJCanvasContext::closePath()
 
 void EJCanvasContext::fill()
 {
+	setProgram(sharedGLContext->getGlProgram2DFlat());
 	path->drawPolygonsToContext(this,  kEJPathPolygonTargetColor);
 }
 
 void EJCanvasContext::stroke()
 {
+	setProgram(sharedGLContext->getGlProgram2DFlat());
 	path->drawLinesToContext(this);
 }
 
@@ -539,15 +639,6 @@ void EJCanvasContext::lineTo(float x, float y)
 	path->lineTo(x, y);
 }
 
-void EJCanvasContext::rect(float x, float y, float w, float h)
-{
-	path->moveTo(x, y);
-	path->lineTo(x+w, y);
-	path->lineTo(x+w, y+h);
-	path->lineTo(x, y+h);
-	path->close();
-}
-
 void EJCanvasContext::bezierCurveTo(float cpx, float cpy, float cpx2, float cpy2, float x, float y)
 {
 	float scale = CGAffineTransformGetScale( state->transform );
@@ -558,6 +649,15 @@ void EJCanvasContext::quadraticCurveTo(float cpx, float cpy, float x, float y)
 {
 	float scale = CGAffineTransformGetScale( state->transform );
 	path->quadraticCurveTo(cpx, cpy, x, y, scale);
+}
+
+void EJCanvasContext::rect(float x, float y, float w, float h)
+{
+	path->moveTo(x, y);
+	path->lineTo(x+w, y);
+	path->lineTo(x+w, y+h);
+	path->lineTo(x, y+h);
+	path->close();
 }
 
 void EJCanvasContext::arcTo(float x1, float y1, float x2, float y2, float radius)
@@ -584,14 +684,18 @@ EJFont* EJCanvasContext::acquireFont(NSString* fontName , float pointSize ,BOOL 
 }
 
 void EJCanvasContext::fillText(NSString * text, float x, float y)
-{		
+{
 	EJFont *font =acquireFont(state->font->fontName ,state->font->pointSize,true,backingStoreRatio);	
+
+	setProgram(sharedGLContext->getGlProgram2DAlphaTexture());
 	font->drawString(text, this, x, y);
 }
 
 void EJCanvasContext::strokeText(NSString * text, float x, float y)
 {
 	EJFont *font =acquireFont(state->font->fontName ,state->font->pointSize,false,backingStoreRatio);
+
+	setProgram(sharedGLContext->getGlProgram2DAlphaTexture());
 	font->drawString(text, this, x, y);	
 	fillText(text,x,y);
 }
@@ -609,6 +713,7 @@ void EJCanvasContext::clip()
 	state->clipPath = NULL;
 	
 	state->clipPath = (EJPath*)(path->copy());
+	setProgram(sharedGLContext->getGlProgram2DFlat());
 	state->clipPath->drawPolygonsToContext(this, kEJPathPolygonTargetDepth);
 }
 

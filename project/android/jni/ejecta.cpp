@@ -22,7 +22,7 @@ extern "C" {
 
         NSLog("nativeCreated : %d, %d", w, h);
         const char *nativeString = (env)->GetStringUTFChars(package_path, 0);
-        EJApp::instance()->init(nativeString, w, h);
+        EJApp::instance()->init(env, thiz, nativeString, w, h);
     }
 
     JNIEXPORT void JNICALL Java_com_impactjs_ejecta_EjectaRenderer_nativeChanged(JNIEnv* env, jobject thiz , jint w, jint h)
@@ -81,6 +81,12 @@ extern "C" {
             break;
         }
     }
+    
+    JNIEXPORT void JNICALL Java_com_impactjs_ejecta_EjectaRenderer_nativeLoadJavaScriptFile(JNIEnv* env, jobject thiz, jstring filename)
+    {
+        const char *filenameAsChar = (env)->GetStringUTFChars(filename, 0);
+        EJApp::instance()->loadJavaScriptFile(filenameAsChar);
+    }
 
     JNIEXPORT void JNICALL Java_com_impactjs_ejecta_EjectaRenderer_nativeOnKeyDown(JNIEnv* env, jobject thiz, jint key_code)
     {
@@ -96,5 +102,4 @@ extern "C" {
     {
 	   //(*s_gravity_sensor_handler)(static_cast<r32>(x), static_cast<r32>(y), static_cast<r32>(z));
     }
-
 }

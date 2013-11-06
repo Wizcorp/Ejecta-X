@@ -2,11 +2,11 @@
 
 ****************************************************************************/
 
-#ifndef __EJ_CANVAS_TYPES_H__
-#define __EJ_CANVAS_TYPES_H__
+#ifndef __EJ_CANVAS_2D_TYPES_H__
+#define __EJ_CANVAS_2D_TYPES_H__
 
-#include <math.h>
 #include "../EJCocoa/CGAffineTransform.h"
+#include <cmath>
 
 typedef union { 
 	unsigned int hex;
@@ -91,5 +91,4 @@ typedef struct {
 	EJColorRGBA color;
 } EJVertex;
 
-
-#endif // __EJ_CANVAS_TYPES_H__
+#endif // __EJ_CANVAS_2D_TYPES_H__

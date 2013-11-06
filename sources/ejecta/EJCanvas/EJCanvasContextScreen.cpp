@@ -21,12 +21,13 @@ EJCanvasContextScreen::~EJCanvasContextScreen()
 void EJCanvasContextScreen::present()
 {
 	glViewport(0, 0, viewportWidth, viewportHeight);
+
 #ifdef _WINDOWS
 	glBindFramebufferEXT(GL_FRAMEBUFFER_EXT, 0 );
 	glBindRenderbufferEXT(GL_RENDERBUFFER_EXT, 0 );
 #else
-	glBindFramebufferOES(GL_FRAMEBUFFER_OES, 0 );
-	glBindRenderbufferOES(GL_RENDERBUFFER_OES, 0 );
+	glBindFramebuffer(GL_FRAMEBUFFER, 0 );
+	glBindRenderbuffer(GL_RENDERBUFFER, 0 );
 #endif	
 
 	// [self flushBuffers];
@@ -46,15 +47,15 @@ void EJCanvasContextScreen::present()
 		glBindFramebufferEXT(GL_FRAMEBUFFER_EXT, msaaFrameBuffer);
 #else
 		//Bind the MSAA and View frameBuffers and resolve
-		glBindFramebufferOES(GL_FRAMEBUFFER_OES, msaaFrameBuffer);
-		glBindFramebufferOES(GL_FRAMEBUFFER_OES, viewFrameBuffer);
+		glBindFramebuffer(GL_FRAMEBUFFER, msaaFrameBuffer);
+		glBindFramebuffer(GL_FRAMEBUFFER, viewFrameBuffer);
 		// glResolveMultisampleFramebufferAPPLE();
 
-		glBindRenderbufferOES(GL_RENDERBUFFER_OES, viewRenderBuffer);
+		glBindRenderbuffer(GL_RENDERBUFFER, viewRenderBuffer);
 		// [[EJApp instance].glContext presentRenderbuffer:GL_RENDERBUFFER];
 		// EJApp::instance()->glContext->presentRenderbuffer(GL_RENDERBUFFER_OES);
 		// presentRenderbuffer(GL_RENDERBUFFER_OES);
-		glBindFramebufferOES(GL_FRAMEBUFFER_OES, msaaFrameBuffer);
+		glBindFramebuffer(GL_FRAMEBUFFER, msaaFrameBuffer);
 #endif
 	}
 	else {
@@ -115,17 +116,19 @@ void EJCanvasContextScreen::create()
 	
 
 	glDisable(GL_CULL_FACE);
-	glDisable(GL_LIGHTING);
 	glDisable(GL_DITHER);
-	
+
 	glEnable(GL_BLEND);
 	glEnable(GL_DEPTH_TEST);
 	glDepthFunc(GL_ALWAYS);
 
+    upsideDown = true;
+
 	prepare();
 	
 	glClearColor(0.0f, 1.0f, 0.0f, 1.0f);
-    glClear(GL_COLOR_BUFFER_BIT);
+    //Removed because Framebuffer doesn't seem to be ready, causing an error
+    //glClear(GL_COLOR_BUFFER_BIT);
 
 // 	// Append the OpenGL view to Impact's main view
     EJApp::instance()->hideLoadingScreen();
@@ -134,9 +137,6 @@ void EJCanvasContextScreen::create()
 void EJCanvasContextScreen::prepare()
 {
 	EJCanvasContext::prepare();
-
-	glTranslatef(0, height, 0);
-	glScalef( 1, -1, 1 );
 }
 
 EJImageData* EJCanvasContextScreen::getImageData(float sx, float sy, float sw, float sh)

@@ -56,6 +56,7 @@ LOCAL_SRC_FILES := \
                     ../../../sources/ejecta/EJBindingBase.cpp \
                     ../../../sources/ejecta/EJBindingEjectaCore.cpp \
                     ../../../sources/ejecta/EJBindingEventedBase.cpp \
+                    ../../../sources/ejecta/EJSharedOpenGLContext.cpp \
                     ../../../sources/ejecta/EJTimer.cpp \
                     ../../../sources/ejecta/EJAudio/EJBindingAudio.cpp \
                     ../../../sources/ejecta/EJCanvas/EJBindingImage.cpp \
@@ -67,13 +68,14 @@ LOCAL_SRC_FILES := \
                     ../../../sources/ejecta/EJCanvas/EJPath.cpp \
                     ../../../sources/ejecta/EJCanvas/EJTexture.cpp \
                     ../../../sources/ejecta/EJCanvas/EJFont.cpp \
+                    ../../../sources/ejecta/EJCanvas/EJGLProgram2D.cpp \
                     ../../../sources/ejecta/EJCanvas/EJImageData.cpp \
                     ../../../sources/ejecta/EJUtils/EJBindingHttpRequest.cpp \
                     ../../../sources/ejecta/EJUtils/EJBindingLocalStorage.cpp \
                     ../../../sources/ejecta/EJUtils/EJBindingTouchInput.cpp \
                     ejecta.cpp \
 
-LOCAL_LDLIBS :=  -lz -llog -lGLESv1_CM \
+LOCAL_LDLIBS :=  -lz -llog -lGLESv2 -lGLESv1_CM \
                     -L$(LOCAL_PATH)/../../../library/android/libfreetype/libs/$(TARGET_ARCH_ABI) -lfreetype \
                     -L$(LOCAL_PATH)/../../../library/android/libpng/libs/$(TARGET_ARCH_ABI) -lpng \
                     -L$(LOCAL_PATH)/../../../library/android/libjpeg/libs/$(TARGET_ARCH_ABI) -ljpeg \

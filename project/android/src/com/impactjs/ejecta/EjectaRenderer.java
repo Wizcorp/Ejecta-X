@@ -12,8 +12,9 @@ public class EjectaRenderer implements Renderer {
     public static String mainBundle;
     private int screen_width;
     private int screen_height;
-    
-	public EjectaRenderer(Context ctx, int width, int height) {
+    private EjectaEventListener ejectaEventListener = null;
+
+    public EjectaRenderer(Context ctx, int width, int height) {
 		mainBundle = "/data/data/" + ctx.getPackageName();
         mContext = ctx;
         System.out.println(mainBundle);
@@ -42,6 +43,7 @@ public class EjectaRenderer implements Renderer {
 	public void onSurfaceCreated(GL10 gl, EGLConfig config) {
 		// TODO Auto-generated method stub
 		nativeCreated(mainBundle, screen_width, screen_height);
+        onCanvasCreated();
 	}
 
 	private native void nativeRender();
@@ -54,9 +56,29 @@ public class EjectaRenderer implements Renderer {
     
 	public native void nativePause();
 	public native void nativeResume();
+
+    public native void nativeLoadJavaScriptFile(String filename);
     
 	public native void nativeTouch(int action, int x, int y);
 	public native void nativeOnSensorChanged(float accle_x, float accle_y, float accle_z);
 	public native void nativeOnKeyDown(int key_code);
 	public native void nativeOnKeyUp(int key_code);
+
+    // Emit event. Ejecta surface was created and init() has been called in JNI
+    private void onCanvasCreated() {
+        if (ejectaEventListener != null) {
+            // Trigger event
+            ejectaEventListener.onCanvasCreated();
+        }
+    };
+
+    // Set listener public interface
+    public void setOnCanvasCreatedListener(EjectaEventListener listener) {
+        ejectaEventListener = listener;
+    }
+
+    public interface EjectaEventListener {
+        public abstract void onCanvasCreated();
+    }
+
 }

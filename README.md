@@ -24,3 +24,26 @@ run Ejecta-X.sln with vs2010 in `project` folder.
 ### Sample
 
 For an example application in the `sample` folder, name `Ejecta-X.apk`.
+
+### Native Events
+
+**Register for Java Events**
+
+Set an event listener on your activity as follows;
+
+	((EjectaGLSurfaceView)mGLView).setEjectaEventListener(new EjectaRenderer.EjectaEventListener() {
+        @Override
+        public void onCanvasCreated() {
+            
+    	}
+	});
+	
+### Native APIs
+
+**loadJavaScriptFile(String filename)**
+
+Will load a JavaScript file into Ejecta-X. File should be relative from ```assets/build/<filename>```. 
+
+For example to load a file at ```assets/build/loadme.js``` would be;
+	
+	((EjectaGLSurfaceView)mGLView).loadJavaScriptFile("loadme.js")

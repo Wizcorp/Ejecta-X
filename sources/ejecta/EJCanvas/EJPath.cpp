@@ -5,6 +5,9 @@
 #include "../EJCocoa/support/nsMacros.h"
 #include "EJCanvasContext.h"
 
+//Necessary for call to OpenGLES 1 functions such as glDisableClientState
+#include <GLES/gl.h>
+
 EJPath::EJPath() :
 		transform(CGAffineTransformIdentity), 
 		stencilMask(0x1) {
@@ -330,7 +333,9 @@ void EJPath::drawPolygonsToContext(EJCanvasContext * context,
 	
 	glEnable(GL_CULL_FACE);
 	for( path_t::iterator sp = paths.begin(); sp != paths.end(); ++sp ) {
-		glVertexPointer(2, GL_FLOAT, sizeof(EJVector2), &(sp->points).front());
+		subpath_t &path = sp==paths.end()?currentPath:*sp;
+		
+		glVertexAttribPointer(kEJGLProgram2DAttributePos, 2, GL_FLOAT, GL_FALSE, 0, &(path.points).front());
 		
 #ifdef _WINDOWS
 		glCullFace(GL_BACK);
@@ -342,13 +347,14 @@ void EJPath::drawPolygonsToContext(EJCanvasContext * context,
 		glDrawArrays(GL_TRIANGLE_FAN, 0, sp->points.size());
 #else
 		glCullFace(GL_BACK);
-		glStencilOp(GL_INCR_WRAP_OES, GL_KEEP, GL_INCR_WRAP_OES);
-		glDrawArrays(GL_TRIANGLE_FAN, 0, sp->points.size());
+		glStencilOp(GL_INCR_WRAP, GL_KEEP, GL_INCR_WRAP);
+		glDrawArrays(GL_TRIANGLE_FAN, 0, path.points.size());
 
 		glCullFace(GL_FRONT);
-		glStencilOp(GL_DECR_WRAP_OES, GL_KEEP, GL_DECR_WRAP_OES);
-		glDrawArrays(GL_TRIANGLE_FAN, 0, sp->points.size());
+		glStencilOp(GL_DECR_WRAP, GL_KEEP, GL_DECR_WRAP);
+		glDrawArrays(GL_TRIANGLE_FAN, 0, path.points.size());
 #endif
+		if(sp==paths.end()) break;
 	}
 	glDisable(GL_CULL_FACE);
 	context->bindVertexBuffer();
@@ -370,6 +376,7 @@ void EJPath::drawPolygonsToContext(EJCanvasContext * context,
 	
 	glStencilFunc(GL_NOTEQUAL, 0x00, 0xff);
     glStencilOp(GL_ZERO, GL_ZERO, GL_ZERO);
+
 	 context->
 	 	pushRect(minPos.x,minPos.y ,maxPos.x-minPos.x ,maxPos.y-minPos.y
 	 	,0 ,0 ,0 ,0

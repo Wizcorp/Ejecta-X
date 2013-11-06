@@ -541,6 +541,9 @@ void EJBindingHttpRequest::onHttpRequestCompleted(NSObject *sender, void *data)
 	std::string buf = std::string(buffer->begin(), buffer->end());
 	responseBody = new char[buffer->size()];
 	sprintf(responseBody, "%s", buf.c_str());
+
+    EJBindingEventedBase::triggerEvent(NSStringMake("loadend"), 0, NULL);
+    EJBindingEventedBase::triggerEvent(NSStringMake("readystatechange"), 0, NULL);
 }
 
 EJ_BIND_FUNCTION(EJBindingHttpRequest, open, ctx, argc, argv) {	
