@@ -82,7 +82,8 @@ EJTexture* EJBindingCanvas::texture() {
 	}
 }
 
-EJ_BIND_ENUM( EJBindingCanvas, globalCompositeOperation, EJCompositeOperation, renderingContext->globalCompositeOperation);
+EJ_BIND_ENUM_GETTER( EJBindingCanvas, globalCompositeOperation, EJCompositeOperation, renderingContext->getGlobalCompositeOperation);
+EJ_BIND_ENUM_SETTER( EJBindingCanvas, globalCompositeOperation, EJCompositeOperation, renderingContext->setGlobalCompositeOperation);
 EJ_BIND_ENUM( EJBindingCanvas, lineCap, EJLineCap, renderingContext->state->lineCap);
 EJ_BIND_ENUM( EJBindingCanvas, lineJoin, EJLineJoin, renderingContext->state->lineJoin);
 EJ_BIND_ENUM( EJBindingCanvas, textAlign, EJTextAlign, renderingContext->state->textAlign);

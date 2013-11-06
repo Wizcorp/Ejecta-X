@@ -416,6 +416,28 @@ void EJCanvasContext::flushBuffers()
 	vertexBufferIndex = 0;
 }
 
+void EJCanvasContext::setGlobalCompositeOperation(EJCompositeOperation op) {
+	// Same composite operation or switching between SourceOver <> Lighter? We don't
+	// have to flush and set the blend mode then, but we still need to update the state,
+	// as the alphaFactor may be different.
+	if(
+		op == state->globalCompositeOperation ||
+		(op == kEJCompositeOperationLighter && state->globalCompositeOperation == kEJCompositeOperationSourceOver) ||
+		(op == kEJCompositeOperationSourceOver && state->globalCompositeOperation == kEJCompositeOperationLighter)
+	) {
+		state->globalCompositeOperation = op;
+		return;
+	}
+	
+	flushBuffers();
+	glBlendFunc(EJCompositeOperationFuncs[op].source, EJCompositeOperationFuncs[op].destination);
+	state->globalCompositeOperation = op;
+}
+
+EJCompositeOperation EJCanvasContext::getGlobalCompositeOperation() const {
+	return state->globalCompositeOperation;
+}
+
 void EJCanvasContext::save()
 {
 	if( stateIndex == EJ_CANVAS_STATE_STACK_SIZE-1 ) {
@@ -456,7 +478,7 @@ void EJCanvasContext::restore()
     
 	// Set Composite op, if different
 	if( state->globalCompositeOperation != oldCompositeOp ) {
-		globalCompositeOperation = state->globalCompositeOperation;
+		setGlobalCompositeOperation(state->globalCompositeOperation);
 	}
 	
 	// Render clip path, if present and different
@@ -551,12 +573,12 @@ void EJCanvasContext::clearRect(float x, float y, float w, float h)
 	setProgram(sharedGLContext->getGlProgram2DFlat());
 
 	EJCompositeOperation oldOp = state->globalCompositeOperation;
-	globalCompositeOperation = kEJCompositeOperationDestinationOut;
+	setGlobalCompositeOperation(kEJCompositeOperationDestinationOut);
 	
 	static EJColorRGBA white = {0x00000000};
 	pushRect(x, y, w, h, 0, 0, 0, 0, white, state->transform);
 	
-	globalCompositeOperation = oldOp;
+	setGlobalCompositeOperation(oldOp);
 
 }
 

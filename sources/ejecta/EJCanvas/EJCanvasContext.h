@@ -130,7 +130,6 @@ public:
 	NSCache * fontCache;
 
 	EJCanvasState * state;
-	EJCompositeOperation globalCompositeOperation;
 	UIFont * font;
 	float backingStoreRatio;
 	bool msaaEnabled;
@@ -186,6 +185,9 @@ public:
 
 	//返回类名
 	virtual const char* getClassName();
+
+	void setGlobalCompositeOperation(EJCompositeOperation op);
+	EJCompositeOperation getGlobalCompositeOperation() const;
 };
 
 #endif // __EJ_CANVAS_CONTEXT_H__
