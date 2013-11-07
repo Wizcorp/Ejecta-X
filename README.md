@@ -25,6 +25,8 @@ run Ejecta-X.sln with vs2010 in `project` folder.
 
 For an example application in the `sample` folder, name `Ejecta-X.apk`.
 
+For XHR, remember to add ```<uses-permission android:name="android.permission.INTERNET"/>``` to the Android Manifest.
+
 ### Native Events
 
 **Register for Java Events**
