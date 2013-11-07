@@ -527,12 +527,8 @@ void EJCanvasContext::drawImage(EJTexture * texture, float sx, float sy, float s
 		float th = texture->realHeight;
 
 		setProgram(sharedGLContext->getGlProgram2DTexture());
-
-		//EJColorRGBA color = {{255, 255, 255, 255 * state->globalAlpha}};
-		EJColorRGBA color = {0xffffffff};
-		color.rgba.a = (unsigned char)(255 * state->globalAlpha);
 		setTexture(texture);
-		pushTexturedRect(dx, dy, dw, dh, sx/tw, sy/th, sw/tw, sh/th, color, state->transform);
+		pushTexturedRect(dx, dy, dw, dh, sx/tw, sy/th, sw/tw, sh/th, EJCanvasBlendWhiteColor(state), state->transform);
 	}
 }
 
@@ -541,10 +537,8 @@ void EJCanvasContext::fillRect(float x, float y, float w, float h)
 	setTexture(NULL);
 	
 	setProgram(sharedGLContext->getGlProgram2DFlat());
-
-	EJColorRGBA color = state->fillColor;	
-	color.rgba.a = (unsigned char)(color.rgba.a * state->globalAlpha);
-	pushRect(x, y, w, h, 0, 0, 0, 0, color, state->transform);
+	EJColorRGBA cc = EJCanvasBlendFillColor(state);
+	pushRect(x, y, w, h, 0, 0, 0, 0, cc, state->transform);
 }
 
 void EJCanvasContext::strokeRect(float x, float y, float w, float h)
@@ -568,18 +562,15 @@ void EJCanvasContext::strokeRect(float x, float y, float w, float h)
 
 void EJCanvasContext::clearRect(float x, float y, float w, float h)
 {
-	setTexture(NULL);
-	
 	setProgram(sharedGLContext->getGlProgram2DFlat());
 
 	EJCompositeOperation oldOp = state->globalCompositeOperation;
 	setGlobalCompositeOperation(kEJCompositeOperationDestinationOut);
 	
-	static EJColorRGBA white = {0x00000000};
+	static EJColorRGBA white = {0xffffffff};
 	pushRect(x, y, w, h, 0, 0, 0, 0, white, state->transform);
 	
 	setGlobalCompositeOperation(oldOp);
-
 }
 
 EJImageData* EJCanvasContext::getImageData(float sx, float sy, float sw, float sh)

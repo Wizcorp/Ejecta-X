@@ -81,8 +81,7 @@ void EJFont::drawString(NSString* string, EJCanvasContext* context, float x, flo
 		textures->setObject(texture,cacheKey->getCString());		
 		texture->release();
 
-		EJColorRGBA color = fill ?state->fillColor: state->strokeColor;
-		color.rgba.a = (float)color.rgba.a * state->globalAlpha;
+		EJColorRGBA color = fill ? EJCanvasBlendFillColor(state) : EJCanvasBlendStrokeColor(state);
 
 		float tw = texture->realWidth;
 		float th = texture->realHeight;	
@@ -93,8 +92,7 @@ void EJFont::drawString(NSString* string, EJCanvasContext* context, float x, flo
 		free(bitmap);}
 	}else{
 		// Fill or stroke color?
-		EJColorRGBA color = fill ?state->fillColor: state->strokeColor;
-		color.rgba.a = (float)color.rgba.a * state->globalAlpha;
+		EJColorRGBA color = fill ? EJCanvasBlendFillColor(state) : EJCanvasBlendStrokeColor(state);
 
 		float tw = texture->realWidth;
 		float th = texture->realHeight;	

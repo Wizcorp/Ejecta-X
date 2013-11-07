@@ -24,6 +24,7 @@
 #include "../EJCocoa/UIFont.h"
 #include "EJSharedOpenGLContext.h"
 
+
 #define EJ_CANVAS_STATE_STACK_SIZE 16
 
 class EJPath;
@@ -67,14 +68,16 @@ typedef enum {
 	kEJCompositeOperationXOR
 } EJCompositeOperation;
 
-static const struct { GLenum source; GLenum destination; } EJCompositeOperationFuncs[] = {
-	{GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA},
-	{GL_SRC_ALPHA, GL_ONE},
-	{GL_DST_COLOR, GL_ONE_MINUS_SRC_ALPHA},
-	{GL_ZERO, GL_ONE_MINUS_SRC_ALPHA},
-	{GL_ONE_MINUS_DST_ALPHA, GL_ONE},
-	{GL_DST_ALPHA, GL_ONE_MINUS_SRC_ALPHA},
-	{GL_ONE_MINUS_DST_ALPHA, GL_ONE_MINUS_SRC_ALPHA}
+static const struct { GLenum source; GLenum destination; float alphaFactor; } EJCompositeOperationFuncs[] = {
+	//Two first blend functions different from iOS
+	{GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA, 1},
+	//Based on Ejecta iOS, alphaFactor should be 0 for lighter but doesn't seem to work
+	{GL_SRC_ALPHA, GL_ONE, 1},
+	{GL_DST_COLOR, GL_ONE_MINUS_SRC_ALPHA, 1},
+	{GL_ZERO, GL_ONE_MINUS_SRC_ALPHA, 1},
+	{GL_ONE_MINUS_DST_ALPHA, GL_ONE, 1},
+	{GL_DST_ALPHA, GL_ONE_MINUS_SRC_ALPHA, 1},
+	{GL_ONE_MINUS_DST_ALPHA, GL_ONE_MINUS_SRC_ALPHA, 1}
 };
 
 
@@ -97,6 +100,28 @@ typedef struct {
 	
 	EJPath * clipPath;
 } EJCanvasState;
+
+static inline EJColorRGBA EJCanvasBlendColor( EJCanvasState *state, EJColorRGBA color ) {
+	float alpha = state->globalAlpha * (float)color.rgba.a/255.0f;
+	EJColorRGBA blendedColor;
+	blendedColor.rgba.r = (unsigned char)(color.rgba.r * alpha);
+	blendedColor.rgba.g = (unsigned char)(color.rgba.g * alpha);
+	blendedColor.rgba.b = (unsigned char)(color.rgba.b * alpha);
+	blendedColor.rgba.a = (unsigned char)(EJCompositeOperationFuncs[state->globalCompositeOperation].alphaFactor * color.rgba.a * state->globalAlpha);
+	return blendedColor;
+}
+
+static inline EJColorRGBA EJCanvasBlendWhiteColor( EJCanvasState *state ) {
+	return EJCanvasBlendColor(state, (EJColorRGBA){0xffffffff});
+}
+
+static inline EJColorRGBA EJCanvasBlendFillColor( EJCanvasState *state ) {
+	return EJCanvasBlendColor(state, state->fillColor);
+}
+
+static inline EJColorRGBA EJCanvasBlendStrokeColor( EJCanvasState *state ) {
+	return EJCanvasBlendColor(state, state->strokeColor);
+}
 
 class EJCanvasContext : public NSObject {
 protected:
