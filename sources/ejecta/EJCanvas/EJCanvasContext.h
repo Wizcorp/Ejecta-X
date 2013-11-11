@@ -14,7 +14,7 @@
 #endif
 
 #include "../EJCocoa/support/nsMacros.h"
-#include "EJDrawable.h"
+#include "EJTexture.h"
 #include "EJImageData.h"
 #include "EJPath.h"
 #include "EJCanvas2DTypes.h"
@@ -139,7 +139,6 @@ public:
 	EJCanvasContext();
 	EJCanvasContext(short widthp, short heightp);
 	~EJCanvasContext();
-
 	virtual void create();
 	void setScreenSize(int widthp, int heightp);
 	void createStencilBufferOnce();

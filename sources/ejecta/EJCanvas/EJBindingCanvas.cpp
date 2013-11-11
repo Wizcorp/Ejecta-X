@@ -358,41 +358,31 @@ EJ_BIND_FUNCTION( EJBindingCanvas, getContext, ctx, argc, argv) {
 EJ_BIND_FUNCTION(EJBindingCanvas, drawImage, ctx, argc, argv) {
 
 	if( argc < 3 || !JSValueIsObject(ctx, argv[0]) ) return NULL;
-	/*http://lists.apple.com/archives/webkitsdk-dev/2009/Sep/msg00059.html
-	@function
-	@abstract Tests whether a JavaScript value is an object with a given class in its class chain.
-	@param ctx The execution context to use.
-	@param value The JSValue to test.
-	@param jsClass The JSClass to test against.
-	@result true if value is an object and has jsClass in its class chain, otherwise false.
-	JS_EXPORT bool JSValueIsObjectOfClass(JSContextRef ctx, JSValueRef value, JSClassRef jsClass);*/
 
 	EJDrawable* drawable = NULL;
 
+	//Compare the JSObject to find out if it's an image or a canvas
+	//TODO: Buffer temporary data to avoid creation at each call?
  	EJBindingImage* tempBindingImage = new EJBindingImage();
  	JSClassRef imageClass = EJApp::instance()->getJSClassForClass((EJBindingImage*)tempBindingImage);
  	if(JSValueIsObjectOfClass(ctx, argv[0], imageClass)) {
  		drawable = (EJBindingImage*)JSObjectGetPrivate((JSObjectRef)argv[0]);
-		NSLOG("drawable: EJBindingImage");
  	} else {
 	 	EJBindingCanvas* tempBindingCanvas = new EJBindingCanvas();
 	 	JSClassRef imageClass = EJApp::instance()->getJSClassForClass((EJBindingCanvas*)tempBindingCanvas);
 	 	if(JSValueIsObjectOfClass(ctx, argv[0], imageClass)) {
  			drawable = (EJBindingCanvas*)JSObjectGetPrivate((JSObjectRef)argv[0]);
-	 		NSLOG("drawable: EJBindingCanvas");
 	 	}
 	 	delete tempBindingCanvas;
  	}
  	delete tempBindingImage;
 
  	if(drawable == NULL) {
- 		NSLOG("drawImage: drawable class not found");
  		return NULL;
  	}
 
 	// NSObject<EJDrawable> * drawable = (NSObject<EJDrawable> *)JSObjectGetPrivate((JSObjectRef)argv[0]);
 	EJTexture * image = drawable->getTexture();
-	NSLOG("drawable: getTexture passed %x", image);
 
 	float scale = image?image->contentScale:1;
 	
