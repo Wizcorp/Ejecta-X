@@ -70,12 +70,14 @@ EJBindingCanvas::EJBindingCanvas(JSContextRef ctx ,JSObjectRef obj, size_t argc,
 }
 
 EJBindingCanvas::~EJBindingCanvas() {
-	renderingContext->release();
+	if(renderingContext) {
+		renderingContext->release();
+	}
 }
 
-EJTexture* EJBindingCanvas::texture() {
+EJTexture* EJBindingCanvas::getTexture() {
 	if (renderingContext->getClassName() == "EJCanvasContextTexture") {
-		return ((EJCanvasContextTexture *)renderingContext)->m_texture;
+		return ((EJCanvasContextTexture *)renderingContext)->getTexture();
 	}
 	else {
 		return NULL;
@@ -356,10 +358,31 @@ EJ_BIND_FUNCTION( EJBindingCanvas, getContext, ctx, argc, argv) {
 EJ_BIND_FUNCTION(EJBindingCanvas, drawImage, ctx, argc, argv) {
 
 	if( argc < 3 || !JSValueIsObject(ctx, argv[0]) ) return NULL;
-	
-	EJBindingImage* drawable = (EJBindingImage*)JSObjectGetPrivate((JSObjectRef)argv[0]);
+
+	EJDrawable* drawable = NULL;
+
+	//Compare the JSObject to find out if it's an image or a canvas
+	//TODO: Buffer temporary data to avoid creation at each call?
+ 	EJBindingImage* tempBindingImage = new EJBindingImage();
+ 	JSClassRef imageClass = EJApp::instance()->getJSClassForClass((EJBindingImage*)tempBindingImage);
+ 	if(JSValueIsObjectOfClass(ctx, argv[0], imageClass)) {
+ 		drawable = (EJBindingImage*)JSObjectGetPrivate((JSObjectRef)argv[0]);
+ 	} else {
+	 	EJBindingCanvas* tempBindingCanvas = new EJBindingCanvas();
+	 	JSClassRef imageClass = EJApp::instance()->getJSClassForClass((EJBindingCanvas*)tempBindingCanvas);
+	 	if(JSValueIsObjectOfClass(ctx, argv[0], imageClass)) {
+ 			drawable = (EJBindingCanvas*)JSObjectGetPrivate((JSObjectRef)argv[0]);
+	 	}
+	 	delete tempBindingCanvas;
+ 	}
+ 	delete tempBindingImage;
+
+ 	if(drawable == NULL) {
+ 		return NULL;
+ 	}
+
 	// NSObject<EJDrawable> * drawable = (NSObject<EJDrawable> *)JSObjectGetPrivate((JSObjectRef)argv[0]);
-	EJTexture * image = drawable->texture;
+	EJTexture * image = drawable->getTexture();
 
 	float scale = image?image->contentScale:1;
 	

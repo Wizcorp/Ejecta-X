@@ -40,7 +40,7 @@ public:
 	EJCanvasContextScreen();
 	EJCanvasContextScreen(short widthp, short heightp);
 	~EJCanvasContextScreen();
-	
+
 	virtual void create();
 	virtual void prepare();
 	virtual void present();

@@ -2,10 +2,10 @@
 #define __EJ_BINDING_IMAGE_H__
 
 #include "../EJBindingEventedBase.h"
-#include "EJTexture.h"
+#include "EJDrawable.h"
 #include "../EJCocoa/NSString.h"
 
-class EJBindingImage : public EJBindingEventedBase {
+class EJBindingImage : public EJBindingEventedBase, public EJDrawable {
 
 	NSString* path;
 	BOOL loading;
@@ -15,13 +15,13 @@ class EJBindingImage : public EJBindingEventedBase {
 	void endLoad(EJTexture * tex);
 public:
 
-	EJTexture* texture;
-
 	EJBindingImage();
 	~EJBindingImage();
 	REFECTION_CLASS_IMPLEMENT_DEFINE(EJBindingImage);
 
 	virtual string superclass(){ return EJBindingEventedBase::toString();};
+
+	virtual EJTexture* getTexture();
 
 	EJ_BIND_GET_DEFINE(src, ctx );
 	EJ_BIND_SET_DEFINE(src, ctx, value);
