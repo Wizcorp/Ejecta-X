@@ -290,11 +290,8 @@ void EJPath::drawPolygonsToContext(EJCanvasContext * context,
 	endSubPath();
 	if( longestSubpath < 3 ) { return; }
 	
-	context->setTexture(NULL);
-	
 	EJCanvasState * state = context->state;
-	EJColorRGBA color = state->fillColor;
-	color.rgba.a = (unsigned char)(color.rgba.a * state->globalAlpha);
+	EJColorRGBA color = EJCanvasBlendFillColor(state);
 	
 	
 	// For potentially concave polygons (those with more than 3 unique vertices), we
@@ -458,7 +455,6 @@ void EJPath::drawLinesToContext(EJCanvasContext * context) {
 	
 	// Find the width of the line as it is projected onto the screen.
 	float projectedLineWidth = CGAffineTransformGetScale( state->transform ) * state->lineWidth;
-	context->setTexture(NULL);
 	
 	// Figure out if we need to add line caps and set the cap texture coord for square or round caps.
 	// For thin lines we disable texturing and line caps.
@@ -469,8 +465,7 @@ void EJPath::drawLinesToContext(EJCanvasContext * context) {
 	BOOL addMiter = (state->lineJoin == kEJLineJoinMiter);
 	float miterLimit = (state->miterLimit * width2);
 	
-	EJColorRGBA color = state->strokeColor;
-	color.rgba.a = (unsigned char)(color.rgba.a * state->globalAlpha);
+	EJColorRGBA color = EJCanvasBlendStrokeColor(state);
 	
 	// Enable stencil test when drawing transparent lines.
 	// Cycle through all bits, so that the stencil buffer only has to be cleared after eight stroke operations
