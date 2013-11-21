@@ -190,6 +190,7 @@ void EJCanvasContext::createStencilBufferOnce()
 
 #else
 
+	/* Generation of the stencilBuffer better be done in the Java code with setEGLConfigChooser()
 	glGenRenderbuffers(1, &stencilBuffer);
 	glBindRenderbuffer(GL_RENDERBUFFER, stencilBuffer);
 	if( msaaEnabled ) {
@@ -201,7 +202,7 @@ void EJCanvasContext::createStencilBufferOnce()
 	glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, stencilBuffer);
 	glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_STENCIL_ATTACHMENT, GL_RENDERBUFFER, stencilBuffer);
 
-	glBindRenderbuffer(GL_RENDERBUFFER, msaaEnabled ? msaaRenderBuffer : viewRenderBuffer );
+	glBindRenderbuffer(GL_RENDERBUFFER, msaaEnabled ? msaaRenderBuffer : viewRenderBuffer );*/
 
 #endif
 
@@ -235,8 +236,6 @@ void EJCanvasContext::prepare()
 	
 	EJCompositeOperation op = state->globalCompositeOperation;
 	glBlendFunc( EJCompositeOperationFuncs[op].source, EJCompositeOperationFuncs[op].destination );
-	//Removed because glGetError() was returning an error after this call
-	//glDisable(GL_TEXTURE_2D);
 	currentTexture = NULL;
 	currentProgram = NULL;
 	EJTexture::setSmoothScaling(imageSmoothingEnabled);
@@ -255,15 +254,6 @@ void EJCanvasContext::setTexture(EJTexture * newTexture) {
 	if( currentTexture == newTexture ) { return; }
 	
 	flushBuffers();
-	
-	if( !newTexture && currentTexture ) {
-		// Was enabled; should be disabled
-		glDisable(GL_TEXTURE_2D);
-	}
-	else if( newTexture && !currentTexture ) {
-		// Was disabled; should be enabled
-		glEnable(GL_TEXTURE_2D);
-	}
 	
 	currentTexture = newTexture;
 	if(currentTexture)currentTexture->bind();
