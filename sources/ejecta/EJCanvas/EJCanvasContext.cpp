@@ -164,10 +164,23 @@ void EJCanvasContext::create()
 
 }
 
+void EJCanvasContext::resizeToWidth(short newWidth, short newHeight) {
+	// This function is a stub - Overwritten in both subclasses
+	width = newWidth;
+	height = newHeight;
+	
+	//backingStoreRatio = (useRetinaResolution && [UIScreen mainScreen].scale == 2) ? 2 : 1;
+	backingStoreRatio = 1;
+	bufferWidth = width * backingStoreRatio;
+	bufferHeight = height * backingStoreRatio;
+	
+	//resetFramebuffer();
+}
+
 void EJCanvasContext::setScreenSize(int widthp, int heightp)
 {
-	bufferWidth = viewportWidth = width = widthp;
-	bufferHeight = viewportHeight = height = heightp;
+	bufferWidth = width = widthp;
+	bufferHeight = height = heightp;
 }
 
 void EJCanvasContext::createStencilBufferOnce()
@@ -231,7 +244,7 @@ void EJCanvasContext::prepare()
 	glBindFramebuffer(GL_FRAMEBUFFER, msaaEnabled ? msaaFrameBuffer : viewFrameBuffer );
 	glBindRenderbuffer(GL_RENDERBUFFER, msaaEnabled ? msaaRenderBuffer : viewRenderBuffer );
 #endif	
-	glViewport(0, 0, viewportWidth, viewportHeight);
+	glViewport(0, 0, width, height);
 	
 	
 	EJCompositeOperation op = state->globalCompositeOperation;
@@ -248,6 +261,34 @@ void EJCanvasContext::prepare()
 	else {
 		glDepthFunc(GL_ALWAYS);
 	}
+}
+
+void EJCanvasContext::setWidth(short newWidth) {
+	if( newWidth == width ) {
+		// Same width as before? Just clear the canvas, as per the spec
+		flushBuffers();
+		glClear(GL_COLOR_BUFFER_BIT);
+		return;
+	}
+	resizeToWidth(newWidth, height);
+}
+
+short EJCanvasContext::getWidth() const {
+	return width;
+}
+
+void EJCanvasContext::setHeight(short newHeight) {
+	if( newHeight == height ) {
+		// Same height as before? Just clear the canvas, as per the spec
+		flushBuffers();
+		glClear(GL_COLOR_BUFFER_BIT);
+		return;
+	}
+	resizeToWidth(width, newHeight);
+}
+
+short EJCanvasContext::getHeight() const {
+	return height;
 }
 
 void EJCanvasContext::setTexture(EJTexture * newTexture) {

@@ -14,10 +14,13 @@ EJBindingCanvas::EJBindingCanvas() : renderingContext(0), isScreenCanvas(false) 
 
 	if( firstCanvasInstance ) {
 		isScreenCanvas = true;
+		width = EJApp::instance()->width;
+		height = EJApp::instance()->height;
+	} else {
+		width = 0;
+		height = 0;
 	}
 
-	width = EJApp::instance()->width;
-	height = EJApp::instance()->height;
 }
 
 void EJBindingCanvas::init(JSContextRef ctx ,JSObjectRef obj, size_t argc, const JSValueRef argv[]) {
@@ -40,9 +43,13 @@ void EJBindingCanvas::init(JSContextRef ctx ,JSObjectRef obj, size_t argc, const
 		height = (short)JSValueToNumberFast(ctx, argv[1]);
 	}
 	else {
-		//CGSize screen = (EJApp::instance())->view->bounds->size;
-		width = EJApp::instance()->width;
-		height = EJApp::instance()->height;
+		if(isScreenCanvas) {
+			width = EJApp::instance()->width;
+			height = EJApp::instance()->height;
+		} else {
+			width = 0;
+			height = 0;
+		}
 	}
 }
 
@@ -166,10 +173,12 @@ EJ_BIND_SET( EJBindingCanvas,font, ctx, value) {
 
  EJ_BIND_SET( EJBindingCanvas,width, ctx, value) {
  	short newWidth = JSValueToNumberFast(ctx, value);
- 	if( renderingContext && newWidth != width ) {
- 		NSLOG("Warning: rendering context already created; can't change width");
- 		return;
- 	}
+	if( renderingContext ) {
+		ejectaInstance->setCurrentRenderingContext(renderingContext);
+		renderingContext->setWidth(newWidth);
+		width = renderingContext->getWidth();
+		return;
+	}
  	width = newWidth;
  }
 
@@ -179,10 +188,12 @@ EJ_BIND_SET( EJBindingCanvas,font, ctx, value) {
 
  EJ_BIND_SET( EJBindingCanvas,height, ctx, value) {
  	short newHeight = JSValueToNumberFast(ctx, value);
- 	if( renderingContext && newHeight != height ) {
- 		NSLOG("Warning: rendering context already created; can't change height");
- 		return;
- 	}
+	if( renderingContext ) {
+		ejectaInstance->setCurrentRenderingContext(renderingContext);
+		renderingContext->setHeight(newHeight);
+		height = renderingContext->getHeight();
+		return;
+	}
  	height = newHeight;
  }
 

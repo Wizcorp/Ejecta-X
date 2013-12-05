@@ -130,7 +130,6 @@ protected:
 	GLuint stencilBuffer;
 	
 	short width, height;
-	short viewportWidth, viewportHeight;
 	short bufferWidth, bufferHeight;
 	
 	EJTexture * currentTexture;
@@ -165,6 +164,7 @@ public:
 	EJCanvasContext(short widthp, short heightp);
 	~EJCanvasContext();
 	virtual void create();
+	virtual void resizeToWidth(short newWidth, short newHeight);
 	void setScreenSize(int widthp, int heightp);
 	void createStencilBufferOnce();
 	void bindVertexBuffer();
@@ -213,6 +213,10 @@ public:
 
 	void setGlobalCompositeOperation(EJCompositeOperation op);
 	EJCompositeOperation getGlobalCompositeOperation() const;
+	void setWidth(short w);
+	short getWidth() const;
+	void setHeight(short h);
+	short getHeight() const;
 };
 
 #endif // __EJ_CANVAS_CONTEXT_H__
