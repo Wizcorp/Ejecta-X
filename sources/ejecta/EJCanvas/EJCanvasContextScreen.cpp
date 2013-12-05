@@ -135,7 +135,7 @@ void EJCanvasContextScreen::create()
 }
 
 void EJCanvasContextScreen::resizeToWidth(short newWidth, short newHeight) {
-	//TODO: Implement it 
+	// TODO: Implement it 
 }
 
 

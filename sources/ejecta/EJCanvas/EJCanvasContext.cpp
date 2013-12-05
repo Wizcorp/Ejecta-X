@@ -169,12 +169,12 @@ void EJCanvasContext::resizeToWidth(short newWidth, short newHeight) {
 	width = newWidth;
 	height = newHeight;
 	
-	//backingStoreRatio = (useRetinaResolution && [UIScreen mainScreen].scale == 2) ? 2 : 1;
+	// backingStoreRatio = (useRetinaResolution && [UIScreen mainScreen].scale == 2) ? 2 : 1;
 	backingStoreRatio = 1;
 	bufferWidth = width * backingStoreRatio;
 	bufferHeight = height * backingStoreRatio;
 	
-	//resetFramebuffer();
+	// resetFramebuffer();
 }
 
 void EJCanvasContext::setScreenSize(int widthp, int heightp)
