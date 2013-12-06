@@ -507,6 +507,8 @@ void EJBindingHttpRequest::onHttpRequestCompleted(NSObject *sender, void *data)
 		return;
 	}
 
+    state = kEJHttpRequestStateDone;
+
 	// You can get original request type from: response->request->reqType
 	if (0 != strlen(response->getHttpRequest()->getTag())) 
 	{
@@ -525,6 +527,8 @@ void EJBindingHttpRequest::onHttpRequestCompleted(NSObject *sender, void *data)
 		NSLOG("error buffer: %s", response->getErrorBuffer());
 		response->retain();
 		responseBody = NULL;
+        EJBindingEventedBase::triggerEvent(NSStringMake("loadend"), 0, NULL);
+        EJBindingEventedBase::triggerEvent(NSStringMake("readystatechange"), 0, NULL);
 		return;
 	}
 
@@ -693,6 +697,7 @@ EJ_BIND_FUNCTION(EJBindingHttpRequest, send, ctx, argc, argv) {
 	// }
 	// [request release];
 
+    state = kEJHttpRequestStateLoading;
 	connection->send(request);
 	request->release();
 	EJBindingEventedBase::triggerEvent(NSStringMake("load"), 0, NULL);
