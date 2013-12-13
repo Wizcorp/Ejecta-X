@@ -32,7 +32,7 @@
 using namespace std;
 
 #define EJECTA_VERSION "0.99"
-#define EJECTA_APP_FOLDER "files/build/"
+#define EJECTA_APP_FOLDER "cache/"
 
 class EJBindingBase;
 class EJTimerCollection;

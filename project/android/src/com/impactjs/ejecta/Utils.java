@@ -9,11 +9,11 @@ import java.io.OutputStream;
 import android.content.Context;
 
 public class Utils {
-	public static void copyDatFiles(Context context, String dest,String source) {
-		copyDatFile( context,  dest, source );
+	public static void copyDataFiles(Context context, String dest,String source) {
+		copyDataFile( context,  dest, source );
 	}
 	
-	public static void copyDatFile(Context context, String dest,String source) {
+	public static void copyDataFile(Context context, String dest,String source) {
 		String[] files;
 		InputStream in = null;
 		OutputStream out = null;
@@ -23,7 +23,7 @@ public class Utils {
 			return;
 		}
 		File mWorkingPath = new File(dest);
-		if (mWorkingPath.exists()) {
+		if (mWorkingPath.isFile() && mWorkingPath.exists()) {
 			return;
 		} else {
 			if (!mWorkingPath.mkdirs()) {
@@ -39,9 +39,9 @@ public class Utils {
 			} catch (IOException e) {
 				e.printStackTrace();
 				if (0 == source.length()) {
-					copyDatFile(context, dest + fileName + "/",fileName);
+					copyDataFile(context, dest + fileName + "/",fileName);
 				} else {
-					copyDatFile(context, dest + fileName+ "/",source + "/" + fileName);
+					copyDataFile(context, dest + fileName+ "/",source + "/" + fileName);
 				}
 				continue;
 			}
