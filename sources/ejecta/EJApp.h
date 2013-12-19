@@ -31,7 +31,7 @@
 
 using namespace std;
 
-#define EJECTA_VERSION "0.99"
+#define EJECTA_VERSION "0.1.0"
 #define EJECTA_APP_FOLDER "files/build/"
 
 class EJBindingBase;
