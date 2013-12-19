@@ -18,8 +18,7 @@ Ejecta is published under the [MIT Open Source License](http://opensource.org/li
 
 **Note for Windows users:-** 
 
-Corefoundation.dll is associated with Apple products, require install QuickTime
-run Ejecta-X.sln with vs2010 in `project` folder.
+Current branches no longer work on Windows after the OpenGLES update. Please use the older release [https://github.com/aogilvie/Ejecta-X/releases/tag/v0.9.9-original](https://github.com/aogilvie/Ejecta-X/releases/tag/v0.9.9-original)
 
 ### Sample
 
