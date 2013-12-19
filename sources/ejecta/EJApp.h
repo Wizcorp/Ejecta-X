@@ -31,8 +31,8 @@
 
 using namespace std;
 
-#define EJECTA_VERSION "0.1.0"
-#define EJECTA_APP_FOLDER "files/build/"
+#define EJECTA_VERSION "0.2.0"
+#define EJECTA_APP_FOLDER "cache/"
 
 class EJBindingBase;
 class EJTimerCollection;

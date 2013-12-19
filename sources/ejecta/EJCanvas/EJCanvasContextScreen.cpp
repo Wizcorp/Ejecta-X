@@ -20,7 +20,7 @@ EJCanvasContextScreen::~EJCanvasContextScreen()
 
 void EJCanvasContextScreen::present()
 {
-	glViewport(0, 0, viewportWidth, viewportHeight);
+	glViewport(0, 0, width, height);
 
 #ifdef _WINDOWS
 	glBindFramebufferEXT(GL_FRAMEBUFFER_EXT, 0 );
@@ -93,8 +93,8 @@ void EJCanvasContextScreen::create()
 	
     backingStoreRatio = internalScaling * contentScale;
 	
-	bufferWidth = viewportWidth = (short)(frame.size.width * contentScale);
-	bufferHeight = viewportHeight = (short)(frame.size.height * contentScale);
+	bufferWidth = (short)(frame.size.width * contentScale);
+	bufferHeight = (short)(frame.size.height * contentScale);
 	
 	NSLOG(
 		"====    Creating ScreenCanvas    ==== \n**    size: %dx%d, aspect ratio: %.3f, \n**    scaled: %.3f = %dx%d, \n**    retina: no = %.0fx%.0f, \n**    msaa: no\n=====================================",
@@ -133,6 +133,11 @@ void EJCanvasContextScreen::create()
 // 	// Append the OpenGL view to Impact's main view
     EJApp::instance()->hideLoadingScreen();
 }
+
+void EJCanvasContextScreen::resizeToWidth(short newWidth, short newHeight) {
+	// TODO: Implement it 
+}
+
 
 void EJCanvasContextScreen::prepare()
 {

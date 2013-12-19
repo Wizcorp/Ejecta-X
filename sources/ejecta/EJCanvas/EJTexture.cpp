@@ -126,24 +126,20 @@ void EJTexture::createTextureWithPixels(GLubyte * pixels, GLenum formatp) {
 	}
 	format = formatp;
 
-	bool wasEnabled = glIsEnabled(GL_TEXTURE_2D);
-	int boundTexture = 0;
+	GLint boundTexture = 0;
 	glGetIntegerv(GL_TEXTURE_BINDING_2D, &boundTexture);
 
-	glEnable (GL_TEXTURE_2D);
 	glGenTextures(1, &textureId);
 	glBindTexture(GL_TEXTURE_2D, textureId);
-	glTexImage2D(GL_TEXTURE_2D, 0, format, realWidth, realHeight, 0, format,
-			GL_UNSIGNED_BYTE, pixels);
 
 	setFilter(EJTextureGlobalFilter);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
 
+	glTexImage2D(GL_TEXTURE_2D, 0, format, realWidth, realHeight, 0, format,
+			GL_UNSIGNED_BYTE, pixels);
+
 	glBindTexture(GL_TEXTURE_2D, boundTexture);
-	if (!wasEnabled) {
-		glDisable(GL_TEXTURE_2D);
-	}
 }
 
 void EJTexture::setFilter(GLint filter) {
@@ -159,7 +155,6 @@ void EJTexture::updateTextureWithPixels(GLubyte * pixels, int x, int y,
 		return;
 	}
 
-	bool wasEnabled = glIsEnabled(GL_TEXTURE_2D);
 	int boundTexture = 0;
 	glGetIntegerv(GL_TEXTURE_BINDING_2D, &boundTexture);
 
@@ -168,9 +163,6 @@ void EJTexture::updateTextureWithPixels(GLubyte * pixels, int x, int y,
 			GL_UNSIGNED_BYTE, pixels);
 
 	glBindTexture(GL_TEXTURE_2D, boundTexture);
-	if (!wasEnabled) {
-		glDisable (GL_TEXTURE_2D);
-	}
 }
 
 GLubyte * EJTexture::loadPixelsFromPath(NSString * path) {

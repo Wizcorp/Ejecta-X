@@ -29,6 +29,37 @@ void EJCanvasContextTexture::create()
 	glClear(GL_COLOR_BUFFER_BIT);
 }
 
+void EJCanvasContextTexture::resizeToWidth(short newWidth, short newHeight) {
+	flushBuffers();
+	
+	width = newWidth;
+	height = newHeight;
+	
+	// Release previous texture if any, create the new texture and set it as
+	// the rendering target for this framebuffer
+	if(texture) {
+		texture->release();
+	}
+	texture = new EJTexture(width, height);
+	
+	bufferWidth = texture->realWidth;
+	bufferHeight = texture->realHeight;
+
+#ifdef _WINDOWS
+	glBindFramebuffer(GL_FRAMEBUFFER, viewFrameBuffer);
+	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, texture->textureId, 0);
+#else
+	glBindFramebuffer(GL_FRAMEBUFFER, viewFrameBuffer);
+	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, texture->textureId, 0);
+#endif
+
+	prepare();
+
+	// Clear to transparent
+	glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
+	glClear(GL_COLOR_BUFFER_BIT);
+}
+
 EJCanvasContextTexture::EJCanvasContextTexture() 
 {
 

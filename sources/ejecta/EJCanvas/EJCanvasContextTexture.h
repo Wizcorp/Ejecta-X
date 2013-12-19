@@ -26,6 +26,7 @@ public:
 	EJTexture* getTexture();
 
 	virtual void create();
+	virtual void resizeToWidth(short newWidth, short newHeight);
 	virtual void prepare();
 
 	virtual const char* getClassName();
