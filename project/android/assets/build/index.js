@@ -24,7 +24,7 @@ for( var i = 0; i < 200; i++ ) {
 var p = [0,0, 0,0, 0,0, 0,0];
 var animate = function() {
 	// Clear the screen - note that .globalAlpha is still honored,
-	// so this will only "darken" the sceen a bit
+	// so this will only "darken" the screen a bit
 	
 	ctx.globalCompositeOperation = 'source-over';
 	ctx.fillRect(0,0,w,h);
@@ -54,8 +54,14 @@ var animate = function() {
 	if(window.pos_y>200)window.pos_y=0;
 	window.pos_x++;
 	window.pos_y++;
+
+	ctx.save();
+
+	ctx.globalAlpha = 1;
 	if(img)ctx.drawImage(img, window.pos_x, window.pos_y);
-	//setTimeout(animate, 100);
+
+	ctx.restore();
+
 };
 
 

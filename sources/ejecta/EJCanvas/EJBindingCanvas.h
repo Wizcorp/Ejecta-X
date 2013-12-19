@@ -52,7 +52,7 @@ static const char * EJScalingModeNames[] = {
 	"fit-height"
 };
 
-class EJBindingCanvas : public EJBindingBase{
+class EJBindingCanvas : public EJBindingBase, public EJDrawable {
 private:
 	EJCanvasContext * renderingContext;
 	EJApp * ejectaInstance;
@@ -70,12 +70,12 @@ public:
 	EJBindingCanvas(JSContextRef ctx ,JSObjectRef obj, size_t argc, const JSValueRef argv[]);
 	EJBindingCanvas();
 	~EJBindingCanvas();
+
+	virtual EJTexture* getTexture();
+
 	REFECTION_CLASS_IMPLEMENT_DEFINE(EJBindingCanvas);
 
 	virtual string superclass(){return EJBindingBase::toString();};
-
-	EJTexture* m_texture;
-	EJTexture* texture();
 
 	virtual void init(JSContextRef ctx ,JSObjectRef obj, size_t argc, const JSValueRef argv[]);
 

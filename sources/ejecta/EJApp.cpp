@@ -60,7 +60,7 @@ JSObjectRef ej_callAsConstructor(JSContextRef ctx, JSObjectRef constructor, size
 EJApp* EJApp::ejectaInstance = NULL;
 
 
-EJApp::EJApp() : currentRenderingContext(0), screenRenderingContext(0), touchDelegate(0), touches(0)
+EJApp::EJApp() : currentRenderingContext(0), screenRenderingContext(0), touchDelegate(0), touches(0), openGLContext(NULL)
 {
 	NSPoolManager::sharedPoolManager()->push();
 
@@ -76,7 +76,7 @@ EJApp::EJApp() : currentRenderingContext(0), screenRenderingContext(0), touchDel
 	
 	paused = false;
 	internalScaling = 1.0f;
-	
+
 	mainBundle = 0;
 
 	timers = new EJTimerCollection();
@@ -111,9 +111,12 @@ EJApp::EJApp() : currentRenderingContext(0), screenRenderingContext(0), touchDel
 			kJSPropertyAttributeDontDelete | kJSPropertyAttributeReadOnly, NULL
 		);
 		
-		// Create the OpenGL ES1 Context
+		// Create the OpenGL ES2 Context
 		// Android init GLView on java framework
-		
+		openGLContext = EJSharedOpenGLContext::getInstance();
+		if(openGLContext != NULL) {
+			openGLContext->retain();
+		}
 }
 
 
@@ -130,12 +133,20 @@ EJApp::~EJApp()
 	timers->release();
 	if(mainBundle)
 		free(mainBundle);
+
+	if(openGLContext != NULL) {
+		openGLContext->release();
+	}
+
 	NSPoolManager::sharedPoolManager()->pop();
 	NSPoolManager::purgePoolManager();
 }
 
-void EJApp::init(const char* path, int w, int h)
+void EJApp::init(JNIEnv* env, jobject jobj, const char* path, int w, int h)
 {
+        env->GetJavaVM(&jvm);
+        
+        g_obj = jobj;
 
 	if(mainBundle)
 		free(mainBundle);
@@ -153,8 +164,8 @@ void EJApp::init(const char* path, int w, int h)
 	width = w;
 
 	// Load the initial JavaScript source files
-	loadScriptAtPath(NSStringMake(EJECTA_BOOT_JS));
-	loadScriptAtPath(NSStringMake(EJECTA_MAIN_JS));
+	// loadScriptAtPath(NSStringMake(EJECTA_BOOT_JS));
+	// loadScriptAtPath(NSStringMake(EJECTA_MAIN_JS));
 }
 
 
@@ -237,10 +248,16 @@ NSString * EJApp::pathForResource(NSString * resourcePath)
 
 // ---------------------------------------------------------------------------------
 // Script loading and execution
+void EJApp::loadJavaScriptFile(const char *filename) {
+        // char to NSString
+        string filenameString = string(filename);
+        NSString *convertedFilename = NSStringMake(filenameString);
+        loadScriptAtPath(convertedFilename);
+}
 
 void EJApp::loadScriptAtPath(NSString * path)
 {
-
+    
 	NSString * script = NSString::createWithContentsOfFile(pathForResource(path)->getCString());
 	
 	if( !script ) {
