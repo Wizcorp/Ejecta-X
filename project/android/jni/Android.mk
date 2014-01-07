@@ -9,4 +9,4 @@ include $(subdirs)
 
 # Copy the shaders from sources to assets
 $(shell rm -r $(LOCAL_PATH)/../assets/www/shaders)
-$(shell cp -r $(LOCAL_PATH)/../../../sources/ejecta/EJCanvas/Shaders $(LOCAL_PATH)/../assets/www/shaders)
+$(shell cp -r $(LOCAL_PATH)/../../../sources/ejecta/EJCanvas/2D/Shaders $(LOCAL_PATH)/../assets/www/shaders)
