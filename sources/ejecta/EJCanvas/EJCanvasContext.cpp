@@ -459,7 +459,15 @@ void EJCanvasContext::flushBuffers()
 }
 
 void EJCanvasContext::setGlobalCompositeOperation(EJCompositeOperation op) {
-	if(op == state->globalCompositeOperation) {
+	// Same composite operation or switching between SourceOver <> Lighter? We don't
+	// have to flush and set the blend mode then, but we still need to update the state,
+	// as the alphaFactor may be different.
+	if(
+		op == state->globalCompositeOperation ||
+		(op == kEJCompositeOperationLighter && state->globalCompositeOperation == kEJCompositeOperationSourceOver) ||
+		(op == kEJCompositeOperationSourceOver && state->globalCompositeOperation == kEJCompositeOperationLighter)
+	) {
+		state->globalCompositeOperation = op;
 		return;
 	}
 
