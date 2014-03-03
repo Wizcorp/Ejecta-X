@@ -22,6 +22,9 @@ LOCAL_CFLAGS += -DENABLE_SINGLE_THREADED=1 -DUSE_FILE32API -D__LINUX__=1 -DCOMPA
 
 LOCAL_C_INCLUDES := \
                     $(LOCAL_PATH) \
+                    $(LOCAL_PATH)/../../../sources/lib/lodefreetype \
+                    $(LOCAL_PATH)/../../../sources/lib/lodepng \
+                    $(LOCAL_PATH)/../../../sources/lib/lodejpeg \
                     $(LOCAL_PATH)/../../../sources/ejecta \
                     $(LOCAL_PATH)/../../../sources/ejecta/EJCanvas \
                     $(LOCAL_PATH)/../../../sources/ejecta/EJCanvas/2D \
@@ -35,9 +38,9 @@ LOCAL_C_INCLUDES := \
                     $(LOCAL_PATH)/../../../library/android/JavaScriptCore/include 
 
 LOCAL_SRC_FILES := \
-                    ../../../sources/ejecta/lodefreetype/lodefreetype.cpp \
-                    ../../../sources/ejecta/lodepng/lodepng.cpp \
-                    ../../../sources/ejecta/lodejpeg/lodejpeg.cpp \
+                    ../../../sources/lib/lodefreetype/lodefreetype.cpp \
+                    ../../../sources/lib/lodepng/lodepng.cpp \
+                    ../../../sources/lib/lodejpeg/lodejpeg.cpp \
                     ../../../sources/ejecta/EJCocoa/support/nsCArray.cpp \
                     ../../../sources/ejecta/EJCocoa/NSObject.cpp \
                     ../../../sources/ejecta/EJCocoa/NSObjectFactory.cpp \

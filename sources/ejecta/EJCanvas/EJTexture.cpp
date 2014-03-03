@@ -1,7 +1,7 @@
 #include <math.h>
 #include "EJTexture.h"
-#include "../lodepng/lodepng.h"
-#include "../lodejpeg/lodejpeg.h"
+#include "lodepng.h"
+#include "lodejpeg.h"
 
 
 // Textures check this global filter state when binding

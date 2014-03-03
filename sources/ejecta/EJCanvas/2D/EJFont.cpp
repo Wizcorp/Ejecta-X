@@ -1,6 +1,6 @@
 #include "EJFont.h"
 #include "EJCanvasContext.h"
-#include "lodefreetype/lodefreetype.h"
+#include "lodefreetype.h"
 #include "EJApp.h"
 
 #define PT_TO_PX(pt) ceilf((pt)*(1.0f+(1.0f/3.0f)))
