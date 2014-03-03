@@ -1,5 +1,5 @@
 #include "EJCanvasContextScreen.h"
-#include "../EJApp.h"
+#include "EJApp.h"
 
 
 EJCanvasContextScreen::EJCanvasContextScreen()

@@ -5,7 +5,7 @@
 #ifndef __EJ_CANVAS_2D_TYPES_H__
 #define __EJ_CANVAS_2D_TYPES_H__
 
-#include "../EJCocoa/CGAffineTransform.h"
+#include "EJCocoa/CGAffineTransform.h"
 #include <cmath>
 
 typedef union { 

@@ -2,7 +2,7 @@
 #include <math.h>
 #include <algorithm>
 #include "EJPath.h"
-#include "../EJCocoa/support/nsMacros.h"
+#include "EJCocoa/support/nsMacros.h"
 #include "EJCanvasContext.h"
 
 //Necessary for call to OpenGLES 1 functions such as glDisableClientState

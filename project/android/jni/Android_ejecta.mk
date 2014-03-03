@@ -24,6 +24,7 @@ LOCAL_C_INCLUDES := \
                     $(LOCAL_PATH) \
                     $(LOCAL_PATH)/../../../sources/ejecta \
                     $(LOCAL_PATH)/../../../sources/ejecta/EJCanvas \
+                    $(LOCAL_PATH)/../../../sources/ejecta/EJCanvas/2D \
                     $(LOCAL_PATH)/../../../sources/ejecta/EJCocoa \
                     $(LOCAL_PATH)/../../../sources/ejecta/EJCocoa/support \
                     $(LOCAL_PATH)/../../../sources/ejecta/EJUtils \
@@ -60,16 +61,16 @@ LOCAL_SRC_FILES := \
                     ../../../sources/ejecta/EJTimer.cpp \
                     ../../../sources/ejecta/EJAudio/EJBindingAudio.cpp \
                     ../../../sources/ejecta/EJCanvas/EJBindingImage.cpp \
-                    ../../../sources/ejecta/EJCanvas/EJBindingImageData.cpp \
                     ../../../sources/ejecta/EJCanvas/EJBindingCanvas.cpp \
                     ../../../sources/ejecta/EJCanvas/EJCanvasContext.cpp \
-                    ../../../sources/ejecta/EJCanvas/EJCanvasContextScreen.cpp \
-                    ../../../sources/ejecta/EJCanvas/EJCanvasContextTexture.cpp \
-                    ../../../sources/ejecta/EJCanvas/EJPath.cpp \
                     ../../../sources/ejecta/EJCanvas/EJTexture.cpp \
-                    ../../../sources/ejecta/EJCanvas/EJFont.cpp \
-                    ../../../sources/ejecta/EJCanvas/EJGLProgram2D.cpp \
-                    ../../../sources/ejecta/EJCanvas/EJImageData.cpp \
+                    ../../../sources/ejecta/EJCanvas/2D/EJBindingImageData.cpp \
+                    ../../../sources/ejecta/EJCanvas/2D/EJCanvasContextScreen.cpp \
+                    ../../../sources/ejecta/EJCanvas/2D/EJCanvasContextTexture.cpp \
+                    ../../../sources/ejecta/EJCanvas/2D/EJFont.cpp \
+                    ../../../sources/ejecta/EJCanvas/2D/EJGLProgram2D.cpp \
+                    ../../../sources/ejecta/EJCanvas/2D/EJImageData.cpp \
+                    ../../../sources/ejecta/EJCanvas/2D/EJPath.cpp \
                     ../../../sources/ejecta/EJUtils/EJBindingHttpRequest.cpp \
                     ../../../sources/ejecta/EJUtils/EJBindingLocalStorage.cpp \
                     ../../../sources/ejecta/EJUtils/EJBindingTouchInput.cpp \
