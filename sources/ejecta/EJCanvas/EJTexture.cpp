@@ -219,6 +219,15 @@ GLubyte * EJTexture::loadPixelsWithLodePNGFromPath(NSString * path) {
 
 	setWidthAndHeight(w, h);
 
+	// Apply premultiplied alpha
+	// Faster operation may exist, no clamping as well
+	int origPixelsLength = w * h;
+	for (int i = 0; i < origPixelsLength; ++i) {
+		origPixels[i * 4 + 0] = ((origPixels[i * 4 + 0] * (origPixels[i * 4 + 3])) + 1 + ((origPixels[i * 4 + 0] * (origPixels[i * 4 + 3])) >> 8)) >> 8;
+		origPixels[i * 4 + 1] = ((origPixels[i * 4 + 1] * (origPixels[i * 4 + 3])) + 1 + ((origPixels[i * 4 + 1] * (origPixels[i * 4 + 3])) >> 8)) >> 8;
+		origPixels[i * 4 + 2] = ((origPixels[i * 4 + 2] * (origPixels[i * 4 + 3])) + 1 + ((origPixels[i * 4 + 2] * (origPixels[i * 4 + 3])) >> 8)) >> 8;
+	}
+
 	// If the image is already in the correct (power of 2) size, just return
 	// the original pixels unmodified
 

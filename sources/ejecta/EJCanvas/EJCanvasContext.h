@@ -69,10 +69,8 @@ typedef enum {
 } EJCompositeOperation;
 
 static const struct { GLenum source; GLenum destination; float alphaFactor; } EJCompositeOperationFuncs[] = {
-	//Two first blend functions different from iOS
-	{GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA, 1},
-	//Based on Ejecta iOS, alphaFactor should be 0 for lighter but doesn't seem to work
-	{GL_SRC_ALPHA, GL_ONE, 1},
+	{GL_ONE, GL_ONE_MINUS_SRC_ALPHA, 1},
+	{GL_ONE, GL_ONE_MINUS_SRC_ALPHA, 0},
 	{GL_DST_COLOR, GL_ONE_MINUS_SRC_ALPHA, 1},
 	{GL_ZERO, GL_ONE_MINUS_SRC_ALPHA, 1},
 	{GL_ONE_MINUS_DST_ALPHA, GL_ONE, 1},
