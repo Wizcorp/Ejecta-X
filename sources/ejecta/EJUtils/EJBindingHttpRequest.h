@@ -5,6 +5,7 @@
 #include "../EJCocoa/NSObject.h"
 #include <vector>
 
+
 class EJHttpClient;
 class EJHttpRequest;
 class EJHttpResponse;
