@@ -46,14 +46,42 @@ void EJGLProgram2D::getUniforms() {
 }
 
 GLint EJGLProgram2D::compileShaderFile(NSString *file, GLenum type) {
-	NSString *path = EJApp::instance()->pathForResource(file);
-	NSString *source = NSString::createWithContentsOfFile(path->getCString());
-	if(!source) {
-		NSLOG("Failed to load shader file %s", file->getCString());
-		return 0;
-	}
+    string cachePath = string(EJApp::instance()->dataBundle) + string("/") + (EJApp::instance()->pathForResource(file))->getCString();
+    // Load from cache - /data/data
+    NSString *source = NSString::createWithContentsOfFile((NSStringMake(cachePath))->getCString());
 
-	return compileShaderSource(source, type);
+    if (!source) {
+        // Check file from data bundle - /assets/EJECTA_APP_FOLDER/
+        if (EJApp::instance()->aassetManager == NULL) {
+            NSLOG("Error loading asset manger");
+            return 0;
+        } else {
+            // NSLOG("loaded asset manger");
+        }
+
+        const char *filename = EJApp::instance()->pathForResource(file)->getCString(); // "dirname/filename.ext";
+
+        // Open file
+        AAsset *asset = AAssetManager_open(EJApp::instance()->aassetManager, filename, AASSET_MODE_UNKNOWN);
+        if (NULL == asset) {
+            NSLOG("Failed to load shader file %s :AssetManager error", file->getCString());
+            return 0;
+        } else {
+           long size = AAsset_getLength(asset);
+           unsigned char *buffer = (unsigned char*)malloc(sizeof(char)*size);
+           AAsset_read(asset, buffer, size);
+
+           source = NSString::createWithData(buffer, size);
+           AAsset_close(asset);
+        }
+    }
+
+    if (!source) {
+        NSLOG("Failed to load shader file %s :Not found", file->getCString());
+        return 0;
+    }
+
+    return compileShaderSource(source, type);
 }
 
 GLint EJGLProgram2D::compileShaderSource(NSString *source, GLenum type) {
