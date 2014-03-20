@@ -198,9 +198,6 @@ GLubyte *EJTexture::loadPixelsWithCGImageFromPath(NSString * path) {
                 long size = AAsset_getLength(asset);
                 unsigned char *buffer = (unsigned char*)malloc(sizeof(char)*size);
                 AAsset_read(asset, buffer, size);
-
-                NSString *source = NSString::createWithData(buffer, size);
-                NSLOG("source %s", source->getCString());
                 AAsset_close(asset);
 
                 unsigned int error = lodejpeg_decode_memory(&origPixels, &w, &h, buffer, size, 8);
@@ -260,9 +257,6 @@ GLubyte *EJTexture::loadPixelsWithLodePNGFromPath(NSString *path) {
                 long size = AAsset_getLength(asset);
                 unsigned char *buffer = (unsigned char*)malloc(sizeof(char)*size);
                 AAsset_read(asset, buffer, size);
-
-                NSString *source = NSString::createWithData(buffer, size);
-                NSLOG("source %s", source->getCString());
                 AAsset_close(asset);
 
                 unsigned int error = lodepng_decode_memory(&origPixels, &w, &h, buffer, size, LCT_RGBA, 8);
