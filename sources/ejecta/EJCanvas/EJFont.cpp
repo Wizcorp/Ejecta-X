@@ -87,7 +87,7 @@ void EJFont::drawString(NSString* string, EJCanvasContext* context, float x, flo
 		float th = texture->realHeight;	
 
 		context->setTexture(texture);
-		context->pushRect(x,y, width, height, 0, 0, width/tw, height/th, color, state->transform);
+		context->pushTexturedRect(x,y, width, height, 0, 0, width/tw, height/th, color, state->transform);
 		
 		free(bitmap);}
 	}else{
@@ -98,7 +98,7 @@ void EJFont::drawString(NSString* string, EJCanvasContext* context, float x, flo
 		float th = texture->realHeight;	
 
 		context->setTexture(texture);
-		context->pushRect(x,y, width, height, 0, 0, width/tw, height/th, color, state->transform);
+		context->pushTexturedRect(x,y, width, height, 0, 0, width/tw, height/th, color, state->transform);
 	}
 }
 
