@@ -29,10 +29,12 @@
 
 #include "EJSharedOpenGLContext.h"
 
+#include <android/asset_manager.h>
+
 using namespace std;
 
-#define EJECTA_VERSION "0.2.0"
-#define EJECTA_APP_FOLDER "cache/"
+#define EJECTA_VERSION "0.2.1"
+#define EJECTA_APP_FOLDER "www/"
 
 class EJBindingBase;
 class EJTimerCollection;
@@ -45,39 +47,35 @@ class EJBindingTouchInput;
 class EJApp : public NSObject {
 
 private:
-	BOOL paused;
+    BOOL paused;
 
-	JavaVM *jvm;
-	jobject g_obj;
-        
-	NSDictionary * jsClasses;
-	EJTimerCollection * timers;
-	long currentTime;
+    JavaVM *jvm;
+    jobject g_obj;
 
-	EJSharedOpenGLContext *openGLContext;
+    NSDictionary *jsClasses;
+    EJTimerCollection *timers;
+    long currentTime;
+    EJSharedOpenGLContext *openGLContext;
+    static EJApp *ejectaInstance;
 
-	static EJApp* ejectaInstance;
-
-	char* mainBundle;
-
-	
 public:
-
-	BOOL landscapeMode;
-	JSGlobalContextRef jsGlobalContext;
-	int height, width;
-
-	EJBindingTouchInput * touchDelegate;
-	EJCanvasContext * currentRenderingContext;
-	EJCanvasContextScreen * screenRenderingContext;
-	float internalScaling;
-	BOOL lockTouches;
-	NSArray* touches;
+    jobject assetManager;
+    BOOL landscapeMode;
+    JSGlobalContextRef jsGlobalContext;
+    int height, width;
+    AAssetManager *aassetManager;
+    char *dataBundle;
+    EJBindingTouchInput *touchDelegate;
+    EJCanvasContext *currentRenderingContext;
+    EJCanvasContextScreen *screenRenderingContext;
+    float internalScaling;
+    BOOL lockTouches;
+    NSArray *touches;
 
     EJApp(void);
     ~EJApp(void);
 
-    void init(JNIEnv* env, jobject jobj, const char* path, int w, int h);
+    void init(JNIEnv *env, jobject jobj, jobject assetManager, const char *path, int w, int h);
     void setScreenSize(int w, int h);
     void run(void);
     void pause(void);
@@ -90,7 +88,7 @@ public:
     JSClassRef getJSClassForClass(EJBindingBase* classId);
     void hideLoadingScreen(void);
     void loadJavaScriptFile(const char *filename);
-    void loadScriptAtPath(NSString * path);
+    void loadScriptAtPath(NSString *path);
     JSValueRef loadModuleWithId(NSString * moduleId, JSValueRef module, JSValueRef exports);
     JSValueRef invokeCallback(JSObjectRef callback, JSObjectRef thisObject, size_t argc, const JSValueRef argv[]);
     void logException(JSValueRef exception, JSContextRef ctxp);
