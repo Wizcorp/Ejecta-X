@@ -33,9 +33,7 @@ void EJBindingCanvas::init(JSContextRef ctx ,JSObjectRef obj, size_t argc, const
 
 	if( firstCanvasInstance ) {
 		isScreenCanvas = true;
-		NSLOG("firstCanvasInstance : %d", firstCanvasInstance);
 		firstCanvasInstance = false;
-		NSLOG("firstCanvasInstance : %d", firstCanvasInstance);
 	}
 	
 	if( argc == 2 ) {
@@ -83,7 +81,7 @@ EJBindingCanvas::~EJBindingCanvas() {
 }
 
 EJTexture* EJBindingCanvas::getTexture() {
-	if (renderingContext->getClassName() == "EJCanvasContextTexture") {
+	if (renderingContext && renderingContext->getClassName() == "EJCanvasContextTexture") {
 		return ((EJCanvasContextTexture *)renderingContext)->getTexture();
 	}
 	else {
