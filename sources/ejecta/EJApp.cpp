@@ -284,10 +284,10 @@ void EJApp::loadScriptAtPath(NSString *path) {
            unsigned char *buffer = (unsigned char *) malloc(sizeof(char) *size);
            int result = AAsset_read(asset, buffer, size);
            if (result < 0) {
-           	NSLOG("Error reading file %s", filename);
-                AAsset_close(asset);
-                free(buffer);
-           	return;
+               NSLOG("Error reading file %s", filename);
+               AAsset_close(asset);
+               free(buffer);
+               return;
            }
            script = NSString::createWithData(buffer, size);
            AAsset_close(asset);
