@@ -183,8 +183,6 @@ GLubyte *EJTexture::loadPixelsWithCGImageFromPath(NSString * path) {
             if (EJApp::instance()->aassetManager == NULL) {
                 NSLOG("Error loading asset manger");
                 return origPixels;
-            } else {
-                // NSLOG("loaded asset manger");
             }
 
             const char *filename = path->getCString(); // "dirname/filename.ext";
@@ -196,15 +194,22 @@ GLubyte *EJTexture::loadPixelsWithCGImageFromPath(NSString * path) {
                 return origPixels;
             } else {
                 long size = AAsset_getLength(asset);
-                unsigned char *buffer = (unsigned char*)malloc(sizeof(char)*size);
-                AAsset_read(asset, buffer, size);
+                unsigned char *buffer = (unsigned char *) malloc(sizeof(char) *size);
+                int result = AAsset_read(asset, buffer, size);
+                if (result < 0) {
+                    AAsset_close(asset);
+                    free(buffer);
+                    return origPixels;
+                }
                 AAsset_close(asset);
 
                 unsigned int error = lodejpeg_decode_memory(&origPixels, &w, &h, buffer, size, 8);
                 if (error) {
                     NSLOG("Error Loading image %s - %u: %s", path->getCString(), error, lodepng_error_text(error));
+                    free(buffer);
                     return origPixels;
                 }
+                free(buffer);
             }
         }
 
@@ -242,8 +247,6 @@ GLubyte *EJTexture::loadPixelsWithLodePNGFromPath(NSString *path) {
             if (EJApp::instance()->aassetManager == NULL) {
                 NSLOG("Error loading asset manger");
                 return origPixels;
-            } else {
-                // NSLOG("loaded asset manger");
             }
 
             const char *filename = path->getCString(); // "dirname/filename.ext";
@@ -255,15 +258,22 @@ GLubyte *EJTexture::loadPixelsWithLodePNGFromPath(NSString *path) {
                 return origPixels;
             } else {
                 long size = AAsset_getLength(asset);
-                unsigned char *buffer = (unsigned char*)malloc(sizeof(char)*size);
-                AAsset_read(asset, buffer, size);
+                unsigned char *buffer = (unsigned char *) malloc(sizeof(char) *size);
+                int result = AAsset_read(asset, buffer, size);
+                if (result < 0) {
+                    AAsset_close(asset);
+                    free(buffer);
+                    return origPixels;
+                }
                 AAsset_close(asset);
 
                 unsigned int error = lodepng_decode_memory(&origPixels, &w, &h, buffer, size, LCT_RGBA, 8);
                 if (error) {
                     NSLOG("Error Loading image %s - %u: %s", path->getCString(), error, lodepng_error_text(error));
+                    free(buffer);
                     return origPixels;
                 }
+                free(buffer);
             }
         }
 

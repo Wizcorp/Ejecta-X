@@ -148,11 +148,9 @@ void EJApp::init(JNIEnv *env, jobject jobj, jobject assetManager, const char* pa
         env->GetJavaVM(&jvm);
         
         g_obj = jobj;
-        
-        // Make this a global ref to ensure our pointer is always true
-        this->assetManager = env->NewGlobalRef(assetManager);
-        // Set global pointer
-        this->aassetManager = AAssetManager_fromJava(env, this->assetManager);
+
+        // Set global pointer to Asset Manager in Java
+        this->aassetManager = AAssetManager_fromJava(env, assetManager);
         
 	if (dataBundle) {
 		free(dataBundle);
@@ -270,27 +268,30 @@ void EJApp::loadScriptAtPath(NSString *path) {
     if (!script) {
         // Check file from main bundle - /assets/EJECTA_APP_FOLDER/
         if (this->aassetManager == NULL) {
-            NSLOG("error loading asset manger");
+            NSLOG("error loading asset manager");
             return;
-        } else {
-            // NSLOG("loaded asset manger");
         }
-
+        
         const char *filename = pathForResource(path)->getCString(); // "dirname/filename.ext";
 
         // Open file
         AAsset *asset = AAssetManager_open(this->aassetManager, filename, AASSET_MODE_UNKNOWN);
         if (NULL == asset) {
-            // NSLOG("Could not open file from internal storage: NULL Asset");
-            NSLOG("Error: Can't Find Script %s", path->getCString() );
+            NSLOG("Error: Cannot find script %s", path->getCString());
             return;
         } else {
            long size = AAsset_getLength(asset);
-           unsigned char *buffer = (unsigned char*)malloc(sizeof(char)*size);
-           AAsset_read(asset, buffer, size);
-
+           unsigned char *buffer = (unsigned char *) malloc(sizeof(char) *size);
+           int result = AAsset_read(asset, buffer, size);
+           if (result < 0) {
+           	NSLOG("Error reading file %s", filename);
+                AAsset_close(asset);
+                free(buffer);
+           	return;
+           }
            script = NSString::createWithData(buffer, size);
            AAsset_close(asset);
+           free(buffer);
         }
     }
 
@@ -316,8 +317,6 @@ JSValueRef EJApp::loadModuleWithId(NSString *moduleId, JSValueRef module, JSValu
             if (this->aassetManager == NULL) {
                 NSLOG("error loading asset manger");
                 return NULL;
-            } else {
-                // NSLOG("loaded asset manger");
             }
 
             const char *filename = pathForResource(moduleIdFile)->getCString(); // "dirname/filename.ext";
@@ -325,16 +324,21 @@ JSValueRef EJApp::loadModuleWithId(NSString *moduleId, JSValueRef module, JSValu
             // Open file
             AAsset *asset = AAssetManager_open(this->aassetManager, filename, AASSET_MODE_UNKNOWN);
             if (NULL == asset) {
-                // NSLOG("Could not open file from internal storage: NULL Asset");
-                NSLOG("Error: Can't Find Script %s", moduleIdFile->getCString());
+                NSLOG("Error: Cannot find script %s", moduleIdFile->getCString());
                 return NULL;
             } else {
-               long size = AAsset_getLength(asset);
-               unsigned char *buffer = (unsigned char*)malloc(sizeof(char)*size);
-               AAsset_read(asset, buffer, size);
-
-               script = NSString::createWithData(buffer, size);
-               AAsset_close(asset);
+                long size = AAsset_getLength(asset);
+                unsigned char *buffer = (unsigned char *) malloc(sizeof(char) *size);
+                int result = AAsset_read(asset, buffer, size);
+                if (result < 0) {
+                    NSLOG("Error reading file %s", moduleIdFile->getCString());
+                    AAsset_close(asset);
+                    free(buffer);
+                    return NULL;
+                }
+                script = NSString::createWithData(buffer, size);
+                AAsset_close(asset);
+                free(buffer);
             }
         }
 	

@@ -55,8 +55,6 @@ GLint EJGLProgram2D::compileShaderFile(NSString *file, GLenum type) {
         if (EJApp::instance()->aassetManager == NULL) {
             NSLOG("Error loading asset manger");
             return 0;
-        } else {
-            // NSLOG("loaded asset manger");
         }
 
         const char *filename = EJApp::instance()->pathForResource(file)->getCString(); // "dirname/filename.ext";
@@ -69,10 +67,15 @@ GLint EJGLProgram2D::compileShaderFile(NSString *file, GLenum type) {
         } else {
            long size = AAsset_getLength(asset);
            unsigned char *buffer = (unsigned char*)malloc(sizeof(char)*size);
-           AAsset_read(asset, buffer, size);
-
+           int result = AAsset_read(asset, buffer, size);
+           if (result < 0) {
+               AAsset_close(asset);
+               free(buffer);
+               return 0;
+           }
            source = NSString::createWithData(buffer, size);
            AAsset_close(asset);
+           free(buffer);
         }
     }
 
