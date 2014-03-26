@@ -24,11 +24,41 @@ EJFont::EJFont(NSString* font, NSInteger size, BOOL usefill, float contentScale)
 	buffer = 0;	
 	unsigned int err = lodefreetype_decode32_file(&font_info, &buffer, &width, &height, fullPath->getCString());
 
-	if(err){		
-		NSLOG("Load EJFont path :   %s   is error",fullPath->getCString());		
-		if (buffer)free(buffer);
-		if (font_info)delete_freetype_font(font_info);
-		if (textures)textures->release();
+	if (err) {
+            // Check file from main bundle - /assets/EJECTA_APP_FOLDER/
+            if (EJApp::instance()->aassetManager == NULL) {
+                NSLOG("Error loading asset manager");
+                return;
+            }
+            const char *filename = fullPath->getCString(); // "dirname/filename.ext";
+
+            // Open file
+            AAsset *asset = AAssetManager_open(EJApp::instance()->aassetManager, filename, AASSET_MODE_UNKNOWN);
+            if (NULL == asset) {
+                NSLOG("Error opening asset %s", filename);
+                return;
+            } else {
+               long size = AAsset_getLength(asset);
+               buffer = (unsigned char *) malloc(sizeof(char) *size);
+               int result = AAsset_read(asset, buffer, size);
+               if (result < 0) {
+                   NSLOG("Error reading file %s", filename);
+                   AAsset_close(asset);
+                   free(buffer);
+                   return;
+               }
+
+               AAsset_close(asset);
+
+               unsigned int err = lodefreetype_decode_memory(&font_info, &width, &height, buffer, size);
+               
+               if (err) {
+                   NSLOG("Load EJFont path: %s is error %d", fullPath->getCString(), err);
+                   if (buffer)free(buffer);
+                   if (font_info)delete_freetype_font(font_info);
+                   if (textures)textures->release();
+               }
+            }
 	}
 	fullPath->release();
 }
