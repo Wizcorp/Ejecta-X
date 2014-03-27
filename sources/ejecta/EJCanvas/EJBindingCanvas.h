@@ -1,7 +1,7 @@
 #ifndef __EJ_BINDING_CANVAS_H__
 #define __EJ_BINDING_CANVAS_H__
 
-#include "../EJBindingBase.h"
+#include "EJBindingBase.h"
 #include "EJCanvasContextTexture.h"
 #include "EJCanvasContextScreen.h"
 #include "EJTexture.h"

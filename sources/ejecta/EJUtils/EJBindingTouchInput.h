@@ -1,7 +1,7 @@
 #ifndef __EJ_BINDING_TOUCHINPUT_H__
 #define __EJ_BINDING_TOUCHINPUT_H__
 
-#include "../EJBindingEventedBase.h"
+#include "EJBindingEventedBase.h"
 
 class EJTouchEvent : public NSObject {
 public:
