@@ -77,7 +77,7 @@ public:
 
 	virtual string superclass(){return EJBindingBase::toString();};
 
-	virtual void init(JSContextRef ctx ,JSObjectRef obj, size_t argc, const JSValueRef argv[]);
+	virtual void initWithContext(JSContextRef ctx, JSObjectRef obj, size_t argc, const JSValueRef argv[]);
 
 	EJ_BIND_ENUM_DEFINE( globalCompositeOperation, EJCompositeOperation, renderingContext->globalCompositeOperation);
 	EJ_BIND_ENUM_DEFINE( lineCap, EJLineCap, renderingContext->state->lineCap);

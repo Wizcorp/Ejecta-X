@@ -202,7 +202,7 @@ public:
 
 	virtual string superclass(){return 0;};
 
-	virtual void init(JSContextRef ctxp, JSObjectRef obj, size_t argc, const JSValueRef argv[]);
+	virtual void initWithContext(JSContextRef ctxp, JSObjectRef obj, size_t argc, const JSValueRef argv[]);
 	static JSClassRef getJSClass(EJBindingBase* ej_obj);
 	REFECTION_CLASS_IMPLEMENT_DEFINE(EJBindingBase);
 };
