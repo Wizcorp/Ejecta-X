@@ -274,7 +274,6 @@ unsigned char *NSString::createFileData(const char *pszFileName, const char *psz
     return getFileData(pszFileName, pszMode, pSize);
 }
 
-
 NSString* NSString::createWithContentsOfFile(const char* pszFileName)
 {
     unsigned long size = 0;

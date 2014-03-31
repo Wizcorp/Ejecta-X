@@ -8,7 +8,6 @@
 #include <cwctype>
 #include <iostream>
 #include <clocale>
-#include <cstring>
 #include <cstdlib>
 #include "../uriparser/Uri.h"
 
