@@ -515,6 +515,84 @@ void EJBindingHttpRequest::onHttpRequestCompleted(NSObject *sender, void *data) 
     EJBindingEventedBase::triggerEvent(NSStringMake("readystatechange"), 0, NULL);
 }
 
+void EJBindingHttpRequest::loadLocalhost() {
+
+    state = kEJHttpRequestStateLoading;
+    
+    // No host? Assume we have a local file        
+    EJBindingEventedBase::triggerEvent(NSStringMake("loadstart"), 0, NULL);
+    EJBindingEventedBase::triggerEvent(NSStringMake("load"), 0, NULL);
+
+    // Spit string removing "localhost/"
+    const char *urlAsChar = url->getCString();
+    std::string urlAsString = string(urlAsChar);
+    // Get from start of string until the length end of localhost (11 chars))
+    std::string str1 = urlAsString.substr(10);
+    url = NSString::create(str1);
+    
+    // Check file from cache - /data/data/
+    string cachePath = string(EJApp::instance()->dataBundle) + string("/") + (EJApp::instance()->pathForResource(url))->getCString();
+    unsigned long size = 0;
+    unsigned char *pData = 0;
+    NSLOG("Search data: %s", cachePath.c_str());
+    pData = NSString::createFileData(cachePath.c_str(), "rb", &size);
+
+    if (pData) {
+        // Data was found
+        NSLOG("Data found in data/data");
+        int len = strlen((char *)pData);
+        std::string buf = std::string(pData, pData + len);
+        responseBody = new char[sizeof(pData)];
+        sprintf(responseBody, "%s", buf.c_str());
+
+    } else { 
+       NSLOG("Checking in bundle");
+        // Check file from main bundle - /assets/EJECTA_APP_FOLDER/
+        if (EJApp::instance()->aassetManager == NULL) {
+            NSLOG("Error loading asset manager");
+            return;
+        }
+
+        const char *filename = (EJApp::instance()->pathForResource(url))->getCString(); // "dirname/filename.ext";
+
+        // Open file
+        AAsset *asset = AAssetManager_open(EJApp::instance()->aassetManager, filename, AASSET_MODE_UNKNOWN);
+        if (NULL == asset) {
+            NSLOG("Error: Cannot find script %s", filename);
+            return;
+        } else {
+           long size = AAsset_getLength(asset);
+           unsigned char *buffer = (unsigned char *) malloc(sizeof(char) *size);
+           int result = AAsset_read(asset, buffer, size);
+           if (result < 0) {
+               NSLOG("Error reading file %s", filename);
+               AAsset_close(asset);
+               free(buffer);
+               return;
+           }
+
+           int len = strlen((char *)buffer);
+           std::string buf = std::string(buffer, buffer + len);
+           responseBody = new char[sizeof(buffer)];
+           sprintf(responseBody, "%s", buf.c_str());
+           AAsset_close(asset);
+           free(buffer);
+        }
+
+    }
+    state = kEJHttpRequestStateDone;
+    // A response Object was never added to the response queue so we do not have
+    // anything to clean on the network thread, but we must create a fake response
+    // to hold the response code etc.
+    // Set a response code and emit events
+    response = new EJHttpResponse(NULL);
+    response->setResponseCode(200);
+        
+    // Emit events
+    EJBindingEventedBase::triggerEvent(NSStringMake("loadend"), 0, NULL);
+    EJBindingEventedBase::triggerEvent(NSStringMake("readystatechange"), 0, NULL);
+}
+
 EJ_BIND_FUNCTION(EJBindingHttpRequest, open, ctx, argc, argv) {
     if (argc < 2) { return NULL; }
     
@@ -589,8 +667,6 @@ EJ_BIND_FUNCTION(EJBindingHttpRequest, send, ctx, argc, argv) {
     Uri u0 = Uri::Parse(string(url->getCString()));
     std::string host = u0.Host;
     
-    NSLOG("host: %s", u0.Host.c_str());
-    
     EJHttpRequest* request = new EJHttpRequest();
     request->setUrl(url->getCString());
     
@@ -598,17 +674,18 @@ EJ_BIND_FUNCTION(EJBindingHttpRequest, send, ctx, argc, argv) {
     //      No host? Assume we have a local file
     // 	requestUrl = [NSURL fileURLWithPath:[[EJApp instance] pathForResource:url]];
     // }
+    
     if (host.empty()) {
-        // No host? Assume we have a local file
-        // request->setUrl((EJApp::instance()->pathForResource(url))->getCString());
-        request->setUrl("file:///data/data/com.impactjs.ejecta.sample/cache/bg.png");
-        // /data/data/com.impactjs.ejecta.sample/cache/bg.png
-        
-        NSLOG("request: %s", (EJApp::instance()->pathForResource(url))->getCString());
+        NSLOG("no host");
+        EJBindingHttpRequest::loadLocalhost();
+        return NULL;
     }
     
-    if (host.compare("localhost")) {
+    if (host == "localhost") {
         // TODO: load localhost path as local file
+        NSLOG("host: %s", host.c_str());
+        EJBindingHttpRequest::loadLocalhost();
+        return NULL;
     }
 
     // NSURL * requestUrl = [NSURL URLWithString:url];

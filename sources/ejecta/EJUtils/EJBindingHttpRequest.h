@@ -449,6 +449,7 @@ public:
 	int getStatusCode();
 	NSString * getResponseText();
 	void onHttpRequestCompleted(NSObject *sender, void *data);
+	void loadLocalhost();
 
 	EJ_BIND_FUNCTION_DEFINE(open, ctx, argc, argv);
 	EJ_BIND_FUNCTION_DEFINE(setRequestHeader, ctx, argc, argv);
