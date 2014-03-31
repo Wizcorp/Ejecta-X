@@ -104,6 +104,8 @@ public:
 
 	EJSharedOpenGLContext *getOpenGLContext() const { return openGLContext; }
 
+    JavaVM* getJvm();
+    jobject getJobj();
 };
 
 #endif // __EJ_APP_H__

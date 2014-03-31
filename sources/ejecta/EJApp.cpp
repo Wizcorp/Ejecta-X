@@ -560,3 +560,14 @@ void EJApp::finalize()
 		ejectaInstance = NULL;
 	}
 }
+
+JavaVM * EJApp::getJvm()
+{
+    return jvm;
+}
+
+jobject EJApp::getJobj()
+{
+    return g_obj;
+}
+

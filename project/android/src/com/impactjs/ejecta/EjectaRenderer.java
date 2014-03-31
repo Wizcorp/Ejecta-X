@@ -78,4 +78,18 @@ public class EjectaRenderer implements Renderer {
 		public abstract void onCanvasCreated();
 	}
 
+	public void setSharedPreferences (String key , String value) {
+		SharedPreferences settings = mContext.getSharedPreferences(mContext.getPackageName(), 0);
+		SharedPreferences.Editor editor = settings.edit();
+			
+		editor.putString(key, value);
+		editor.commit();
+	}
+
+	public String getSharedPreferences (String key) {
+		SharedPreferences settings = mContext.getSharedPreferences(mContext.getPackageName(), 0);
+		
+		return settings.getString(key, "");
+	}
+
 }

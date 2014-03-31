@@ -3,7 +3,6 @@
 
 #include "../EJBindingBase.h"
 
-
 class EJBindingLocalStorage : public EJBindingBase {
 	
 public:
