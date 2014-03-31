@@ -46,7 +46,9 @@ struct Uri
             (pathStart != uriEnd) ? pathStart : queryStart,
             ':');  // check for port
 
-        result.Host = std::string(hostStart, hostEnd);
+        if (!result.Protocol.empty()) {
+                result.Host = std::string(hostStart, hostEnd);
+        }
 
         // port
         if ((hostEnd != uriEnd) && ((&*(hostEnd))[0] == ':'))  // we have a port

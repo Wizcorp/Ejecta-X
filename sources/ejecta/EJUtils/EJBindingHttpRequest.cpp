@@ -8,6 +8,7 @@
 #include <cwctype>
 #include <iostream>
 #include <clocale>
+#include <cstring>
 #include <cstdlib>
 #include "../uriparser/Uri.h"
 
@@ -523,13 +524,6 @@ void EJBindingHttpRequest::loadLocalhost() {
     EJBindingEventedBase::triggerEvent(NSStringMake("loadstart"), 0, NULL);
     EJBindingEventedBase::triggerEvent(NSStringMake("load"), 0, NULL);
 
-    // Spit string removing "localhost/"
-    const char *urlAsChar = url->getCString();
-    std::string urlAsString = string(urlAsChar);
-    // Get from start of string until the length end of localhost (11 chars))
-    std::string str1 = urlAsString.substr(10);
-    url = NSString::create(str1);
-    
     // Check file from cache - /data/data/
     string cachePath = string(EJApp::instance()->dataBundle) + string("/") + (EJApp::instance()->pathForResource(url))->getCString();
     unsigned long size = 0;
@@ -545,8 +539,8 @@ void EJBindingHttpRequest::loadLocalhost() {
         responseBody = new char[sizeof(pData)];
         sprintf(responseBody, "%s", buf.c_str());
 
-    } else { 
-       NSLOG("Checking in bundle");
+    } else {
+        NSLOG("Checking in bundle");
         // Check file from main bundle - /assets/EJECTA_APP_FOLDER/
         if (EJApp::instance()->aassetManager == NULL) {
             NSLOG("Error loading asset manager");
@@ -569,16 +563,15 @@ void EJBindingHttpRequest::loadLocalhost() {
                AAsset_close(asset);
                free(buffer);
                return;
+           } else {
+               int len = strlen((char *)buffer);
+               std::string buf = std::string(buffer, buffer + len);
+               responseBody = new char[len];
+               sprintf(responseBody, "%s", buf.c_str());
+               AAsset_close(asset);
+               free(buffer);
            }
-
-           int len = strlen((char *)buffer);
-           std::string buf = std::string(buffer, buffer + len);
-           responseBody = new char[sizeof(buffer)];
-           sprintf(responseBody, "%s", buf.c_str());
-           AAsset_close(asset);
-           free(buffer);
         }
-
     }
     state = kEJHttpRequestStateDone;
     // A response Object was never added to the response queue so we do not have
@@ -674,20 +667,13 @@ EJ_BIND_FUNCTION(EJBindingHttpRequest, send, ctx, argc, argv) {
     //      No host? Assume we have a local file
     // 	requestUrl = [NSURL fileURLWithPath:[[EJApp instance] pathForResource:url]];
     // }
-    
+
     if (host.empty()) {
         NSLOG("no host");
         EJBindingHttpRequest::loadLocalhost();
         return NULL;
     }
     
-    if (host == "localhost") {
-        // TODO: load localhost path as local file
-        NSLOG("host: %s", host.c_str());
-        EJBindingHttpRequest::loadLocalhost();
-        return NULL;
-    }
-
     // NSURL * requestUrl = [NSURL URLWithString:url];
 
     // NSMutableURLRequest * request = [[NSMutableURLRequest alloc] initWithURL:requestUrl];
