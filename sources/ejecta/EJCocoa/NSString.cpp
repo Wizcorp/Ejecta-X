@@ -273,6 +273,9 @@ unsigned char* getFileData(const char* fileName, const char* pszMode, unsigned l
 unsigned char *NSString::createFileData(const char *pszFileName, const char *pszMode, unsigned long *pSize) {
     return getFileData(pszFileName, pszMode, pSize);
 }
+void NSString::freeFileData(unsigned char *fileBuffer) {
+    free(fileBuffer);
+}
 
 NSString* NSString::createWithContentsOfFile(const char* pszFileName)
 {

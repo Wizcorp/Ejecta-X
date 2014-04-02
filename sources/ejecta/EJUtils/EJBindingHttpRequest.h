@@ -418,6 +418,13 @@ typedef enum {
 	kEJHttpRequestStateDone = 4,
 } EJHttpRequestState;
 
+typedef enum {
+	kEJHttpRequestSourceUndefined = -1,
+	kEJHttpRequestSourceHttp = 0,
+	kEJHttpRequestSourceData = 1,
+	kEJHttpRequestSourceAssets = 2,
+} EJHttpRequestSource;
+
 class EJBindingHttpRequest : public EJBindingEventedBase {
 
 	EJHttpRequestType type;
@@ -433,6 +440,8 @@ class EJBindingHttpRequest : public EJBindingEventedBase {
 	EJHttpClient * connection;
 	EJHttpResponse * response;
 	char * responseBody;
+	size_t responseBodySize;
+	EJHttpRequestSource requestSource;
 	
 public:
 

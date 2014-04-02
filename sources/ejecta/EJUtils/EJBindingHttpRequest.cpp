@@ -418,7 +418,9 @@ EJBindingHttpRequest::EJBindingHttpRequest():method(NULL),
                                             password(NULL), 
                                             connection(NULL), 
                                             response(NULL), 
-                                            responseBody(NULL) {
+                                            responseBody(NULL),
+                                            responseBodySize(0),
+                                            requestSource(kEJHttpRequestSourceUndefined) {
     requestHeaders = new NSDictionary();
 }
 
@@ -432,9 +434,24 @@ void EJBindingHttpRequest::init(JSContextRef ctx ,JSObjectRef obj, size_t argc, 
 }
 
 void EJBindingHttpRequest::clearConnection() {
-    if (connection)connection->release(); connection = NULL;
-    if (responseBody)delete [] responseBody; responseBody = NULL;
-    if (response)response->release(); response = NULL;
+    if (connection) {
+        connection->release();
+        connection = NULL;
+    }
+    if (responseBody) {
+        if (requestSource == kEJHttpRequestSourceData) {
+            NSString::freeFileData((unsigned char *)responseBody);
+        } else {
+            free(responseBody);
+        }
+        requestSource = kEJHttpRequestSourceUndefined;
+        responseBodySize = 0;
+        responseBody = NULL;
+    }
+    if (response) {
+        response->release();
+        response = NULL;
+    }
 }
 
 void EJBindingHttpRequest::clearRequest() {
@@ -465,7 +482,7 @@ NSString * EJBindingHttpRequest::getResponseText() {
     // 	}
     // }
     
-    return NSStringMake(responseBody);
+    return NSString::createWithData((unsigned char *)responseBody, responseBodySize);
 }
 
 void EJBindingHttpRequest::onHttpRequestCompleted(NSObject *sender, void *data) {
@@ -498,18 +515,13 @@ void EJBindingHttpRequest::onHttpRequestCompleted(NSObject *sender, void *data) 
         return;
     }
 
-    // Dump data
     std::vector<char> *buffer = response->getResponseData();
-    printf("Http Test, dump data: ");
-    for (unsigned int i = 0; i < buffer->size(); i++) {
-        printf("%c", (*buffer)[i]);
-    }
-    printf("\n");
 
     response->retain();
-    std::string buf = std::string(buffer->begin(), buffer->end());
-    responseBody = new char[buffer->size()];
-    sprintf(responseBody, "%s", buf.c_str());
+    requestSource = kEJHttpRequestSourceHttp;
+    responseBodySize = buffer->size();
+    responseBody = (char *)malloc(sizeof(char) * responseBodySize);
+    memcpy(responseBody, &((*buffer)[0]), sizeof(char) * responseBodySize);
 
     EJBindingEventedBase::triggerEvent(NSStringMake("loadend"), 0, NULL);
     EJBindingEventedBase::triggerEvent(NSStringMake("readystatechange"), 0, NULL);
@@ -533,11 +545,9 @@ void EJBindingHttpRequest::loadLocalhost() {
     if (pData) {
         // Data was found
         NSLOG("Data found in data/data");
-        int len = strlen((char *)pData);
-        std::string buf = std::string(pData, pData + len);
-        responseBody = new char[sizeof(pData)];
-        sprintf(responseBody, "%s", buf.c_str());
-
+        requestSource = kEJHttpRequestSourceData;
+        responseBodySize = size;
+        responseBody = (char *)pData;
     } else {
         NSLOG("Checking in bundle");
         // Check file from main bundle - /assets/EJECTA_APP_FOLDER/
@@ -553,24 +563,23 @@ void EJBindingHttpRequest::loadLocalhost() {
         if (NULL == asset) {
             NSLOG("Error: Cannot find script %s", filename);
             return;
-        } else {
-           long size = AAsset_getLength(asset);
-           unsigned char *buffer = (unsigned char *) malloc(sizeof(char) *size);
-           int result = AAsset_read(asset, buffer, size);
-           if (result < 0) {
-               NSLOG("Error reading file %s", filename);
-               AAsset_close(asset);
-               free(buffer);
-               return;
-           } else {
-               int len = strlen((char *)buffer);
-               std::string buf = std::string(buffer, buffer + len);
-               responseBody = new char[len];
-               sprintf(responseBody, "%s", buf.c_str());
-               AAsset_close(asset);
-               free(buffer);
-           }
         }
+
+        long size = AAsset_getLength(asset);
+        unsigned char *buffer = (unsigned char *)malloc(sizeof(char) * size);
+        int result = AAsset_read(asset, buffer, size);
+
+        if (result < 0) {
+            NSLOG("Error reading file %s", filename);
+            AAsset_close(asset);
+            free(buffer);
+            return;
+        }
+
+        requestSource = kEJHttpRequestSourceAssets;
+        responseBodySize = result;
+        responseBody = (char *)buffer;
+        AAsset_close(asset);
     }
     state = kEJHttpRequestStateDone;
     // A response Object was never added to the response queue so we do not have
