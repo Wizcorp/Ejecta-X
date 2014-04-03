@@ -1,3 +1,7 @@
+/*
+ * Modified from
+ * http://stackoverflow.com/a/11044337/2206385
+ */
 #include <string>
 #include <algorithm> // find
 
