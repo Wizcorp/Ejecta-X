@@ -129,6 +129,7 @@ public:
     static NSString* createWithContentsOfFile(const char* pszFileName);
 
     static unsigned char *createFileData(const char *pszFileName, const char *pszMode, unsigned long *pSize);
+    static void freeFileData(unsigned char *fileBuffer);
     
 private:
 
