@@ -6,6 +6,7 @@ import javax.microedition.khronos.opengles.GL10;
 import android.content.Context;
 import android.content.res.AssetManager;
 import android.opengl.GLSurfaceView.Renderer;
+import android.content.SharedPreferences;
 
 public class EjectaRenderer implements Renderer {
 
