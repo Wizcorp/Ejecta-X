@@ -1,5 +1,15 @@
 #include "EJBindingLocalStorage.h"
 
+void EJBindingLocalStorage::init(JSContextRef ctx, JSObjectRef obj, size_t argc, const JSValueRef argv[]) {
+    
+    _g_obj = EJApp::instance()->g_obj;
+    
+    env = NULL;
+    EJApp::instance()->jvm->GetEnv((void**)&env, JNI_VERSION_1_6);
+    
+    javaCallerClass = env->GetObjectClass(_g_obj);
+}
+
 EJBindingLocalStorage::EJBindingLocalStorage() {
 }
 
@@ -11,17 +21,6 @@ EJ_BIND_FUNCTION(EJBindingLocalStorage, getItem, ctx, argc, argv ) {
 
 	NSString * key = JSValueToNSString( ctx, argv[0] );
 	char * val;
-
-    JavaVM *_jvm = EJApp::instance()->jvm;
-    jobject _g_obj = EJApp::instance()->g_obj;
-	
-	//JavaVM* g_JavaVM = EJApp::instance()->getJvm();
-	JNIEnv *env = NULL;
-    _jvm->GetEnv((void**)&env, JNI_VERSION_1_6);
-    if (env == NULL)
-        return NULL;
-
-    jclass javaCallerClass = env->GetObjectClass(_g_obj);
 
     jmethodID methodId_getSharedPref = env->GetMethodID(
 	 javaCallerClass,
@@ -41,17 +40,6 @@ EJ_BIND_FUNCTION(EJBindingLocalStorage, setItem, ctx, argc, argv ) {
 	
 	NSString * key = JSValueToNSString( ctx, argv[0] );
 	NSString * value = JSValueToNSString( ctx, argv[1] );
-	
-    JavaVM *_jvm = EJApp::instance()->jvm;
-    jobject _g_obj = EJApp::instance()->g_obj;
-    
-    //JavaVM* g_JavaVM = EJApp::instance()->getJvm();
-    JNIEnv *env = NULL;
-    _jvm->GetEnv((void**)&env, JNI_VERSION_1_6);
-    if (env == NULL)
-        return NULL;
-
-    jclass javaCallerClass = env->GetObjectClass(_g_obj);
 
     jmethodID methodId_setSharedPref = env->GetMethodID(
 	 javaCallerClass,
