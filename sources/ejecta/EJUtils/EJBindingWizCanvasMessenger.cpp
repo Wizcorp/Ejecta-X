@@ -2,13 +2,14 @@
 #include "../EJCocoa/NSString.h"
 #include <JavaScriptCore/JavaScriptCore.h>
 
-void EJBindingWizCanvasMessenger::init(JSContextRef ctx ,JSObjectRef obj, size_t argc, const JSValueRef argv[]) {
+void EJBindingWizCanvasMessenger::init(JSContextRef ctx, JSObjectRef obj, size_t argc, const JSValueRef argv[]) {
     if (argc > 0) {
-        viewName = JSValueToNSString( ctx, argv[0] ); viewName->retain();
+        viewName = JSValueToNSString(ctx, argv[0]);
+        viewName->retain();
         NSLog("init WizCanvasMessenger on %s", viewName->getCString());
     } else {
         NSLog("init no params");
-        viewName =  NSStringMake("unknown");
+        viewName = NSStringMake("unknown");
     }
     EJApp::instance()->messengerDelegate = this;
     
@@ -28,11 +29,6 @@ void EJBindingWizCanvasMessenger::init(JSContextRef ctx ,JSObjectRef obj, size_t
     int getEnvStat = _jvm->GetEnv((void **)&g_env, JNI_VERSION_1_6);
     if (getEnvStat == JNI_EDETACHED) {
         NSLOG("GetEnv: not attached");
-        /*
-        if (_jvm->AttachCurrentThread((void **) &g_env, NULL) != 0) {
-            NSLOG("Failed to attach");
-        }
-        */
         return;
     } else if (getEnvStat == JNI_OK) {
         // NSLOG("JNI OK");
@@ -86,11 +82,10 @@ void EJBindingWizCanvasMessenger::triggerEvent(NSString *name, NSString *message
     JSStringRef type_string = JSStringCreateWithUTF8CString(type->getCString()); 
     JSValueRef _type = JSValueMakeString(ctx, type_string);
 
-    JSValueRef params[] = { _origin, _target, _message, _type };
+    JSValueRef params[] = {_origin, _target, _message, _type};
     
     //param[1] = result;
     EJBindingEventedBase::triggerEvent(name, 4, params);
-    // JSStringRelease(jstr);
 }
 
 EJ_BIND_FUNCTION(EJBindingWizCanvasMessenger, postMessage, ctx, argc, argv ) {
@@ -117,11 +112,11 @@ EJ_BIND_FUNCTION(EJBindingWizCanvasMessenger, postMessage, ctx, argc, argv ) {
     }
 
     // Stringify our data using JavaScriptCore
-    JSStringRef scriptJS = JSStringCreateWithUTF8CString("return JSON.stringify( arguments[0] )");
+    JSStringRef scriptJS = JSStringCreateWithUTF8CString("return JSON.stringify(arguments[0])");
     JSObjectRef fn = JSObjectMakeFunction(ctx, NULL, 0, NULL, scriptJS, NULL, 1, NULL);
     JSValueRef result = JSObjectCallAsFunction(ctx, fn, NULL, 1, argv, NULL);
     NSString *message = JSValueToNSString(ctx, result);
-    NSString *targetName = JSValueToNSString( ctx, argv[1] );
+    NSString *targetName = JSValueToNSString(ctx, argv[1]);
 
     // NSLog("Send to target view: %s", viewName->getCString());
 
