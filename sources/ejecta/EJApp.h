@@ -49,9 +49,6 @@ class EJApp : public NSObject {
 private:
     BOOL paused;
 
-    JavaVM *jvm;
-    jobject g_obj;
-
     NSDictionary *jsClasses;
     EJTimerCollection *timers;
     long currentTime;
@@ -59,6 +56,10 @@ private:
     static EJApp *ejectaInstance;
 
 public:
+
+	JavaVM *jvm; // Required to be public for MessengerBinding
+    jobject g_obj; // Required to be public for MessengerBinding
+    
     jobject assetManager;
     BOOL landscapeMode;
     JSGlobalContextRef jsGlobalContext;
@@ -66,11 +67,14 @@ public:
     AAssetManager *aassetManager;
     char *dataBundle;
     EJBindingTouchInput *touchDelegate;
+    EJBindingWizCanvasMessenger *messengerDelegate;
     EJCanvasContext *currentRenderingContext;
     EJCanvasContextScreen *screenRenderingContext;
     float internalScaling;
     BOOL lockTouches;
     NSArray *touches;
+    BOOL lockMessages;
+    NSArray *messages;
 
     EJApp(void);
     ~EJApp(void);
@@ -91,6 +95,7 @@ public:
 
     void loadJavaScriptFile(const char *filename);
     void loadScriptAtPath(NSString *path);
+    void evaluateScript(const char *script);
     JSValueRef loadModuleWithId(NSString * moduleId, JSValueRef module, JSValueRef exports);
     JSValueRef invokeCallback(JSObjectRef callback, JSObjectRef thisObject, size_t argc, const JSValueRef argv[]);
     void logException(JSValueRef exception, JSContextRef ctxp);

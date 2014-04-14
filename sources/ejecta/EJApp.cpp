@@ -35,7 +35,7 @@ JSValueRef ej_getNativeClass(JSContextRef ctx, JSObjectRef object, JSStringRef p
  }
 
 JSObjectRef ej_callAsConstructor(JSContextRef ctx, JSObjectRef constructor, size_t argc, const JSValueRef argv[], JSValueRef* exception) {
-	
+
 
 
 	EJBindingBase* pClass = (EJBindingBase*)(JSObjectGetPrivate( constructor ));
@@ -143,14 +143,11 @@ EJApp::~EJApp()
 	touches->release();
 	timers->release();
     messages->release();
-       
-	if(mainBundle)
-		free(mainBundle);
-        
-	if(dataBundle)
+
+	if (dataBundle)
 		free(dataBundle);
 
-	if(openGLContext != NULL) {
+	if (openGLContext != NULL) {
 		openGLContext->release();
 	}
 
@@ -327,6 +324,19 @@ void EJApp::loadScriptAtPath(NSString *path) {
 
     JSStringRelease(scriptJS);
     JSStringRelease(pathJS);
+}
+
+void EJApp::evaluateScript(const char *script) {
+    // char to NSString
+    string scriptString = string(script);
+    NSString *convertedscript = NSStringMake(scriptString);
+    JSStringRef scriptJS = JSStringCreateWithUTF8CString(convertedscript->getCString());
+
+    JSValueRef exception = NULL;
+	JSEvaluateScript(jsGlobalContext, scriptJS, NULL, NULL, 0, &exception );
+	logException(exception, jsGlobalContext);
+
+    JSStringRelease(scriptJS);
 }
 
 JSValueRef EJApp::loadModuleWithId(NSString *moduleId, JSValueRef module, JSValueRef exports) {
