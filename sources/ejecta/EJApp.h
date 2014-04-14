@@ -73,7 +73,6 @@ public:
     float internalScaling;
     BOOL lockTouches;
     NSArray *touches;
-    BOOL lockMessages;
     NSArray *messages;
 
     EJApp(void);

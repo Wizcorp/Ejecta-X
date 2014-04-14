@@ -88,12 +88,11 @@ EJApp::EJApp() : currentRenderingContext(0), screenRenderingContext(0), touchDel
 	{
 		touches->retain();
 	}
-        lockMessages = false;
-        messages = NSArray::create();
-        if (messages != NULL) {
-            messages->retain();
+	messages = NSArray::create();
+	if (messages != NULL) {
+		messages->retain();
 	}
-
+	
 
 	// Create the global JS context and attach the 'Ejecta' object
 		jsClasses = new NSDictionary();
@@ -142,7 +141,7 @@ EJApp::~EJApp()
 	
 	touches->release();
 	timers->release();
-    messages->release();
+	messages->release();
 
 	if (dataBundle)
 		free(dataBundle);
@@ -213,18 +212,13 @@ void EJApp::run(void)
 		}
 		lockTouches = false;
 	}
-        
-        if (!lockMessages) {
-            lockMessages = true;
-            if (messengerDelegate&&messages&&messages->count()>0) {
-                EJMessageEvent *event = (EJMessageEvent*)messages->objectAtIndex(0); 
-                // NSLOG("event %s :: %s", event->eventName->getCString(), event->message->getCString());
-                messengerDelegate->triggerEvent(event->eventName, event->message, event->type);
-                messages->removeObjectAtIndex(0);
-            }
-            lockMessages = false;
-        }
-        
+
+	if (messengerDelegate&&messages&&messages->count()>0) {
+		EJMessageEvent *event = (EJMessageEvent*)messages->objectAtIndex(0);
+		// NSLOG("event %s :: %s", event->eventName->getCString(), event->message->getCString());
+		messengerDelegate->triggerEvent(event->eventName, event->message, event->type);
+		messages->removeObjectAtIndex(0);
+	}
 
 	// Check all timers
 	timers->update();
@@ -481,14 +475,9 @@ void EJApp::logException(JSValueRef valueAsexception, JSContextRef ctxp)
 // Message Handler
 
 void EJApp::triggerMessage(const char *message, const char *type) {
-    // TODO convert script to NSString
-    if (!lockMessages) {
-        lockMessages= true;
-        EJMessageEvent *event = new EJMessageEvent("message", message, type);
-        messages->addObject(event);
-        event->release();
-        lockMessages = false;
-    }
+    EJMessageEvent *event = new EJMessageEvent("message", message, type);
+    messages->addObject(event);
+    event->release();
 }
 
 // ---------------------------------------------------------------------------------

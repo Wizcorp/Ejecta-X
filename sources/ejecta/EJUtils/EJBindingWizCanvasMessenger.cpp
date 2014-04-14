@@ -86,6 +86,11 @@ void EJBindingWizCanvasMessenger::triggerEvent(NSString *name, NSString *message
     
     //param[1] = result;
     EJBindingEventedBase::triggerEvent(name, 4, params);
+
+    JSStringRelease(origin_string);
+    JSStringRelease(target_string);
+    JSStringRelease(message_string);
+    JSStringRelease(type_string);
 }
 
 EJ_BIND_FUNCTION(EJBindingWizCanvasMessenger, postMessage, ctx, argc, argv ) {
