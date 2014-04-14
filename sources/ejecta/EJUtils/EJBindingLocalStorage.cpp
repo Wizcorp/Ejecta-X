@@ -32,6 +32,8 @@ EJ_BIND_FUNCTION(EJBindingLocalStorage, getItem, ctx, argc, argv ) {
     jstring my_java_string = (jstring) env->CallObjectMethod(_g_obj, methodId_getSharedPref, pkey);
     val = strdup(env->GetStringUTFChars(my_java_string, 0));
 
+    env->DeleteLocalRef(pkey);
+
 	return JSValueMakeString(ctx, JSStringCreateWithUTF8CString(val));
 }
 
@@ -50,6 +52,9 @@ EJ_BIND_FUNCTION(EJBindingLocalStorage, setItem, ctx, argc, argv ) {
     jstring pvalue = env->NewStringUTF(value->getCString()); 
 
     env->CallVoidMethod(_g_obj, methodId_setSharedPref, pkey, pvalue);
+
+    env->DeleteLocalRef(pkey);
+    env->DeleteLocalRef(pvalue);
 	
 	return NULL;
 }
