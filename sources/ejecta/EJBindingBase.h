@@ -146,6 +146,29 @@ extern JSValueRef ej_global_undefined;
  		JSStringRelease( str );\
  	}
 
+//Binding needs to be modified to make use of accessors appropriately
+#define EJ_BIND_ENUM_GETTER( CLASS,NAME, ENUM_NAMES, TARGET ) \
+ 	EJ_BIND_GET( CLASS,NAME, ctx ) { \
+ 		JSStringRef src = JSStringCreateWithUTF8CString( ENUM_NAMES##Names[TARGET()] ); \
+ 		JSValueRef ret = JSValueMakeString(ctx, src); \
+ 		JSStringRelease(src); \
+ 		return ret; \
+ 	} \
+
+#define EJ_BIND_ENUM_SETTER( CLASS,NAME, ENUM_NAMES, TARGET ) \
+ 	EJ_BIND_SET( CLASS,NAME, ctx, value ) { \
+ 		JSStringRef str = JSValueToStringCopy(ctx, value, NULL); \
+ 		const JSChar * strptr = JSStringGetCharactersPtr( str ); \
+ 		int length = JSStringGetLength(str)-1; \
+ 		for( int i = 0; i < sizeof(ENUM_NAMES##Names)/sizeof(ENUM_NAMES##Names[0]); i++ ) { \
+ 			if( JSStrIsEqualToStr( strptr, ENUM_NAMES##Names[i], length) ) { \
+ 				TARGET((ENUM_NAMES)i); \
+ 				break; \
+ 			} \
+ 		} \
+ 		JSStringRelease( str );\
+ 	}
+
 static inline bool JSStrIsEqualToStr(const JSChar * s1, const char * s2,
 		int length) {
 	for (int i = 0; i < length && *s1 == *s2; i++) {

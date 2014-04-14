@@ -14,10 +14,13 @@ EJBindingCanvas::EJBindingCanvas() : renderingContext(0), isScreenCanvas(false) 
 
 	if( firstCanvasInstance ) {
 		isScreenCanvas = true;
+		width = EJApp::instance()->width;
+		height = EJApp::instance()->height;
+	} else {
+		width = 0;
+		height = 0;
 	}
 
-	width = EJApp::instance()->width;
-	height = EJApp::instance()->height;
 }
 
 void EJBindingCanvas::init(JSContextRef ctx ,JSObjectRef obj, size_t argc, const JSValueRef argv[]) {
@@ -40,9 +43,13 @@ void EJBindingCanvas::init(JSContextRef ctx ,JSObjectRef obj, size_t argc, const
 		height = (short)JSValueToNumberFast(ctx, argv[1]);
 	}
 	else {
-		//CGSize screen = (EJApp::instance())->view->bounds->size;
-		width = EJApp::instance()->width;
-		height = EJApp::instance()->height;
+		if(isScreenCanvas) {
+			width = EJApp::instance()->width;
+			height = EJApp::instance()->height;
+		} else {
+			width = 0;
+			height = 0;
+		}
 	}
 }
 
@@ -70,19 +77,22 @@ EJBindingCanvas::EJBindingCanvas(JSContextRef ctx ,JSObjectRef obj, size_t argc,
 }
 
 EJBindingCanvas::~EJBindingCanvas() {
-	renderingContext->release();
+	if(renderingContext) {
+		renderingContext->release();
+	}
 }
 
-EJTexture* EJBindingCanvas::texture() {
+EJTexture* EJBindingCanvas::getTexture() {
 	if (renderingContext->getClassName() == "EJCanvasContextTexture") {
-		return ((EJCanvasContextTexture *)renderingContext)->m_texture;
+		return ((EJCanvasContextTexture *)renderingContext)->getTexture();
 	}
 	else {
 		return NULL;
 	}
 }
 
-EJ_BIND_ENUM( EJBindingCanvas, globalCompositeOperation, EJCompositeOperation, renderingContext->globalCompositeOperation);
+EJ_BIND_ENUM_GETTER( EJBindingCanvas, globalCompositeOperation, EJCompositeOperation, renderingContext->getGlobalCompositeOperation);
+EJ_BIND_ENUM_SETTER( EJBindingCanvas, globalCompositeOperation, EJCompositeOperation, renderingContext->setGlobalCompositeOperation);
 EJ_BIND_ENUM( EJBindingCanvas, lineCap, EJLineCap, renderingContext->state->lineCap);
 EJ_BIND_ENUM( EJBindingCanvas, lineJoin, EJLineJoin, renderingContext->state->lineJoin);
 EJ_BIND_ENUM( EJBindingCanvas, textAlign, EJTextAlign, renderingContext->state->textAlign);
@@ -163,10 +173,12 @@ EJ_BIND_SET( EJBindingCanvas,font, ctx, value) {
 
  EJ_BIND_SET( EJBindingCanvas,width, ctx, value) {
  	short newWidth = JSValueToNumberFast(ctx, value);
- 	if( renderingContext && newWidth != width ) {
- 		NSLOG("Warning: rendering context already created; can't change width");
- 		return;
- 	}
+	if( renderingContext ) {
+		ejectaInstance->setCurrentRenderingContext(renderingContext);
+		renderingContext->setWidth(newWidth);
+		width = renderingContext->getWidth();
+		return;
+	}
  	width = newWidth;
  }
 
@@ -176,10 +188,12 @@ EJ_BIND_SET( EJBindingCanvas,font, ctx, value) {
 
  EJ_BIND_SET( EJBindingCanvas,height, ctx, value) {
  	short newHeight = JSValueToNumberFast(ctx, value);
- 	if( renderingContext && newHeight != height ) {
- 		NSLOG("Warning: rendering context already created; can't change height");
- 		return;
- 	}
+	if( renderingContext ) {
+		ejectaInstance->setCurrentRenderingContext(renderingContext);
+		renderingContext->setHeight(newHeight);
+		height = renderingContext->getHeight();
+		return;
+	}
  	height = newHeight;
  }
 
@@ -355,10 +369,31 @@ EJ_BIND_FUNCTION( EJBindingCanvas, getContext, ctx, argc, argv) {
 EJ_BIND_FUNCTION(EJBindingCanvas, drawImage, ctx, argc, argv) {
 
 	if( argc < 3 || !JSValueIsObject(ctx, argv[0]) ) return NULL;
-	
-	EJBindingImage* drawable = (EJBindingImage*)JSObjectGetPrivate((JSObjectRef)argv[0]);
+
+	EJDrawable* drawable = NULL;
+
+	//Compare the JSObject to find out if it's an image or a canvas
+	//TODO: Buffer temporary data to avoid creation at each call?
+ 	EJBindingImage* tempBindingImage = new EJBindingImage();
+ 	JSClassRef imageClass = EJApp::instance()->getJSClassForClass((EJBindingImage*)tempBindingImage);
+ 	if(JSValueIsObjectOfClass(ctx, argv[0], imageClass)) {
+ 		drawable = (EJBindingImage*)JSObjectGetPrivate((JSObjectRef)argv[0]);
+ 	} else {
+	 	EJBindingCanvas* tempBindingCanvas = new EJBindingCanvas();
+	 	JSClassRef imageClass = EJApp::instance()->getJSClassForClass((EJBindingCanvas*)tempBindingCanvas);
+	 	if(JSValueIsObjectOfClass(ctx, argv[0], imageClass)) {
+ 			drawable = (EJBindingCanvas*)JSObjectGetPrivate((JSObjectRef)argv[0]);
+	 	}
+	 	delete tempBindingCanvas;
+ 	}
+ 	delete tempBindingImage;
+
+ 	if(drawable == NULL) {
+ 		return NULL;
+ 	}
+
 	// NSObject<EJDrawable> * drawable = (NSObject<EJDrawable> *)JSObjectGetPrivate((JSObjectRef)argv[0]);
-	EJTexture * image = drawable->texture;
+	EJTexture * image = drawable->getTexture();
 
 	float scale = image?image->contentScale:1;
 	

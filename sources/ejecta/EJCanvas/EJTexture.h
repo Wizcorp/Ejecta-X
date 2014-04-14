@@ -9,8 +9,8 @@
 #include <gl//gl.h>
 #include <gl/glext.h>
 #else
-#include <GLES/gl.h>
-#include <GLES/glext.h>
+#include <GLES2/gl2.h>
+#include <GLES2/gl2ext.h>
 #endif
 #include "../EJCocoa/NSString.h"
 

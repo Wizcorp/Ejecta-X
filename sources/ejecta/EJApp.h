@@ -13,7 +13,7 @@
 #else
 #include <jni.h>
 #include <android/log.h>
-#include <GLES/gl.h>
+#include <GLES2/gl2.h>
 #endif
 
 #include <string>
@@ -27,10 +27,14 @@
 #include "EJCocoa/NSSet.h"
 #include "EJCocoa/NSValue.h"
 
+#include "EJSharedOpenGLContext.h"
+
+#include <android/asset_manager.h>
+
 using namespace std;
 
-#define EJECTA_VERSION "0.99"
-#define EJECTA_APP_FOLDER "files/build/"
+#define EJECTA_VERSION "0.2.1"
+#define EJECTA_APP_FOLDER "www/"
 
 class EJBindingBase;
 class EJTimerCollection;
@@ -42,39 +46,36 @@ class EJBindingWizCanvasMessenger;
 
 class EJApp : public NSObject {
 
-	BOOL paused;
-        
-	NSDictionary * jsClasses;
-	EJTimerCollection * timers;
-	long currentTime;
+private:
+    BOOL paused;
 
-	static EJApp* ejectaInstance;
+    JavaVM *jvm;
+    jobject g_obj;
 
-	char* mainBundle;
+    NSDictionary *jsClasses;
+    EJTimerCollection *timers;
+    long currentTime;
+    EJSharedOpenGLContext *openGLContext;
+    static EJApp *ejectaInstance;
 
-	
 public:
-
-        jobject g_obj;
-        JavaVM *jvm;
-	BOOL landscapeMode;
-	JSGlobalContextRef jsGlobalContext;
-	int height, width;
-
-	EJBindingTouchInput * touchDelegate;
-	EJBindingWizCanvasMessenger *messengerDelegate;
-	EJCanvasContext * currentRenderingContext;
-	EJCanvasContextScreen * screenRenderingContext;
-	float internalScaling;
-	BOOL lockTouches;
-	NSArray* touches;
-        BOOL lockMessages;
-        NSArray *messages;
+    jobject assetManager;
+    BOOL landscapeMode;
+    JSGlobalContextRef jsGlobalContext;
+    int height, width;
+    AAssetManager *aassetManager;
+    char *dataBundle;
+    EJBindingTouchInput *touchDelegate;
+    EJCanvasContext *currentRenderingContext;
+    EJCanvasContextScreen *screenRenderingContext;
+    float internalScaling;
+    BOOL lockTouches;
+    NSArray *touches;
 
     EJApp(void);
     ~EJApp(void);
 
-    void init(JNIEnv* env, jobject jobj, const char* path, int w, int h);
+    void init(JNIEnv *env, jobject jobj, jobject assetManager, const char *path, int w, int h);
     void setScreenSize(int w, int h);
     void run(void);
     void pause(void);
@@ -89,8 +90,7 @@ public:
     void triggerMessage(const char *message, const char *type);
 
     void loadJavaScriptFile(const char *filename);
-    void evaluateScript(const char *script);
-    void loadScriptAtPath(NSString * path);
+    void loadScriptAtPath(NSString *path);
     JSValueRef loadModuleWithId(NSString * moduleId, JSValueRef module, JSValueRef exports);
     JSValueRef invokeCallback(JSObjectRef callback, JSObjectRef thisObject, size_t argc, const JSValueRef argv[]);
     void logException(JSValueRef exception, JSContextRef ctxp);
@@ -103,6 +103,8 @@ public:
     static EJApp* instance();
     static void finalize();
     void setCurrentRenderingContext(EJCanvasContext * renderingContext);
+
+	EJSharedOpenGLContext *getOpenGLContext() const { return openGLContext; }
 
 };
 

@@ -18,12 +18,13 @@ Ejecta is published under the [MIT Open Source License](http://opensource.org/li
 
 **Note for Windows users:-** 
 
-Corefoundation.dll is associated with Apple products, require install QuickTime
-run Ejecta-X.sln with vs2010 in `project` folder.
+Current branches no longer work on Windows after the OpenGLES update. Please use the older release [https://github.com/aogilvie/Ejecta-X/releases/tag/v0.9.9-original](https://github.com/aogilvie/Ejecta-X/releases/tag/v0.9.9-original)
 
 ### Sample
 
 For an example application in the `sample` folder, name `Ejecta-X.apk`.
+
+For XHR, remember to add ```<uses-permission android:name="android.permission.INTERNET"/>``` to the Android Manifest.
 
 ### Native Events
 
@@ -47,3 +48,16 @@ Will load a JavaScript file into Ejecta-X. File should be relative from ```asset
 For example to load a file at ```assets/build/loadme.js``` would be;
 	
 	((EjectaGLSurfaceView)mGLView).loadJavaScriptFile("loadme.js")
+
+# Commit to Ejecta-X
+
+## Workflow
+
+Any kind of help is welcomed!
+
+We work from `develop` branch and PR into `develop` branch. Stable versions are pushed from `develop` to `master` and then tagged.
+
+## Where to start?
+
+Just pick an enchancement (feature) issue or a bug issue from the [open issues list](https://github.com/Wizcorp/Ejecta-X/issues?state=open). Thanks for your help!
+

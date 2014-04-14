@@ -1,5 +1,4 @@
 
-#include <string.h>
 #include <jni.h>
 #include <android/log.h>
 #include <GLES/gl.h>
@@ -17,12 +16,11 @@ extern "C" {
 
     static bool s_is_resumed = false;
 
-    JNIEXPORT void JNICALL Java_com_impactjs_ejecta_EjectaRenderer_nativeCreated(JNIEnv* env, jobject thiz , jstring package_path, jint w, jint h)
+    JNIEXPORT void JNICALL Java_com_impactjs_ejecta_EjectaRenderer_nativeCreated(JNIEnv* env, jobject thiz, jobject assetManager, jstring package_path, jint w, jint h)
     {
-
         NSLog("nativeCreated : %d, %d", w, h);
-        const char *nativeString = (env)->GetStringUTFChars(package_path, 0);
-        EJApp::instance()->init(env, thiz, nativeString, w, h);
+        const char *dataBundle = (env)->GetStringUTFChars(package_path, 0);
+        EJApp::instance()->init(env, thiz, assetManager, dataBundle, w, h);
     }
 
     JNIEXPORT void JNICALL Java_com_impactjs_ejecta_EjectaRenderer_nativeChanged(JNIEnv* env, jobject thiz , jint w, jint h)
@@ -34,14 +32,11 @@ extern "C" {
     JNIEXPORT void JNICALL Java_com_impactjs_ejecta_EjectaRenderer_nativeRender(JNIEnv* env, jobject thiz)
     {
 
-        if (s_is_resumed)
-        {
+        if (s_is_resumed) {
             s_is_resumed = false;
-
         }
 
         EJApp::instance()->run();
-
     }
 
     JNIEXPORT void JNICALL Java_com_impactjs_ejecta_EjectaRenderer_nativeFinalize(JNIEnv* env, jobject thiz)

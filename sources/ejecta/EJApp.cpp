@@ -8,6 +8,7 @@
 #include "EJCocoa/NSObjectFactory.h"
 #include "EJCocoa/NSAutoreleasePool.h"
 #include "EJTimer.h"
+#include <android/asset_manager_jni.h>
 
 JSValueRef ej_global_undefined;
 JSClassRef ej_constructorClass;
@@ -78,7 +79,7 @@ EJApp::EJApp() : currentRenderingContext(0), screenRenderingContext(0), touchDel
 	paused = false;
 	internalScaling = 1.0f;
 
-	mainBundle = 0;
+	dataBundle = 0;
 
 	timers = new EJTimerCollection();
 	lockTouches = false;
@@ -118,9 +119,12 @@ EJApp::EJApp() : currentRenderingContext(0), screenRenderingContext(0), touchDel
 			kJSPropertyAttributeDontDelete | kJSPropertyAttributeReadOnly, NULL
 		);
 		
-		// Create the OpenGL ES1 Context
+		// Create the OpenGL ES2 Context
 		// Android init GLView on java framework
-		
+		openGLContext = EJSharedOpenGLContext::getInstance();
+		if(openGLContext != NULL) {
+			openGLContext->retain();
+		}
 }
 
 
@@ -138,31 +142,43 @@ EJApp::~EJApp()
 	
 	touches->release();
 	timers->release();
-        messages->release();
+    messages->release();
        
 	if(mainBundle)
 		free(mainBundle);
         
+	if(dataBundle)
+		free(dataBundle);
+
+	if(openGLContext != NULL) {
+		openGLContext->release();
+	}
+
 	NSPoolManager::sharedPoolManager()->pop();
 	NSPoolManager::purgePoolManager();
 }
 
-void EJApp::init(JNIEnv* env, jobject jobj, const char* path, int w, int h)
+void EJApp::init(JNIEnv *env, jobject jobj, jobject assetManager, const char* path, int w, int h)
 {
         env->GetJavaVM(&jvm);
         
         this->g_obj = env->NewGlobalRef(jobj);
 
-	if(mainBundle)
-		free(mainBundle);
+        // Set global pointer to Asset Manager in Java
+        this->aassetManager = AAssetManager_fromJava(env, assetManager);
+        
+	if (dataBundle) {
+		free(dataBundle);
+	}
 
-    int len = (strlen(path) + 1);
-    mainBundle = (char *)malloc(len * sizeof(char));
-    memset(mainBundle, 0, len);
+ 	int len = (strlen(path) + 1);
+	dataBundle = (char *)malloc(len * sizeof(char));
+	memset(dataBundle, 0, len);
+
 #ifdef _WINDOWS
-	_snprintf(mainBundle, len, "%s", path);
+	_snprintf(dataBundle, len, "%s", path);
 #else
-	snprintf(mainBundle, len, "%s", path);
+	snprintf(dataBundle, len, "%s", path);
 #endif
 
 	height = h;
@@ -253,10 +269,9 @@ void EJApp::hideLoadingScreen(void)
 	//loadingScreen = nil;
 }
 
-NSString * EJApp::pathForResource(NSString * resourcePath)
-{
- 	string full_path = string(mainBundle) + string("/") + string(EJECTA_APP_FOLDER) + resourcePath->getCString();
-	return NSStringMake(full_path);
+NSString *EJApp::pathForResource(NSString *resourcePath) {
+    string full_path = string(EJECTA_APP_FOLDER) + resourcePath->getCString();
+    return NSStringMake(full_path);
 }
 
 // ---------------------------------------------------------------------------------
@@ -268,59 +283,91 @@ void EJApp::loadJavaScriptFile(const char *filename) {
         loadScriptAtPath(convertedFilename);
 }
 
-void EJApp::evaluateScript(const char *script) {
-        // char to NSString
-        string scriptString = string(script);
-        NSString *convertedscript = NSStringMake(scriptString);
-        NSLOG("Evaluating script...");
+void EJApp::loadScriptAtPath(NSString *path) {
+    // Check file from cache - /data/data/
+    string cachePath = string(dataBundle) + string("/") + (pathForResource(path))->getCString();
+    NSString *script = NSString::createWithContentsOfFile((NSStringMake(cachePath))->getCString());
 
-        JSStringRef scriptJS = JSStringCreateWithUTF8CString(convertedscript->getCString());
+    if (!script) {
+        // Check file from main bundle - /assets/EJECTA_APP_FOLDER/
+        if (this->aassetManager == NULL) {
+            NSLOG("error loading asset manager");
+            return;
+        }
         
-        JSValueRef exception = NULL;
-	JSEvaluateScript( jsGlobalContext, scriptJS, NULL, NULL, 0, &exception );
-	logException(exception, jsGlobalContext);
-        
-        JSStringRelease( scriptJS );
+        const char *filename = pathForResource(path)->getCString(); // "dirname/filename.ext";
+
+        // Open file
+        AAsset *asset = AAssetManager_open(this->aassetManager, filename, AASSET_MODE_UNKNOWN);
+        if (NULL == asset) {
+            NSLOG("Error: Cannot find script %s", path->getCString());
+            return;
+        } else {
+           long size = AAsset_getLength(asset);
+           unsigned char *buffer = (unsigned char *) malloc(sizeof(char) *size);
+           int result = AAsset_read(asset, buffer, size);
+           if (result < 0) {
+               NSLOG("Error reading file %s", filename);
+               AAsset_close(asset);
+               free(buffer);
+               return;
+           }
+           script = NSString::createWithData(buffer, size);
+           AAsset_close(asset);
+           free(buffer);
+        }
+    }
+
+    JSStringRef scriptJS = JSStringCreateWithUTF8CString(script->getCString());
+    JSStringRef pathJS = JSStringCreateWithUTF8CString(path->getCString());
+
+    JSValueRef exception = NULL;
+    JSEvaluateScript(jsGlobalContext, scriptJS, NULL, pathJS, 0, &exception );
+    logException(exception, jsGlobalContext);
+
+    JSStringRelease(scriptJS);
+    JSStringRelease(pathJS);
 }
 
-void EJApp::loadScriptAtPath(NSString * path)
-{
-    
-	NSString * script = NSString::createWithContentsOfFile(pathForResource(path)->getCString());
-	
-	if( !script ) {
-		NSLOG("Error: Can't Find Script %s", path->getCString() );
-		return;
-	}
-	
-	NSLOG("Loading file: %s", path->getCString() );
+JSValueRef EJApp::loadModuleWithId(NSString *moduleId, JSValueRef module, JSValueRef exports) {
+	NSString *moduleIdFile = NSStringMake(moduleId->getCString() + string(".js"));
+	string cachePath = string(dataBundle) + string("/") + (pathForResource(moduleIdFile))->getCString();
+	NSString *script = NSString::createWithContentsOfFile((NSStringMake(cachePath))->getCString());
 
-	JSStringRef scriptJS = JSStringCreateWithUTF8CString(script->getCString());
-	JSStringRef pathJS = JSStringCreateWithUTF8CString(path->getCString());
-	
-	JSValueRef exception = NULL;
-	JSEvaluateScript( jsGlobalContext, scriptJS, NULL, pathJS, 0, &exception );
-	logException(exception, jsGlobalContext);
+	if (!script) {
+            // Check file from main bundle - /assets/EJECTA_APP_FOLDER/
+            if (this->aassetManager == NULL) {
+                NSLOG("error loading asset manger");
+                return NULL;
+            }
 
-	JSStringRelease( scriptJS );
-	JSStringRelease( pathJS );
+            const char *filename = pathForResource(moduleIdFile)->getCString(); // "dirname/filename.ext";
 
-}
-
-JSValueRef EJApp::loadModuleWithId(NSString * moduleId, JSValueRef module, JSValueRef exports)
-{
-	NSString * path = NSStringMake(moduleId->getCString() + string(".js"));
-	NSString * script = NSString::createWithContentsOfFile(pathForResource(path)->getCString());
-	
-	if( !script ) {
-		NSLOG("Error: Can't Find Module %s", moduleId->getCString() );
-		return NULL;
-	}
+            // Open file
+            AAsset *asset = AAssetManager_open(this->aassetManager, filename, AASSET_MODE_UNKNOWN);
+            if (NULL == asset) {
+                NSLOG("Error: Cannot find script %s", moduleIdFile->getCString());
+                return NULL;
+            } else {
+                long size = AAsset_getLength(asset);
+                unsigned char *buffer = (unsigned char *) malloc(sizeof(char) *size);
+                int result = AAsset_read(asset, buffer, size);
+                if (result < 0) {
+                    NSLOG("Error reading file %s", moduleIdFile->getCString());
+                    AAsset_close(asset);
+                    free(buffer);
+                    return NULL;
+                }
+                script = NSString::createWithData(buffer, size);
+                AAsset_close(asset);
+                free(buffer);
+            }
+        }
 	
 	NSLOG("Loading Module: %s", moduleId->getCString() );
 	
 	JSStringRef scriptJS = JSStringCreateWithUTF8CString(script->getCString());
-	JSStringRef pathJS = JSStringCreateWithUTF8CString(path->getCString());
+	JSStringRef pathJS = JSStringCreateWithUTF8CString(moduleIdFile->getCString());
 	JSStringRef parameterNames[] = {
 		JSStringCreateWithUTF8CString("module"),
 		JSStringCreateWithUTF8CString("exports"),

@@ -10,23 +10,22 @@
 #include <GL/glew.h>
 #include <GL/gl.h>
 #else
-#include <GLES/gl.h>
+#include <GLES2/gl2.h>
 #endif
 
 #include "../EJCocoa/support/nsMacros.h"
 #include "EJTexture.h"
 #include "EJImageData.h"
 #include "EJPath.h"
-#include "EJCanvasTypes.h"
+#include "EJCanvas2DTypes.h"
 #include "EJFont.h"
 #include "../EJCocoa/NSDictionary.h"
 #include "../EJCocoa/NSCache.h"
 #include "../EJCocoa/UIFont.h"
+#include "EJSharedOpenGLContext.h"
+
 
 #define EJ_CANVAS_STATE_STACK_SIZE 16
-#define EJ_CANVAS_VERTEX_BUFFER_SIZE 2048
-
-extern EJVertex CanvasVertexBuffer[EJ_CANVAS_VERTEX_BUFFER_SIZE];
 
 class EJPath;
 
@@ -69,14 +68,14 @@ typedef enum {
 	kEJCompositeOperationXOR
 } EJCompositeOperation;
 
-static const struct { GLenum source; GLenum destination; } EJCompositeOperationFuncs[] = {
-	{GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA},
-	{GL_SRC_ALPHA, GL_ONE},
-	{GL_DST_COLOR, GL_ONE_MINUS_SRC_ALPHA},
-	{GL_ZERO, GL_ONE_MINUS_SRC_ALPHA},
-	{GL_ONE_MINUS_DST_ALPHA, GL_ONE},
-	{GL_DST_ALPHA, GL_ONE_MINUS_SRC_ALPHA},
-	{GL_ONE_MINUS_DST_ALPHA, GL_ONE_MINUS_SRC_ALPHA}
+static const struct { GLenum source; GLenum destination; float alphaFactor; } EJCompositeOperationFuncs[] = {
+	{GL_ONE, GL_ONE_MINUS_SRC_ALPHA, 1},
+	{GL_ONE, GL_ONE_MINUS_SRC_ALPHA, 0},
+	{GL_DST_COLOR, GL_ONE_MINUS_SRC_ALPHA, 1},
+	{GL_ZERO, GL_ONE_MINUS_SRC_ALPHA, 1},
+	{GL_ONE_MINUS_DST_ALPHA, GL_ONE, 1},
+	{GL_DST_ALPHA, GL_ONE_MINUS_SRC_ALPHA, 1},
+	{GL_ONE_MINUS_DST_ALPHA, GL_ONE_MINUS_SRC_ALPHA, 1}
 };
 
 
@@ -100,6 +99,28 @@ typedef struct {
 	EJPath * clipPath;
 } EJCanvasState;
 
+static inline EJColorRGBA EJCanvasBlendColor( EJCanvasState *state, EJColorRGBA color ) {
+	float alpha = state->globalAlpha * (float)color.rgba.a/255.0f;
+	EJColorRGBA blendedColor;
+	blendedColor.rgba.r = (unsigned char)(color.rgba.r * alpha);
+	blendedColor.rgba.g = (unsigned char)(color.rgba.g * alpha);
+	blendedColor.rgba.b = (unsigned char)(color.rgba.b * alpha);
+	blendedColor.rgba.a = (unsigned char)(EJCompositeOperationFuncs[state->globalCompositeOperation].alphaFactor * color.rgba.a * state->globalAlpha);
+	return blendedColor;
+}
+
+static inline EJColorRGBA EJCanvasBlendWhiteColor( EJCanvasState *state ) {
+	return EJCanvasBlendColor(state, (EJColorRGBA){0xffffffff});
+}
+
+static inline EJColorRGBA EJCanvasBlendFillColor( EJCanvasState *state ) {
+	return EJCanvasBlendColor(state, state->fillColor);
+}
+
+static inline EJColorRGBA EJCanvasBlendStrokeColor( EJCanvasState *state ) {
+	return EJCanvasBlendColor(state, state->strokeColor);
+}
+
 class EJCanvasContext : public NSObject {
 protected:
 	GLuint viewFrameBuffer, viewRenderBuffer;
@@ -107,23 +128,30 @@ protected:
 	GLuint stencilBuffer;
 	
 	short width, height;
-	short viewportWidth, viewportHeight;
 	short bufferWidth, bufferHeight;
 	
 	EJTexture * currentTexture;
 	
 	EJPath * path;
 	
+	EJVertex *vertexBuffer;
+	int vertexBufferSize;
 	int vertexBufferIndex;
 	
 	int stateIndex;
 	EJCanvasState stateStack[EJ_CANVAS_STATE_STACK_SIZE];
-		
+	
+	bool upsideDown;
+
+	EJGLProgram2D *currentProgram;
+	EJSharedOpenGLContext *sharedGLContext;
+
+	void setProgram(EJGLProgram2D *program);
+
 public:
 	NSCache * fontCache;
 
 	EJCanvasState * state;
-	EJCompositeOperation globalCompositeOperation;
 	UIFont * font;
 	float backingStoreRatio;
 	bool msaaEnabled;
@@ -134,6 +162,7 @@ public:
 	EJCanvasContext(short widthp, short heightp);
 	~EJCanvasContext();
 	virtual void create();
+	virtual void resizeToWidth(short newWidth, short newHeight);
 	void setScreenSize(int widthp, int heightp);
 	void createStencilBufferOnce();
 	void bindVertexBuffer();
@@ -142,6 +171,7 @@ public:
 	void pushTri(float x1, float y1, float x2, float y2, float x3, float y3, EJColorRGBA color, CGAffineTransform transform);
 	void pushQuad(EJVector2 v1, EJVector2 v2, EJVector2 v3, EJVector2 v4, EJVector2 t1, EJVector2 t2, EJVector2 t3, EJVector2 t4, EJColorRGBA color, CGAffineTransform transform);
 	void pushRect(float x, float y, float w, float h, float tx, float ty, float tw, float th, EJColorRGBA color, CGAffineTransform transform);
+	void pushTexturedRect(float x, float y, float w, float h, float tx, float ty, float tw, float th, EJColorRGBA color, CGAffineTransform transform);
 	void flushBuffers();
 	
 	void save();
@@ -178,6 +208,13 @@ public:
 
 	//返回类名
 	virtual const char* getClassName();
+
+	void setGlobalCompositeOperation(EJCompositeOperation op);
+	EJCompositeOperation getGlobalCompositeOperation() const;
+	void setWidth(short w);
+	short getWidth() const;
+	void setHeight(short h);
+	short getHeight() const;
 };
 
 #endif // __EJ_CANVAS_CONTEXT_H__

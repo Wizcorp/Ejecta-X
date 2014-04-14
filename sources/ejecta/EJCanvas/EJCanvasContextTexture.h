@@ -13,7 +13,8 @@ private:
 	bool msaaNeedsResolving;
 
 	void dealloc();
-	EJTexture* texture();
+
+	EJTexture* texture;
 
 public:
 
@@ -22,9 +23,10 @@ public:
 	EJCanvasContextTexture(short widthp, short heightp);
 	~EJCanvasContextTexture();
 	
-	EJTexture* m_texture;
+	EJTexture* getTexture();
 
 	virtual void create();
+	virtual void resizeToWidth(short newWidth, short newHeight);
 	virtual void prepare();
 
 	virtual const char* getClassName();
