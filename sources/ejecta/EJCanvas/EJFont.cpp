@@ -121,6 +121,8 @@ void EJFont::drawString(NSString* string, EJCanvasContext* context, float x, flo
 		
 		free(bitmap);}
 	}else{
+		width = texture->width;
+
 		// Fill or stroke color?
 		EJColorRGBA color = fill ? EJCanvasBlendFillColor(state) : EJCanvasBlendStrokeColor(state);
 
