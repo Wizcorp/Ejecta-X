@@ -25,6 +25,7 @@ LOCAL_C_INCLUDES := \
                     $(LOCAL_PATH)/../../../sources/lib/lodefreetype \
                     $(LOCAL_PATH)/../../../sources/lib/lodepng \
                     $(LOCAL_PATH)/../../../sources/lib/lodejpeg \
+                    $(LOCAL_PATH)/../../../sources/lib/uriparser \
                     $(LOCAL_PATH)/../../../sources/ejecta \
                     $(LOCAL_PATH)/../../../sources/ejecta/EJCanvas \
                     $(LOCAL_PATH)/../../../sources/ejecta/EJCanvas/2D \

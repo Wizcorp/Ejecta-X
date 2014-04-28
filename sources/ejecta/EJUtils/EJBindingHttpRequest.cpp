@@ -9,7 +9,7 @@
 #include <iostream>
 #include <clocale>
 #include <cstdlib>
-#include "../uriparser/Uri.h"
+#include "Uri.h"
 
 #include "curl/curl.h"
 
