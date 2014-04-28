@@ -48,3 +48,16 @@ Will load a JavaScript file into Ejecta-X. File should be relative from ```asset
 For example to load a file at ```assets/build/loadme.js``` would be;
 	
 	((EjectaGLSurfaceView)mGLView).loadJavaScriptFile("loadme.js")
+
+# Commit to Ejecta-X
+
+## Workflow
+
+Any kind of help is welcomed!
+
+We work from `develop` branch and PR into `develop` branch. Stable versions are pushed from `develop` to `master` and then tagged.
+
+## Where to start?
+
+Just pick an enchancement (feature) issue or a bug issue from the [open issues list](https://github.com/Wizcorp/Ejecta-X/issues?state=open). Thanks for your help!
+

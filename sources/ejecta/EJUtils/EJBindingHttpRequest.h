@@ -5,6 +5,7 @@
 #include "EJCocoa/NSObject.h"
 #include <vector>
 
+
 class EJHttpClient;
 class EJHttpRequest;
 class EJHttpResponse;
@@ -417,6 +418,13 @@ typedef enum {
 	kEJHttpRequestStateDone = 4,
 } EJHttpRequestState;
 
+typedef enum {
+	kEJHttpRequestSourceUndefined = -1,
+	kEJHttpRequestSourceHttp = 0,
+	kEJHttpRequestSourceData = 1,
+	kEJHttpRequestSourceAssets = 2,
+} EJHttpRequestSource;
+
 class EJBindingHttpRequest : public EJBindingEventedBase {
 
 	EJHttpRequestType type;
@@ -432,6 +440,8 @@ class EJBindingHttpRequest : public EJBindingEventedBase {
 	EJHttpClient * connection;
 	EJHttpResponse * response;
 	char * responseBody;
+	size_t responseBodySize;
+	EJHttpRequestSource requestSource;
 	
 public:
 
@@ -448,6 +458,7 @@ public:
 	int getStatusCode();
 	NSString * getResponseText();
 	void onHttpRequestCompleted(NSObject *sender, void *data);
+	void loadLocalhost();
 
 	EJ_BIND_FUNCTION_DEFINE(open, ctx, argc, argv);
 	EJ_BIND_FUNCTION_DEFINE(setRequestHeader, ctx, argc, argv);
