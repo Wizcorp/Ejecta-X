@@ -1,6 +1,6 @@
 #include "EJGLProgram2D.h"
 
-#include "../EJApp.h"
+#include "EJApp.h"
 
 EJGLProgram2D::EJGLProgram2D(): program(0), screen(0) {
 

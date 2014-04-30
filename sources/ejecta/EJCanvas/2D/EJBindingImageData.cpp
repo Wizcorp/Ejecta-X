@@ -15,7 +15,7 @@ EJBindingImageData::EJBindingImageData():EJBindingBase() {
 }
 
 void EJBindingImageData::init(JSContextRef ctx, JSObjectRef obj, EJImageData* imageData) {
-	EJBindingBase::init(ctx, obj, 0, NULL);
+	EJBindingBase::initWithContext(ctx, obj, 0, NULL);
 	// m_imageData = imageData->retain();
 	imageData->retain();
 	m_imageData = imageData;

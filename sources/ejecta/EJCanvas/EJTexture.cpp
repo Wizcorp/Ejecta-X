@@ -1,8 +1,10 @@
 #include <math.h>
+
+#include "EJApp.h"
 #include "EJTexture.h"
-#include "../lodepng/lodepng.h"
-#include "../lodejpeg/lodejpeg.h"
-#include"../EJApp.h"
+
+#include "lodepng.h"
+#include "lodejpeg.h"
 
 // Textures check this global filter state when binding
 static GLint EJTextureGlobalFilter = GL_LINEAR;

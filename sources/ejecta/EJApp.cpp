@@ -2,8 +2,8 @@
 #include "EJBindingBase.h"
 #include "EJUtils/EJBindingTouchInput.h"
 #include "EJUtils/EJBindingHttpRequest.h"
-#include "EJCanvas/EJCanvasContext.h"
-#include "EJCanvas/EJCanvasContextScreen.h"
+#include "EJCanvasContext.h"
+#include "EJCanvasContextScreen.h"
 #include "EJCocoa/NSObjectFactory.h"
 #include "EJCocoa/NSAutoreleasePool.h"
 #include "EJTimer.h"
@@ -44,7 +44,7 @@ JSObjectRef ej_callAsConstructor(JSContextRef ctx, JSObjectRef constructor, size
 	JSObjectRef obj = JSObjectMake( ctx, jsClass, NULL );
 	
  	EJBindingBase* instance = (EJBindingBase*)NSClassFromString(pClass->toString().c_str());
-	instance->init(ctx, obj, argc, argv);
+	instance->initWithContext(ctx, obj, argc, argv);
 
 	JSObjectSetPrivate( obj, (void *)instance );
 	

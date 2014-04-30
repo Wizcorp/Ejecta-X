@@ -7,7 +7,7 @@
 
 #include <JavaScriptCore/JavaScriptCore.h>
 #include "EJCocoa/NSString.h"
-#include "EJCanvas/EJCanvas2DTypes.h"
+#include "EJCanvas2DTypes.h"
 
 #ifdef __cplusplus
 extern "C" {

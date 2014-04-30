@@ -1,8 +1,8 @@
 #ifndef __EJ_BINDING_HTTPREQUEST_H__
 #define __EJ_BINDING_HTTPREQUEST_H__
 
-#include "../EJBindingEventedBase.h"
-#include "../EJCocoa/NSObject.h"
+#include "EJBindingEventedBase.h"
+#include "EJCocoa/NSObject.h"
 #include <vector>
 
 

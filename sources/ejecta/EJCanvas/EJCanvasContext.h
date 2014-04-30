@@ -13,15 +13,15 @@
 #include <GLES2/gl2.h>
 #endif
 
-#include "../EJCocoa/support/nsMacros.h"
+#include "EJCocoa/support/nsMacros.h"
 #include "EJTexture.h"
 #include "EJImageData.h"
 #include "EJPath.h"
 #include "EJCanvas2DTypes.h"
 #include "EJFont.h"
-#include "../EJCocoa/NSDictionary.h"
-#include "../EJCocoa/NSCache.h"
-#include "../EJCocoa/UIFont.h"
+#include "EJCocoa/NSDictionary.h"
+#include "EJCocoa/NSCache.h"
+#include "EJCocoa/UIFont.h"
 #include "EJSharedOpenGLContext.h"
 
 

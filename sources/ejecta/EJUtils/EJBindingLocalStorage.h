@@ -1,7 +1,7 @@
 #ifndef __EJ_BINDING_LOCALSTORAGE_H__
 #define __EJ_BINDING_LOCALSTORAGE_H__
 
-#include "../EJBindingBase.h"
+#include "EJBindingBase.h"
 
 
 class EJBindingLocalStorage : public EJBindingBase {
