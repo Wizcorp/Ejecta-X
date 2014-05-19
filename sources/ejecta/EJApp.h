@@ -58,6 +58,8 @@ private:
     EJSharedOpenGLContext *openGLContext;
     static EJApp *ejectaInstance;
 
+    bool doesFileExist(const char *filename);
+
 public:
     jobject assetManager;
     BOOL landscapeMode;

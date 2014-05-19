@@ -536,11 +536,11 @@ void EJBindingHttpRequest::loadLocalhost() {
     EJBindingEventedBase::triggerEvent(NSStringMake("load"), 0, NULL);
 
     // Check file from cache - /data/data/
-    string cachePath = string(EJApp::instance()->dataBundle) + string("/") + (EJApp::instance()->pathForResource(url))->getCString();
+    NSString *urlPath = EJApp::instance()->pathForResource(url);
     unsigned long size = 0;
     unsigned char *pData = 0;
-    NSLOG("Search data: %s", cachePath.c_str());
-    pData = NSString::createFileData(cachePath.c_str(), "rb", &size);
+    NSLOG("Search data: %s", urlPath->getCString());
+    pData = NSString::createFileData(urlPath->getCString(), "rb", &size);
 
     if (pData) {
         // Data was found
@@ -556,7 +556,7 @@ void EJBindingHttpRequest::loadLocalhost() {
             return;
         }
 
-        const char *filename = (EJApp::instance()->pathForResource(url))->getCString(); // "dirname/filename.ext";
+        const char *filename = urlPath->getCString(); // "dirname/filename.ext";
 
         // Open file
         AAsset *asset = AAssetManager_open(EJApp::instance()->aassetManager, filename, AASSET_MODE_UNKNOWN);

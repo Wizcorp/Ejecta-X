@@ -63,6 +63,12 @@ public:
     /** compare to a c string */
     int compare(const char *) const;
 
+    /** Check if the string starts with a certain prefix **/
+    bool hasPrefix(const char *) const;
+
+    /** Returns a new string containing the characters of the receiver from the one at a given index to the end. **/
+    NSString* substringFromIndex(size_t) const;
+
     /* override functions */
     virtual NSObject* copyWithZone(NSZone* pZone);
     virtual bool isEqual(const NSObject* pObject);
