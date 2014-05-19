@@ -83,5 +83,5 @@ setInterval( animate, 16 );
 
 //test XMLHttpRequest
 var request = new XMLHttpRequest()
-request.open("GET","www.google.com");
+request.open("GET","http://www.google.com");
 request.send()
