@@ -22,8 +22,27 @@ void EJBindingImage::beginLoad() {
 
 void EJBindingImage::load(NSString* sharegroup) {
 
-	NSLOG("Loading Image: %s", path->getCString() );
-	NSString * fullPath = EJApp::instance()->pathForResource(path);
+	NSString * fullPath;
+	// If path is a Data URI, a remote URL or a File URI we don't want to prepend resource paths
+	if(path->hasPrefix("data:")) {
+		NSLOG("Loading Image from Data URI not yet implemented.");
+		fullPath = NULL;
+	} else if(path->hasPrefix("http:") || path->hasPrefix("https:")) {
+		NSLOG("Loading Image from URL not yet implemented.");
+		fullPath = NULL;
+	} else if(path->hasPrefix("file://")) {
+		NSLOG("Loading Image from File URI: %s", path->getCString());
+		size_t prefixLength = strlen("file://");
+		fullPath = path->substringFromIndex(prefixLength);
+	} else if(path->hasPrefix("/")) {
+		// This handles '/data/' or '/storage/' but not 'data/' or 'storage/', user has to prepend a '/' for full path
+		NSLOG("Loading Image from full path: %s", path->getCString());
+		fullPath = path;
+	} else {
+		NSLOG("Loading Image (lazy): %s", path->getCString());
+		fullPath = EJApp::instance()->pathForResource(path);
+	}
+
 	EJTexture * tempTex = new EJTexture(fullPath, sharegroup);
 	tempTex->autorelease();
 	endLoad(tempTex);
