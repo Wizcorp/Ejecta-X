@@ -23,8 +23,8 @@ EJBindingCanvas::EJBindingCanvas() : renderingContext(0), isScreenCanvas(false) 
 
 }
 
-void EJBindingCanvas::init(JSContextRef ctx ,JSObjectRef obj, size_t argc, const JSValueRef argv[]) {
-	EJBindingBase::init(ctx, obj, 0, NULL);
+void EJBindingCanvas::initWithContext(JSContextRef ctx, JSObjectRef obj, size_t argc, const JSValueRef argv[]) {
+	EJBindingBase::initWithContext(ctx, obj, 0, NULL);
 	ejectaInstance = EJApp::instance();
 	scalingMode = kEJScalingModeFitWidth;
 	useRetinaResolution = true;
@@ -33,9 +33,7 @@ void EJBindingCanvas::init(JSContextRef ctx ,JSObjectRef obj, size_t argc, const
 
 	if( firstCanvasInstance ) {
 		isScreenCanvas = true;
-		NSLOG("firstCanvasInstance : %d", firstCanvasInstance);
 		firstCanvasInstance = false;
-		NSLOG("firstCanvasInstance : %d", firstCanvasInstance);
 	}
 	
 	if( argc == 2 ) {
@@ -83,7 +81,7 @@ EJBindingCanvas::~EJBindingCanvas() {
 }
 
 EJTexture* EJBindingCanvas::getTexture() {
-	if (renderingContext->getClassName() == "EJCanvasContextTexture") {
+	if (renderingContext && renderingContext->getClassName() == "EJCanvasContextTexture") {
 		return ((EJCanvasContextTexture *)renderingContext)->getTexture();
 	}
 	else {

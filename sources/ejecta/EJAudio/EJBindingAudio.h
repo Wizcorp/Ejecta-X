@@ -2,7 +2,7 @@
 #define __EJ_BINDING_AUDIO_H__
 
 //#import <Foundation/Foundation.h>
-#include "../EJBindingEventedBase.h"
+#include "EJBindingEventedBase.h"
 
 // #import "EJAudioSourceOpenAL.h"
 // #import "EJAudioSourceAVAudio.h"

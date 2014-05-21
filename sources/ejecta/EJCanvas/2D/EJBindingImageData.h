@@ -1,7 +1,7 @@
 #ifndef __EJ_BINDINGIMAGE_DATA_H__
 #define __EJ_BINDINGIMAGE_DATA_H__
 
-#include "../EJBindingBase.h"
+#include "EJBindingBase.h"
 #include "EJImageData.h"
 
 class EJBindingImageData : public EJBindingBase {

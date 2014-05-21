@@ -12,7 +12,7 @@
 #include <GLES2/gl2.h>
 #include <GLES2/gl2ext.h>
 #endif
-#include "../EJCocoa/NSString.h"
+#include "EJCocoa/NSString.h"
 
 class EJTexture : public NSObject {
 

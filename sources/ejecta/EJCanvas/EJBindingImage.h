@@ -1,9 +1,9 @@
 #ifndef __EJ_BINDING_IMAGE_H__
 #define __EJ_BINDING_IMAGE_H__
 
-#include "../EJBindingEventedBase.h"
+#include "EJBindingEventedBase.h"
 #include "EJDrawable.h"
-#include "../EJCocoa/NSString.h"
+#include "EJCocoa/NSString.h"
 
 class EJBindingImage : public EJBindingEventedBase, public EJDrawable {
 

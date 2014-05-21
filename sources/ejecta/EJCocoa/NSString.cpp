@@ -142,6 +142,28 @@ int NSString::compare(const char * pStr) const
     return strcmp(getCString(), pStr);
 }
 
+bool NSString::hasPrefix(const char *prefix) const {
+    size_t prefixLength = strlen(prefix);
+    size_t stringLength = m_sString.length();
+    return stringLength < prefixLength ? false : strncmp(prefix, m_sString.c_str(), prefixLength) == 0;
+}
+
+NSString* NSString::substringFromIndex(size_t anIndex) const {
+    size_t stringLength = m_sString.length();
+    if (anIndex < 0 || anIndex > stringLength) {
+        NSLOG("NSRangeException - Error, index does not lie within the bounds of the receiver.");
+        return NULL;
+    } else if (anIndex == stringLength) {
+        NSString *pRet = new NSString("");
+        pRet->autorelease();
+        return pRet;
+    }
+
+    NSString *pRet = new NSString(m_sString.substr(anIndex).c_str());
+    pRet->autorelease();
+    return pRet;
+}
+
 NSObject* NSString::copyWithZone(NSZone* pZone)
 {
     NSAssert(pZone == NULL, "NSString should not be inherited.");
@@ -268,6 +290,13 @@ unsigned char* getFileData(const char* fileName, const char* pszMode, unsigned l
     }
     
     return buffer;
+}
+
+unsigned char *NSString::createFileData(const char *pszFileName, const char *pszMode, unsigned long *pSize) {
+    return getFileData(pszFileName, pszMode, pSize);
+}
+void NSString::freeFileData(unsigned char *fileBuffer) {
+    free(fileBuffer);
 }
 
 NSString* NSString::createWithContentsOfFile(const char* pszFileName)

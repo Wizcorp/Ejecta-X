@@ -2,10 +2,10 @@
 #define __EJFONT_H__
 
 #include "EJTexture.h"
-#include "../EJCocoa/NSArray.h"
-#include "../EJCocoa/NSInteger.h"
-#include "../EJCocoa/NSString.h"
-#include "../EJCocoa/NSCache.h"
+#include "EJCocoa/NSArray.h"
+#include "EJCocoa/NSInteger.h"
+#include "EJCocoa/NSString.h"
+#include "EJCocoa/NSCache.h"
 
 #define EJ_FONT_TEXTURE_SIZE 1024
 

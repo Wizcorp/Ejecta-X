@@ -3,12 +3,14 @@
 #include "EJUtils/EJBindingTouchInput.h"
 #include "EJUtils/EJBindingWizCanvasMessenger.h"
 #include "EJUtils/EJBindingHttpRequest.h"
-#include "EJCanvas/EJCanvasContext.h"
-#include "EJCanvas/EJCanvasContextScreen.h"
+#include "EJCanvasContext.h"
+#include "EJCanvasContextScreen.h"
 #include "EJCocoa/NSObjectFactory.h"
 #include "EJCocoa/NSAutoreleasePool.h"
 #include "EJTimer.h"
 #include <android/asset_manager_jni.h>
+
+#include <sys/stat.h>
 
 JSValueRef ej_global_undefined;
 JSClassRef ej_constructorClass;
@@ -45,7 +47,7 @@ JSObjectRef ej_callAsConstructor(JSContextRef ctx, JSObjectRef constructor, size
 	JSObjectRef obj = JSObjectMake( ctx, jsClass, NULL );
 	
  	EJBindingBase* instance = (EJBindingBase*)NSClassFromString(pClass->toString().c_str());
-	instance->init(ctx, obj, argc, argv);
+	instance->initWithContext(ctx, obj, argc, argv);
 
 	JSObjectSetPrivate( obj, (void *)instance );
 	
@@ -260,8 +262,23 @@ void EJApp::hideLoadingScreen(void)
 	//loadingScreen = nil;
 }
 
+bool EJApp::doesFileExist(const char *filename) {
+    struct stat st;
+    return (stat(filename, &st)) == 0;
+}
+
 NSString *EJApp::pathForResource(NSString *resourcePath) {
-    string full_path = string(EJECTA_APP_FOLDER) + resourcePath->getCString();
+    // Path to cache
+    string full_path = string(dataBundle) + string("/") + string("cache/") + resourcePath->getCString();
+
+    // Check if there is a file at this path
+    bool isFileInCache = doesFileExist(full_path.c_str());
+
+    if (isFileInCache) {
+        return NSStringMake(full_path);
+    }
+
+    full_path = string(EJECTA_APP_FOLDER) + resourcePath->getCString();
     return NSStringMake(full_path);
 }
 
@@ -276,8 +293,8 @@ void EJApp::loadJavaScriptFile(const char *filename) {
 
 void EJApp::loadScriptAtPath(NSString *path) {
     // Check file from cache - /data/data/
-    string cachePath = string(dataBundle) + string("/") + (pathForResource(path))->getCString();
-    NSString *script = NSString::createWithContentsOfFile((NSStringMake(cachePath))->getCString());
+    NSString *scriptPath = pathForResource(path);
+    NSString *script = NSString::createWithContentsOfFile(scriptPath->getCString());
 
     if (!script) {
         // Check file from main bundle - /assets/EJECTA_APP_FOLDER/
@@ -286,7 +303,7 @@ void EJApp::loadScriptAtPath(NSString *path) {
             return;
         }
         
-        const char *filename = pathForResource(path)->getCString(); // "dirname/filename.ext";
+        const char *filename = scriptPath->getCString(); // "dirname/filename.ext";
 
         // Open file
         AAsset *asset = AAssetManager_open(this->aassetManager, filename, AASSET_MODE_UNKNOWN);
@@ -335,8 +352,8 @@ void EJApp::evaluateScript(const char *script) {
 
 JSValueRef EJApp::loadModuleWithId(NSString *moduleId, JSValueRef module, JSValueRef exports) {
 	NSString *moduleIdFile = NSStringMake(moduleId->getCString() + string(".js"));
-	string cachePath = string(dataBundle) + string("/") + (pathForResource(moduleIdFile))->getCString();
-	NSString *script = NSString::createWithContentsOfFile((NSStringMake(cachePath))->getCString());
+	NSString *scriptPath = pathForResource(moduleIdFile);
+	NSString *script = NSString::createWithContentsOfFile(scriptPath->getCString());
 
 	if (!script) {
             // Check file from main bundle - /assets/EJECTA_APP_FOLDER/
@@ -345,7 +362,7 @@ JSValueRef EJApp::loadModuleWithId(NSString *moduleId, JSValueRef module, JSValu
                 return NULL;
             }
 
-            const char *filename = pathForResource(moduleIdFile)->getCString(); // "dirname/filename.ext";
+            const char *filename = scriptPath->getCString(); // "dirname/filename.ext";
 
             // Open file
             AAsset *asset = AAssetManager_open(this->aassetManager, filename, AASSET_MODE_UNKNOWN);

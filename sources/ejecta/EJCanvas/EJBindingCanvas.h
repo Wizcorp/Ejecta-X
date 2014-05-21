@@ -1,7 +1,7 @@
 #ifndef __EJ_BINDING_CANVAS_H__
 #define __EJ_BINDING_CANVAS_H__
 
-#include "../EJBindingBase.h"
+#include "EJBindingBase.h"
 #include "EJCanvasContextTexture.h"
 #include "EJCanvasContextScreen.h"
 #include "EJTexture.h"
@@ -77,7 +77,7 @@ public:
 
 	virtual string superclass(){return EJBindingBase::toString();};
 
-	virtual void init(JSContextRef ctx ,JSObjectRef obj, size_t argc, const JSValueRef argv[]);
+	virtual void initWithContext(JSContextRef ctx, JSObjectRef obj, size_t argc, const JSValueRef argv[]);
 
 	EJ_BIND_ENUM_DEFINE( globalCompositeOperation, EJCompositeOperation, renderingContext->globalCompositeOperation);
 	EJ_BIND_ENUM_DEFINE( lineCap, EJLineCap, renderingContext->state->lineCap);

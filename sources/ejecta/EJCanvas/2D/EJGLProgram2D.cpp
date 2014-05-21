@@ -1,6 +1,6 @@
 #include "EJGLProgram2D.h"
 
-#include "../EJApp.h"
+#include "EJApp.h"
 
 EJGLProgram2D::EJGLProgram2D(): program(0), screen(0) {
 
@@ -46,9 +46,9 @@ void EJGLProgram2D::getUniforms() {
 }
 
 GLint EJGLProgram2D::compileShaderFile(NSString *file, GLenum type) {
-    string cachePath = string(EJApp::instance()->dataBundle) + string("/") + (EJApp::instance()->pathForResource(file))->getCString();
+    NSString *sourcePath = EJApp::instance()->pathForResource(file);
     // Load from cache - /data/data
-    NSString *source = NSString::createWithContentsOfFile((NSStringMake(cachePath))->getCString());
+    NSString *source = NSString::createWithContentsOfFile(sourcePath->getCString());
 
     if (!source) {
         // Check file from data bundle - /assets/EJECTA_APP_FOLDER/
@@ -57,7 +57,7 @@ GLint EJGLProgram2D::compileShaderFile(NSString *file, GLenum type) {
             return 0;
         }
 
-        const char *filename = EJApp::instance()->pathForResource(file)->getCString(); // "dirname/filename.ext";
+        const char *filename = sourcePath->getCString(); // "dirname/filename.ext";
 
         // Open file
         AAsset *asset = AAssetManager_open(EJApp::instance()->aassetManager, filename, AASSET_MODE_UNKNOWN);
