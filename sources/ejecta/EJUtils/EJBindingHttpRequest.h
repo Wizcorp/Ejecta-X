@@ -451,8 +451,6 @@ public:
 
 	virtual string superclass(){ return EJBindingEventedBase::toString();};
 
-	virtual void init(JSContextRef ctx ,JSObjectRef obj, size_t argc, const JSValueRef argv[]);
-
 	void clearConnection();
 	void clearRequest();
 	int getStatusCode();

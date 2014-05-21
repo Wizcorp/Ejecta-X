@@ -3,7 +3,8 @@
 EJBindingAudio::EJBindingAudio() {
 }
 
-void EJBindingAudio::init(JSContextRef ctx ,JSObjectRef obj, size_t argc, const JSValueRef argv[]) {
+void EJBindingAudio::initWithContext(JSContextRef ctx ,JSObjectRef obj, size_t argc, const JSValueRef argv[]) {
+	EJBindingEventedBase::initWithContext(ctx, obj, 0, NULL);
 	volume = 1;
 	preload = kEJAudioPreloadNone;
 		
@@ -139,7 +140,7 @@ EJ_BIND_FUNCTION(EJBindingAudio, cloneNode, ctx, argc, argv) {
 	
 	// Create the native instance
 	EJBindingAudio* audio = (EJBindingAudio*)NSClassFromString(pClass->toString().c_str());
-	audio->init(ctx, obj, 0, NULL);
+	audio->initWithContext(ctx, obj, 0, NULL);
 	
 	audio->loop = loop;
 	audio->volume = volume;

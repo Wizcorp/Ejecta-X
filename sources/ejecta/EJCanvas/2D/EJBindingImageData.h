@@ -17,7 +17,6 @@ public:
 	virtual string superclass(){return EJBindingBase::toString();};
 
 	EJImageData* imageData();
-	virtual void init(JSContextRef ctx, JSObjectRef obj, EJImageData* imageData);
 
 	REFECTION_CLASS_IMPLEMENT_DEFINE(EJBindingImageData);
 

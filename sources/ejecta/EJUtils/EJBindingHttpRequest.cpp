@@ -430,9 +430,6 @@ EJBindingHttpRequest::~EJBindingHttpRequest() {
     clearConnection();
 }
 
-void EJBindingHttpRequest::init(JSContextRef ctx ,JSObjectRef obj, size_t argc, const JSValueRef argv[]) {
-}
-
 void EJBindingHttpRequest::clearConnection() {
     if (connection) {
         connection->release();
