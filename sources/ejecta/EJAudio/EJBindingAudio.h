@@ -48,7 +48,7 @@ public:
 	void load();
 	void setSourcePath(NSString* pathp);
 
-	void init(JSContextRef ctx ,JSObjectRef obj, size_t argc, const JSValueRef argv[]);
+	virtual void initWithContext(JSContextRef ctx ,JSObjectRef obj, size_t argc, const JSValueRef argv[]);
 
 	EJ_BIND_FUNCTION_DEFINE(play, ctx, argc, argv);
 	EJ_BIND_FUNCTION_DEFINE(pause, ctx, argc, argv);

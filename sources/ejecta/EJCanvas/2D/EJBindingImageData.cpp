@@ -14,13 +14,6 @@ EJBindingImageData::EJBindingImageData():EJBindingBase() {
 	dataArray = NULL;
 }
 
-void EJBindingImageData::init(JSContextRef ctx, JSObjectRef obj, EJImageData* imageData) {
-	EJBindingBase::initWithContext(ctx, obj, 0, NULL);
-	// m_imageData = imageData->retain();
-	imageData->retain();
-	m_imageData = imageData;
-}
-
 EJBindingImageData::~EJBindingImageData() {
 	JSContextRef ctx = EJApp::instance()->jsGlobalContext;
 	if (dataArray) {
