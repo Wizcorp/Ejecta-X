@@ -38,7 +38,7 @@ public:
     EJBindingWizCanvasMessenger(const char *name);
     ~EJBindingWizCanvasMessenger();
 
-    virtual void init(JSContextRef ctx, JSObjectRef obj, size_t argc, const JSValueRef argv[]);
+    virtual void initWithContext(JSContextRef ctx, JSObjectRef obj, size_t argc, const JSValueRef argv[]);
 
     REFECTION_CLASS_IMPLEMENT_DEFINE(EJBindingWizCanvasMessenger);
 

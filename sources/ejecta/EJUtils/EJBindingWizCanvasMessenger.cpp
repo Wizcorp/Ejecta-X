@@ -2,7 +2,7 @@
 #include "../EJCocoa/NSString.h"
 #include <JavaScriptCore/JavaScriptCore.h>
 
-void EJBindingWizCanvasMessenger::init(JSContextRef ctx, JSObjectRef obj, size_t argc, const JSValueRef argv[]) {
+void EJBindingWizCanvasMessenger::initWithContext(JSContextRef ctx, JSObjectRef obj, size_t argc, const JSValueRef argv[]) {
     if (argc > 0) {
         viewName = JSValueToNSString(ctx, argv[0]);
         viewName->retain();
