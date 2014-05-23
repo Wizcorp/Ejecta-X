@@ -49,9 +49,6 @@ class EJApp : public NSObject {
 private:
     BOOL paused;
     
-    JavaVM *jvm;
-    jobject g_obj;
-    
     NSDictionary *jsClasses;
     EJTimerCollection *timers;
     long currentTime;
