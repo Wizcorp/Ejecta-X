@@ -25,7 +25,6 @@ public class DemoActivity extends Activity {
                 Log.d("ejecta", "Event: Canvas was created");
                 ((EjectaGLSurfaceView)mGLView).loadJavaScriptFile("ejecta.js");
                 ((EjectaGLSurfaceView)mGLView).loadJavaScriptFile("index.js");
-                ((EjectaGLSurfaceView)mGLView).loadJavaScriptFile("loadme.js");
             }
         });
 	}

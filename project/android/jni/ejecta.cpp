@@ -83,6 +83,19 @@ extern "C" {
         EJApp::instance()->loadJavaScriptFile(filenameAsChar);
     }
 
+    JNIEXPORT void JNICALL Java_com_impactjs_ejecta_EjectaRenderer_nativeEvaluateScript(JNIEnv* env, jobject thiz, jstring script)
+    {
+        const char *scriptAsChar = (env)->GetStringUTFChars(script, 0);
+        EJApp::instance()->evaluateScript(scriptAsChar);
+    }
+    
+    JNIEXPORT void JNICALL Java_com_impactjs_ejecta_EjectaRenderer_nativeTriggerMessage(JNIEnv* env, jobject thiz, jstring message, jstring type)
+    {
+        const char *messageAsChar = (env)->GetStringUTFChars(message, 0);
+        const char *typeAsChar = (env)->GetStringUTFChars(type, 0);
+        EJApp::instance()->triggerMessage(messageAsChar, typeAsChar);
+    }
+    
     JNIEXPORT void JNICALL Java_com_impactjs_ejecta_EjectaRenderer_nativeOnKeyDown(JNIEnv* env, jobject thiz, jint key_code)
     {
         //callKeyEventHandler(static_cast<s16>(key_code), true);
