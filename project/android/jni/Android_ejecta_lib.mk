@@ -1,5 +1,5 @@
 BASE_LOCAL_PATH := $(call my-dir)
-BASE_PATH := ../../../library/android
+BASE_PATH := library/android
 
 include $(CLEAR_VARS)
 

@@ -13,8 +13,12 @@ Ejecta is published under the [MIT Open Source License](http://opensource.org/li
 
 1. Install [Android NDK](http://developer.android.com/tools/sdk/ndk/index.html) first.
 2. Install [Android SDK](http://developer.android.com/sdk/index.html) then Eclipse and ADT OR, [Android Studio](http://developer.android.com/sdk/installing/studio.html)
-3. `cd <your project dir>` then run `/path/to/your/android-ndk-r9/ndk-build` to compile libejecta.so and libJavaScriptCore.so
-4. Open in your favourite IDE and build.
+3. Building:
+	- With NDK CLI: `cd project/android/jni/source` then run `/path/to/your/android-ndk-r9/ndk-build` to compile libejecta.so and libJavaScriptCore.so
+	- With Eclipse: Open `project/android/` in Eclipse, change the NDK build phase [1] to point to your NDK path.
+4. Build in your IDE or with ant.
+
+![image](build-phase-configuration.png) [1]
 
 **Note for Windows users:-** 
 
