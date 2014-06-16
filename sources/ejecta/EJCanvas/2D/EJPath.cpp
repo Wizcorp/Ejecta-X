@@ -5,9 +5,6 @@
 #include "EJCocoa/support/nsMacros.h"
 #include "EJCanvasContext.h"
 
-//Necessary for call to OpenGLES 1 functions such as glDisableClientState
-#include <GLES/gl.h>
-
 EJPath::EJPath() :
 		transform(CGAffineTransformIdentity), 
 		stencilMask(0x1) {
@@ -304,9 +301,6 @@ void EJPath::drawPolygonsToContext(EJCanvasContext * context,
 	
 	
 	// Disable drawing to the color buffer, enable the stencil buffer
-	glDisableClientState(GL_TEXTURE_COORD_ARRAY);
-	glDisableClientState(GL_COLOR_ARRAY);
-	
 	glDisable(GL_BLEND);
 	glEnable(GL_STENCIL_TEST);
 	glStencilMask(0xff);
