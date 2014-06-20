@@ -22,69 +22,69 @@ LOCAL_CFLAGS += -DENABLE_SINGLE_THREADED=1 -DUSE_FILE32API -D__LINUX__=1 -DCOMPA
 
 LOCAL_C_INCLUDES := \
                     $(LOCAL_PATH) \
-                    $(LOCAL_PATH)/../../../sources/lib/lodefreetype \
-                    $(LOCAL_PATH)/../../../sources/lib/lodepng \
-                    $(LOCAL_PATH)/../../../sources/lib/lodejpeg \
-                    $(LOCAL_PATH)/../../../sources/lib/uriparser \
-                    $(LOCAL_PATH)/../../../sources/ejecta \
-                    $(LOCAL_PATH)/../../../sources/ejecta/EJCanvas \
-                    $(LOCAL_PATH)/../../../sources/ejecta/EJCanvas/2D \
-                    $(LOCAL_PATH)/../../../sources/ejecta/EJCocoa \
-                    $(LOCAL_PATH)/../../../sources/ejecta/EJCocoa/support \
-                    $(LOCAL_PATH)/../../../sources/ejecta/EJUtils \
-                    $(LOCAL_PATH)/../../../library/android/libfreetype/include \
-                    $(LOCAL_PATH)/../../../library/android/libpng/include \
-                    $(LOCAL_PATH)/../../../library/android/libjpeg/include \
-                    $(LOCAL_PATH)/../../../library/android/libcurl/include \
-                    $(LOCAL_PATH)/../../../library/android/JavaScriptCore/include 
+                    $(LOCAL_PATH)/source/lib/lodefreetype \
+                    $(LOCAL_PATH)/source/lib/lodepng \
+                    $(LOCAL_PATH)/source/lib/lodejpeg \
+                    $(LOCAL_PATH)/source/lib/uriparser \
+                    $(LOCAL_PATH)/source/ejecta \
+                    $(LOCAL_PATH)/source/ejecta/EJCanvas \
+                    $(LOCAL_PATH)/source/ejecta/EJCanvas/2D \
+                    $(LOCAL_PATH)/source/ejecta/EJCocoa \
+                    $(LOCAL_PATH)/source/ejecta/EJCocoa/support \
+                    $(LOCAL_PATH)/source/ejecta/EJUtils \
+                    $(LOCAL_PATH)/libraries/android/libfreetype/include \
+                    $(LOCAL_PATH)/libraries/android/libpng/include \
+                    $(LOCAL_PATH)/libraries/android/libjpeg/include \
+                    $(LOCAL_PATH)/libraries/android/libcurl/include \
+                    $(LOCAL_PATH)/libraries/android/JavaScriptCore/include 
 
 LOCAL_SRC_FILES := \
-                    ../../../sources/lib/lodefreetype/lodefreetype.cpp \
-                    ../../../sources/lib/lodepng/lodepng.cpp \
-                    ../../../sources/lib/lodejpeg/lodejpeg.cpp \
-                    ../../../sources/ejecta/EJCocoa/support/nsCArray.cpp \
-                    ../../../sources/ejecta/EJCocoa/NSObject.cpp \
-                    ../../../sources/ejecta/EJCocoa/NSObjectFactory.cpp \
-                    ../../../sources/ejecta/EJCocoa/NSGeometry.cpp \
-                    ../../../sources/ejecta/EJCocoa/NSAutoreleasePool.cpp \
-                    ../../../sources/ejecta/EJCocoa/NSArray.cpp \
-                    ../../../sources/ejecta/EJCocoa/CGAffineTransform.cpp \
-                    ../../../sources/ejecta/EJCocoa/NSDictionary.cpp \
-                    ../../../sources/ejecta/EJCocoa/NSNS.cpp \
-                    ../../../sources/ejecta/EJCocoa/NSSet.cpp \
-                    ../../../sources/ejecta/EJCocoa/NSString.cpp \
-                    ../../../sources/ejecta/EJCocoa/NSValue.cpp \
-                    ../../../sources/ejecta/EJCocoa/NSZone.cpp \
-                    ../../../sources/ejecta/EJCocoa/NSCache.cpp \
-                    ../../../sources/ejecta/EJApp.cpp \
-                    ../../../sources/ejecta/EJConvert.cpp \
-                    ../../../sources/ejecta/EJBindingBase.cpp \
-                    ../../../sources/ejecta/EJBindingEjectaCore.cpp \
-                    ../../../sources/ejecta/EJBindingEventedBase.cpp \
-                    ../../../sources/ejecta/EJSharedOpenGLContext.cpp \
-                    ../../../sources/ejecta/EJTimer.cpp \
-                    ../../../sources/ejecta/EJAudio/EJBindingAudio.cpp \
-                    ../../../sources/ejecta/EJCanvas/EJBindingImage.cpp \
-                    ../../../sources/ejecta/EJCanvas/EJBindingCanvas.cpp \
-                    ../../../sources/ejecta/EJCanvas/EJCanvasContext.cpp \
-                    ../../../sources/ejecta/EJCanvas/EJTexture.cpp \
-                    ../../../sources/ejecta/EJCanvas/2D/EJBindingImageData.cpp \
-                    ../../../sources/ejecta/EJCanvas/2D/EJCanvasContextScreen.cpp \
-                    ../../../sources/ejecta/EJCanvas/2D/EJCanvasContextTexture.cpp \
-                    ../../../sources/ejecta/EJCanvas/2D/EJFont.cpp \
-                    ../../../sources/ejecta/EJCanvas/2D/EJGLProgram2D.cpp \
-                    ../../../sources/ejecta/EJCanvas/2D/EJImageData.cpp \
-                    ../../../sources/ejecta/EJCanvas/2D/EJPath.cpp \
-                    ../../../sources/ejecta/EJUtils/EJBindingHttpRequest.cpp \
-                    ../../../sources/ejecta/EJUtils/EJBindingLocalStorage.cpp \
-                    ../../../sources/ejecta/EJUtils/EJBindingTouchInput.cpp \
+                    source/lib/lodefreetype/lodefreetype.cpp \
+                    source/lib/lodepng/lodepng.cpp \
+                    source/lib/lodejpeg/lodejpeg.cpp \
+                    source/ejecta/EJCocoa/support/nsCArray.cpp \
+                    source/ejecta/EJCocoa/NSObject.cpp \
+                    source/ejecta/EJCocoa/NSObjectFactory.cpp \
+                    source/ejecta/EJCocoa/NSGeometry.cpp \
+                    source/ejecta/EJCocoa/NSAutoreleasePool.cpp \
+                    source/ejecta/EJCocoa/NSArray.cpp \
+                    source/ejecta/EJCocoa/CGAffineTransform.cpp \
+                    source/ejecta/EJCocoa/NSDictionary.cpp \
+                    source/ejecta/EJCocoa/NSNS.cpp \
+                    source/ejecta/EJCocoa/NSSet.cpp \
+                    source/ejecta/EJCocoa/NSString.cpp \
+                    source/ejecta/EJCocoa/NSValue.cpp \
+                    source/ejecta/EJCocoa/NSZone.cpp \
+                    source/ejecta/EJCocoa/NSCache.cpp \
+                    source/ejecta/EJApp.cpp \
+                    source/ejecta/EJConvert.cpp \
+                    source/ejecta/EJBindingBase.cpp \
+                    source/ejecta/EJBindingEjectaCore.cpp \
+                    source/ejecta/EJBindingEventedBase.cpp \
+                    source/ejecta/EJSharedOpenGLContext.cpp \
+                    source/ejecta/EJTimer.cpp \
+                    source/ejecta/EJAudio/EJBindingAudio.cpp \
+                    source/ejecta/EJCanvas/EJBindingImage.cpp \
+                    source/ejecta/EJCanvas/EJBindingCanvas.cpp \
+                    source/ejecta/EJCanvas/EJCanvasContext.cpp \
+                    source/ejecta/EJCanvas/EJTexture.cpp \
+                    source/ejecta/EJCanvas/2D/EJBindingImageData.cpp \
+                    source/ejecta/EJCanvas/2D/EJCanvasContextScreen.cpp \
+                    source/ejecta/EJCanvas/2D/EJCanvasContextTexture.cpp \
+                    source/ejecta/EJCanvas/2D/EJFont.cpp \
+                    source/ejecta/EJCanvas/2D/EJGLProgram2D.cpp \
+                    source/ejecta/EJCanvas/2D/EJImageData.cpp \
+                    source/ejecta/EJCanvas/2D/EJPath.cpp \
+                    source/ejecta/EJUtils/EJBindingHttpRequest.cpp \
+                    source/ejecta/EJUtils/EJBindingLocalStorage.cpp \
+                    source/ejecta/EJUtils/EJBindingTouchInput.cpp \
                     ejecta.cpp \
 
 LOCAL_LDLIBS :=  -landroid -lz -llog -lGLESv2 -lGLESv1_CM \
-                    -L$(LOCAL_PATH)/../../../library/android/libfreetype/libs/$(TARGET_ARCH_ABI) -lfreetype \
-                    -L$(LOCAL_PATH)/../../../library/android/libpng/libs/$(TARGET_ARCH_ABI) -lpng \
-                    -L$(LOCAL_PATH)/../../../library/android/libjpeg/libs/$(TARGET_ARCH_ABI) -ljpeg \
-                    -L$(LOCAL_PATH)/../../../library/android/libcurl/libs/$(TARGET_ARCH_ABI) -lcurl \
+                    -L$(LOCAL_PATH)/libraries/android/libfreetype/libs/$(TARGET_ARCH_ABI) -lfreetype \
+                    -L$(LOCAL_PATH)/libraries/android/libpng/libs/$(TARGET_ARCH_ABI) -lpng \
+                    -L$(LOCAL_PATH)/libraries/android/libjpeg/libs/$(TARGET_ARCH_ABI) -ljpeg \
+                    -L$(LOCAL_PATH)/libraries/android/libcurl/libs/$(TARGET_ARCH_ABI) -lcurl \
 
 LOCAL_SHARED_LIBRARIES := libJavaScriptCore
 

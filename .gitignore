@@ -26,6 +26,8 @@ gen/
 *.iws
 *.ipr
 
+libs/
+
 # Gradle Files
 .gradle/
 
