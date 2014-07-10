@@ -95,10 +95,10 @@ public:
     JSValueRef invokeCallback(JSObjectRef callback, JSObjectRef thisObject, size_t argc, const JSValueRef argv[]);
     void logException(JSValueRef exception, JSContextRef ctxp);
 
-    void touchesBegan(int x, int y);
-    void touchesEnded(int x, int y);
-    void touchesCancelled(int x, int y);
-    void touchesMoved(int x, int y);
+    void touchesBegan(int x, int y, int id);
+    void touchesEnded(int x, int y, int id);
+    void touchesCancelled(int x, int y, int id);
+    void touchesMoved(int x, int y, int id);
 
     static EJApp* instance();
     static void finalize();

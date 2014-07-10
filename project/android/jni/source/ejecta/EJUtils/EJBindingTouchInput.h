@@ -9,24 +9,25 @@ public:
 		eventName = new NSString("");
 		posX = 0;
 		posY = 0;
+		touchId = 0;
 	};
-	EJTouchEvent(const char* name, int x, int y){
+	EJTouchEvent(const char* name, int x, int y, int id){
 		eventName = new NSString(name);
 		posX = x;
 		posY = y;
+		touchId = id;
 	};
 	~EJTouchEvent(){
 		eventName->release();
 	};
 
 	NSString* eventName;
+	int touchId;
 	int posX;
 	int posY;
 };
 
 class EJBindingTouchInput : public EJBindingEventedBase {
-
-	int tag;
 	
 public:
 
@@ -36,7 +37,7 @@ public:
 
 	virtual string superclass(){ return EJBindingEventedBase::toString();};
 
-	void triggerEvent(NSString* name, int x, int y);
+	void triggerEvent(NSString* name, int x, int y, int id);
 
 };
 

@@ -1,6 +1,6 @@
 #include "EJBindingTouchInput.h"
 
-EJBindingTouchInput::EJBindingTouchInput() : tag(0)
+EJBindingTouchInput::EJBindingTouchInput()
 {
 	EJApp::instance()->touchDelegate = this;
 }
@@ -10,7 +10,7 @@ EJBindingTouchInput::~EJBindingTouchInput()
 
 }
 
-void EJBindingTouchInput::triggerEvent(NSString* name, int x, int y)
+void EJBindingTouchInput::triggerEvent(NSString* name, int x, int y, int id)
 {
 	EJApp* ejecta = EJApp::instance();
 	JSContextRef ctx = ejecta->jsGlobalContext;
@@ -18,7 +18,7 @@ void EJBindingTouchInput::triggerEvent(NSString* name, int x, int y)
 
 	JSValueRef params[3];
 
-	params[0] = JSValueMakeNumber(ctx, ++tag);
+	params[0] = JSValueMakeNumber(ctx, id);
 	params[1] = JSValueMakeNumber(ctx, x / scaling);
 	params[2] = JSValueMakeNumber(ctx, y / scaling);
 

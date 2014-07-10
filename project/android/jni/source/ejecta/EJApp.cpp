@@ -202,7 +202,7 @@ void EJApp::run(void)
 		{
 			EJTouchEvent* event = (EJTouchEvent*)touches->objectAtIndex(0);
 			NSLOG("event count %d %s(%d, %d)", touches->count(), event->eventName->getCString(), event->posX, event->posY);
-			touchDelegate->triggerEvent(event->eventName, event->posX, event->posY);
+			touchDelegate->triggerEvent(event->eventName, event->posX, event->posY, event->touchId);
 			touches->removeObjectAtIndex(0);
 		}
 		lockTouches = false;
@@ -467,46 +467,46 @@ void EJApp::logException(JSValueRef valueAsexception, JSContextRef ctxp)
 // Touch handlers
 
 
-void EJApp::touchesBegan(int x, int y)
+void EJApp::touchesBegan(int x, int y, int id)
 {
 	if (!lockTouches)
 	{
 		lockTouches = true;
-		EJTouchEvent* event = new EJTouchEvent("touchstart", x, y);
+		EJTouchEvent* event = new EJTouchEvent("touchstart", x, y, id);
 		touches->addObject(event);
 		event->release();
 		lockTouches = false;
 	}
 }
 
-void EJApp::touchesEnded(int x, int y)
+void EJApp::touchesEnded(int x, int y, int id)
 {
 	if (!lockTouches)
 	{
 		lockTouches = true;
-		EJTouchEvent* event = new EJTouchEvent("touchend", x, y);
+		EJTouchEvent* event = new EJTouchEvent("touchend", x, y, id);
 		touches->addObject(event);
 		event->release();
 		lockTouches = false;
 	}
 }
 
-void EJApp::touchesCancelled(int x, int y)
+void EJApp::touchesCancelled(int x, int y, int id)
 {
 	if (!lockTouches)
 	{
 		lockTouches = true;
-		touchesEnded(x, y);
+		touchesEnded(x, y, id);
 		lockTouches = false;
 	}
 }
 
-void EJApp::touchesMoved(int x, int y)
+void EJApp::touchesMoved(int x, int y, int id)
 {
 	if (!lockTouches)
 	{
 		lockTouches = true;
-		EJTouchEvent* event = new EJTouchEvent("touchmove", x, y);
+		EJTouchEvent* event = new EJTouchEvent("touchmove", x, y, id);
 		touches->addObject(event);
 		event->release();
 		lockTouches = false;
