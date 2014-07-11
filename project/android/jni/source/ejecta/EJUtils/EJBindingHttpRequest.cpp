@@ -507,8 +507,8 @@ void EJBindingHttpRequest::onHttpRequestCompleted(NSObject *sender, void *data) 
         NSLOG("error buffer: %s", response->getErrorBuffer());
         response->retain();
         responseBody = NULL;
-        EJBindingEventedBase::triggerEvent(NSStringMake("loadend"), 0, NULL);
-        EJBindingEventedBase::triggerEvent(NSStringMake("readystatechange"), 0, NULL);
+        EJBindingEventedBase::triggerEvent(NSStringMake("loadend"));
+        EJBindingEventedBase::triggerEvent(NSStringMake("readystatechange"));
         return;
     }
 
@@ -520,8 +520,8 @@ void EJBindingHttpRequest::onHttpRequestCompleted(NSObject *sender, void *data) 
     responseBody = (char *)malloc(sizeof(char) * responseBodySize);
     memcpy(responseBody, &((*buffer)[0]), sizeof(char) * responseBodySize);
 
-    EJBindingEventedBase::triggerEvent(NSStringMake("loadend"), 0, NULL);
-    EJBindingEventedBase::triggerEvent(NSStringMake("readystatechange"), 0, NULL);
+    EJBindingEventedBase::triggerEvent(NSStringMake("loadend"));
+    EJBindingEventedBase::triggerEvent(NSStringMake("readystatechange"));
 }
 
 void EJBindingHttpRequest::loadLocalhost() {
@@ -529,8 +529,8 @@ void EJBindingHttpRequest::loadLocalhost() {
     state = kEJHttpRequestStateLoading;
     
     // No host? Assume we have a local file        
-    EJBindingEventedBase::triggerEvent(NSStringMake("loadstart"), 0, NULL);
-    EJBindingEventedBase::triggerEvent(NSStringMake("load"), 0, NULL);
+    EJBindingEventedBase::triggerEvent(NSStringMake("loadstart"));
+    EJBindingEventedBase::triggerEvent(NSStringMake("load"));
 
     // Check file from cache - /data/data/
     NSString *urlPath = EJApp::instance()->pathForResource(url);
@@ -587,8 +587,8 @@ void EJBindingHttpRequest::loadLocalhost() {
     response->setResponseCode(200);
         
     // Emit events
-    EJBindingEventedBase::triggerEvent(NSStringMake("loadend"), 0, NULL);
-    EJBindingEventedBase::triggerEvent(NSStringMake("readystatechange"), 0, NULL);
+    EJBindingEventedBase::triggerEvent(NSStringMake("loadend"));
+    EJBindingEventedBase::triggerEvent(NSStringMake("readystatechange"));
 }
 
 EJ_BIND_FUNCTION(EJBindingHttpRequest, open, ctx, argc, argv) {
@@ -624,7 +624,7 @@ EJ_BIND_FUNCTION(EJBindingHttpRequest, setRequestHeader, ctx, argc, argv) {
 EJ_BIND_FUNCTION(EJBindingHttpRequest, abort, ctx, argc, argv) {
     if (connection) {
         clearConnection();
-        EJBindingEventedBase::triggerEvent(NSStringMake("abort"), 0, NULL);
+        EJBindingEventedBase::triggerEvent(NSStringMake("abort"));
     }
     return NULL;
 }
@@ -716,7 +716,7 @@ EJ_BIND_FUNCTION(EJBindingHttpRequest, send, ctx, argc, argv) {
     connection->setTimeoutForConnect(timeout/1000);
 
     NSLOG("XHR: %s %s", method->getCString(), url->getCString());
-    EJBindingEventedBase::triggerEvent(NSStringMake("loadstart"), 0, NULL);
+    EJBindingEventedBase::triggerEvent(NSStringMake("loadstart"));
 
     // if( async ) {
     // 	state = kEJHttpRequestStateLoading;
@@ -745,7 +745,7 @@ EJ_BIND_FUNCTION(EJBindingHttpRequest, send, ctx, argc, argv) {
     state = kEJHttpRequestStateLoading;
     connection->send(request);
     request->release();
-    EJBindingEventedBase::triggerEvent(NSStringMake("load"), 0, NULL);
+    EJBindingEventedBase::triggerEvent(NSStringMake("load"));
 
     return NULL;
 }
