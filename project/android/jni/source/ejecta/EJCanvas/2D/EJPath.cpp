@@ -304,9 +304,9 @@ void EJPath::drawPolygonsToContext(EJCanvasContext * context,
 	
 	
 	// Disable drawing to the color buffer, enable the stencil buffer
-	glDisableClientState(GL_TEXTURE_COORD_ARRAY);
-	glDisableClientState(GL_COLOR_ARRAY);
-	
+	glDisableVertexAttribArray(kEJGLProgram2DAttributeColor);
+	glDisableVertexAttribArray(kEJGLProgram2DAttributeUV);
+
 	glDisable(GL_BLEND);
 	glEnable(GL_STENCIL_TEST);
 	glStencilMask(0xff);

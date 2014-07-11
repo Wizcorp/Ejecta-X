@@ -78,12 +78,18 @@ static const struct { GLenum source; GLenum destination; float alphaFactor; } EJ
 	{GL_ONE_MINUS_DST_ALPHA, GL_ONE_MINUS_SRC_ALPHA, 1}
 };
 
+class EJCanvasPattern;
+
+class EJFillable : public NSObject
+{
+};
 
 typedef struct {
 	CGAffineTransform transform;
 	
 	EJCompositeOperation globalCompositeOperation;
 	EJColorRGBA fillColor;
+	EJFillable* fillObject;
 	EJColorRGBA strokeColor;
 	float globalAlpha;
 	
@@ -145,6 +151,7 @@ protected:
 
 	EJGLProgram2D *currentProgram;
 	EJSharedOpenGLContext *sharedGLContext;
+	EJFillable* fillObject;
 
 	void setProgram(EJGLProgram2D *program);
 
@@ -171,7 +178,9 @@ public:
 	void pushTri(float x1, float y1, float x2, float y2, float x3, float y3, EJColorRGBA color, CGAffineTransform transform);
 	void pushQuad(EJVector2 v1, EJVector2 v2, EJVector2 v3, EJVector2 v4, EJVector2 t1, EJVector2 t2, EJVector2 t3, EJVector2 t4, EJColorRGBA color, CGAffineTransform transform);
 	void pushRect(float x, float y, float w, float h, float tx, float ty, float tw, float th, EJColorRGBA color, CGAffineTransform transform);
+	void pushFilledRect(float x, float y, float w, float h, EJFillable* fillable, EJColorRGBA color, CGAffineTransform transform);
 	void pushTexturedRect(float x, float y, float w, float h, float tx, float ty, float tw, float th, EJColorRGBA color, CGAffineTransform transform);
+	void pushPatternedRect(float x, float y, float w, float h, EJCanvasPattern* pattern, EJColorRGBA color, CGAffineTransform transform);
 	void flushBuffers();
 	
 	void save();
@@ -215,6 +224,8 @@ public:
 	short getWidth() const;
 	void setHeight(short h);
 	short getHeight() const;
+	void setFillObject(EJFillable* pFillable);
+	EJFillable* getFillObject();
 };
 
 #endif // __EJ_CANVAS_CONTEXT_H__

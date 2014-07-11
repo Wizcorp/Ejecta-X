@@ -1,6 +1,8 @@
 #include "EJBindingCanvas.h"
 #include "EJBindingImageData.h"
 #include "EJCanvasContextScreen.h"
+#include "EJCanvasPattern.h"
+#include "EJBindingCanvasPattern.h"
 
 bool EJBindingCanvas::firstCanvasInstance = true;
 
@@ -81,7 +83,7 @@ EJBindingCanvas::~EJBindingCanvas() {
 }
 
 EJTexture* EJBindingCanvas::getTexture() {
-	if (renderingContext && renderingContext->getClassName() == "EJCanvasContextTexture") {
+	if (renderingContext && strcmp(renderingContext->getClassName(),"EJCanvasContextTexture") == 0){
 		return ((EJCanvasContextTexture *)renderingContext)->getTexture();
 	}
 	else {
@@ -102,7 +104,27 @@ EJ_BIND_GET( EJBindingCanvas, fillStyle, ctx ) {
 }
 
 EJ_BIND_SET( EJBindingCanvas, fillStyle, ctx, value) {
-	renderingContext->state->fillColor = JSValueToColorRGBA(ctx, value);
+	if( JSValueIsObject(ctx, value) )
+	{
+		// Try CanvasPattern or CanvasGradient
+		EJFillable *fillable;
+
+		if( (fillable = EJBindingCanvasPattern::patternFromJSValue(value)) )
+		{
+			renderingContext->setFillObject(fillable);
+		}
+		/*
+		else if( (fillable = [EJBindingCanvasGradient gradientFromJSValue:value]) ) {
+			renderingContext.fillObject = fillable;
+		}
+		*/
+	}
+	else
+	{
+		// Should be a color string
+		renderingContext->state->fillColor = JSValueToColorRGBA(ctx, value);
+		renderingContext->setFillObject(NULL);
+	}
 }
 
 EJ_BIND_GET( EJBindingCanvas, strokeStyle, ctx ) {
@@ -724,9 +746,66 @@ EJ_BIND_FUNCTION(EJBindingCanvas, drawImage, ctx, argc, argv) {
  	return NULL;
  }
 
+ EJ_BIND_FUNCTION(EJBindingCanvas, createPattern, ctx, argc, argv) {
+ 	if( argc < 1 )
+ 	{
+ 		return NULL;
+ 	}
+	EJDrawable* drawable = NULL;
+
+	//Compare the JSObject to find out if it's an image or a canvas
+	//TODO: Buffer temporary data to avoid creation at each call?
+ 	EJBindingImage* tempBindingImage = new EJBindingImage();
+ 	JSClassRef imageClass = EJApp::instance()->getJSClassForClass((EJBindingImage*)tempBindingImage);
+ 	if(JSValueIsObjectOfClass(ctx, argv[0], imageClass)) {
+ 		drawable = (EJBindingImage*)JSObjectGetPrivate((JSObjectRef)argv[0]);
+ 	} else {
+	 	EJBindingCanvas* tempBindingCanvas = new EJBindingCanvas();
+	 	JSClassRef imageClass = EJApp::instance()->getJSClassForClass((EJBindingCanvas*)tempBindingCanvas);
+	 	if(JSValueIsObjectOfClass(ctx, argv[0], imageClass)) {
+ 			drawable = (EJBindingCanvas*)JSObjectGetPrivate((JSObjectRef)argv[0]);
+	 	}
+	 	delete tempBindingCanvas;
+ 	}
+ 	delete tempBindingImage;
+
+ 	if(drawable == NULL) {
+ 		return NULL;
+ 	}
+
+	// NSObject<EJDrawable> * drawable = (NSObject<EJDrawable> *)JSObjectGetPrivate((JSObjectRef)argv[0]);
+	EJTexture * image = drawable->getTexture();
+
+ 	if( !image )
+ 	{
+ 		return NULL;
+ 	}
+
+ 	EJCanvasPatternRepeat repeat = kEJCanvasPatternRepeat;
+ 	if( argc > 1 ) {
+ 		NSString *repeatString = JSValueToNSString(ctx, argv[1]);
+ 		if(repeatString->isEqual(NSStringMake("repeat-x"))) {
+ 			repeat = kEJCanvasPatternRepeatX;
+ 		}
+ 		else if(repeatString->isEqual(NSStringMake("repeat-y"))) {
+ 			repeat = kEJCanvasPatternRepeatY;
+ 		}
+ 		else if(repeatString->isEqual(NSStringMake("no-repeat"))) {
+ 			repeat = kEJCanvasPatternNoRepeat;
+ 		}
+ 	}
+ 	EJCanvasPattern *pattern = new EJCanvasPattern(image, repeat); // [[[EJCanvasPattern alloc] initWithTexture:image repeat:repeat] autorelease];
+
+
+ 	EJBindingCanvasPattern* tempBinding = new EJBindingCanvasPattern();
+  	JSClassRef bindingClass = EJApp::instance()->getJSClassForClass((EJBindingCanvasPattern*)tempBinding);
+
+ 	JSObjectRef obj = EJBindingCanvasPattern::createJSObjectWithContext(ctx, pattern);
+ 	return obj;
+}
+
  EJ_BIND_FUNCTION_NOT_IMPLEMENTED(EJBindingCanvas, createRadialGradient );
  EJ_BIND_FUNCTION_NOT_IMPLEMENTED(EJBindingCanvas, createLinearGradient );
- EJ_BIND_FUNCTION_NOT_IMPLEMENTED(EJBindingCanvas, createPattern );
  EJ_BIND_FUNCTION_NOT_IMPLEMENTED(EJBindingCanvas, isPointInPath );
 //end
 
