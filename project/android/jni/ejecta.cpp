@@ -55,24 +55,24 @@ extern "C" {
         EJApp::instance()->resume();
     }
 
-    JNIEXPORT void JNICALL Java_com_impactjs_ejecta_EjectaRenderer_nativeTouch(JNIEnv* env, jobject thiz, jint action, jint x, jint y)
+    JNIEXPORT void JNICALL Java_com_impactjs_ejecta_EjectaRenderer_nativeTouch(JNIEnv* env, jobject thiz, jint action, jint x, jint y, jint id)
     {
         switch (action)
         {
         case 0: // ACTION_DOWN
-            EJApp::instance()->touchesBegan(x, y);
+            EJApp::instance()->touchesBegan(x, y, id);
             break;
 
         case 1: // ACTION_UP:
-            EJApp::instance()->touchesEnded(x, y);
+            EJApp::instance()->touchesEnded(x, y, id);
             break;
 
         case 2: // ACTION_MOVE:
-            EJApp::instance()->touchesMoved(x, y);
+            EJApp::instance()->touchesMoved(x, y, id);
             break;
 
         default:
-            EJApp::instance()->touchesCancelled(x, y);
+            EJApp::instance()->touchesCancelled(x, y, id);
             break;
         }
     }

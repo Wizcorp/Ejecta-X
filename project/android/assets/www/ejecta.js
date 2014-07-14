@@ -191,6 +191,7 @@ self = window = this;
  touchEvent.changedTouches = touchEvent.touches;
  
  var publishTouchEvent = function( type, args ) {
+ touchEvent.type = type;
  var touches = touchEvent.touches;
  touches.length = args.length/3;
  

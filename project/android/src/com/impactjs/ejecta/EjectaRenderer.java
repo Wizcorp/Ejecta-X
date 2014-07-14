@@ -56,7 +56,7 @@ public class EjectaRenderer implements Renderer {
 
 	public native void nativeLoadJavaScriptFile(String filename);
 
-	public native void nativeTouch(int action, int x, int y);
+	public native void nativeTouch(int action, int x, int y, int id);
 	public native void nativeOnSensorChanged(float accle_x, float accle_y, float accle_z);
 	public native void nativeOnKeyDown(int key_code);
 	public native void nativeOnKeyUp(int key_code);
