@@ -8,8 +8,10 @@
 #include <GLES2/gl2.h>
 #include <GLES2/gl2ext.h>
 #endif
+#include <typeinfo>
 #include "../EJApp.h"
 #include "EJCanvasContext.h"
+#include "EJCanvasPattern.h"
 
 
 EJCanvasContext::EJCanvasContext() :
@@ -23,7 +25,8 @@ EJCanvasContext::EJCanvasContext() :
 	vertexBufferIndex(0),
 	upsideDown(false),
 	currentProgram(NULL),
-	sharedGLContext(NULL)
+	sharedGLContext(NULL),
+	fillObject(NULL)
 {
 }
 
@@ -78,6 +81,7 @@ EJCanvasContext::EJCanvasContext(short widthp, short heightp) :
 	imageSmoothingEnabled = true;
 	msaaEnabled = false;
 	msaaSamples = 2;
+	fillObject = NULL;
 }
 
 EJCanvasContext::~EJCanvasContext()
@@ -304,7 +308,11 @@ void EJCanvasContext::setProgram(EJGLProgram2D *newProgram) {
     
     flushBuffers();
     currentProgram = newProgram;
-    
+	if(currentProgram == NULL)
+	{
+		return;
+	}
+
     glUseProgram(currentProgram->getProgram());
     glUniform2f(currentProgram->getScreen(), width, height * (upsideDown ? -1 : 1));
 }
@@ -450,6 +458,67 @@ void EJCanvasContext::pushTexturedRect(float x, float y, float w, float h, float
 	vertexBufferIndex += 6;
 }
 
+void EJCanvasContext::pushFilledRect(float x, float y, float w, float h, EJFillable* fillable, EJColorRGBA color, CGAffineTransform transform)
+{
+	if(typeid(*fillable) == typeid(EJCanvasPattern))
+	{
+		EJCanvasPattern *pattern = (EJCanvasPattern *)fillable;
+		pushPatternedRect(x, y, w, h, pattern, color, transform);
+	}
+	else
+	{
+		NSLOG("Unsupported EJFillable type (%s)", typeid(fillable).name());
+	}
+	/*
+
+	if( [fillable isKindOfClass:[EJCanvasPattern class]] ) {
+		EJCanvasPattern *pattern = (EJCanvasPattern *)fillable;
+		[self pushPatternedRectX:x y:y w:w h:h pattern:pattern color:color withTransform:transform];
+	}
+	else if( [fillable isKindOfClass:[EJCanvasGradient class]] ) {
+		EJCanvasGradient *gradient = (EJCanvasGradient *)fillable;
+		[self pushGradientRectX:x y:y w:w h:h gradient:gradient color:color withTransform:transform];
+	}
+}
+*/
+}
+
+void EJCanvasContext::pushPatternedRect(float x, float y, float w, float h, EJCanvasPattern* pattern, EJColorRGBA color, CGAffineTransform transform)
+{
+	EJTexture *texture = pattern->GetTexture();
+	float scale = texture->contentScale;
+	float tw = texture->width / scale;
+	float th = texture->height / scale;
+	float pw = w;
+	float ph = h;
+
+	if( !(pattern->GetRepeat() & kEJCanvasPatternRepeatX) )
+	{
+		pw = MIN(tw - x, w);
+	}
+
+	if( !(pattern->GetRepeat() & kEJCanvasPatternRepeatY) )
+	{
+		ph = MIN(th - y, h);
+	}
+
+	if( pw > 0 && ph > 0 )
+	{
+		setProgram(sharedGLContext->getGlProgram2DPattern());
+		setTexture(texture);
+		pushTexturedRect(x, y, pw, ph, x/tw, y/th, pw/tw, ph/th, color, transform);
+	}
+
+	if( pw < w || ph < h )
+	{
+		// Draw clearing rect for the stencil buffer if we didn't fill everything with
+		// the pattern image - happens when not repeating in both directions
+		setProgram(sharedGLContext->getGlProgram2DFlat());
+		static EJColorRGBA transparentBlack = {0x0};
+		pushRect(x, y, w, h, 0, 0, 0, 0, transparentBlack, state->transform);
+	}
+}
+
 void EJCanvasContext::flushBuffers()
 {
 	if( vertexBufferIndex == 0 ) { return; }
@@ -576,11 +645,17 @@ void EJCanvasContext::drawImage(EJTexture * texture, float sx, float sy, float s
 
 void EJCanvasContext::fillRect(float x, float y, float w, float h)
 {
-	setTexture(NULL);
-	
-	setProgram(sharedGLContext->getGlProgram2DFlat());
-	EJColorRGBA cc = EJCanvasBlendFillColor(state);
-	pushRect(x, y, w, h, 0, 0, 0, 0, cc, state->transform);
+	if( state->fillObject )
+	{
+		pushFilledRect(x, y, w, h, state->fillObject, EJCanvasBlendWhiteColor(state), state->transform);
+	}
+	else
+	{
+		setProgram(sharedGLContext->getGlProgram2DFlat());
+		EJColorRGBA cc = EJCanvasBlendFillColor(state);
+		pushRect(x, y, w, h, 0, 0, 0, 0, cc, state->transform);
+	}
+
 }
 
 void EJCanvasContext::strokeRect(float x, float y, float w, float h)
@@ -742,9 +817,18 @@ float EJCanvasContext::measureText(NSString * text)
 void EJCanvasContext::clip()
 {
 	flushBuffers();
-	state->clipPath->release();
-	state->clipPath = NULL;
 	
+	if(state == NULL)
+	{
+		return;
+	}
+
+	if(state->clipPath)
+	{
+		state->clipPath->release();
+		state->clipPath = NULL;
+	}
+
 	state->clipPath = (EJPath*)(path->copy());
 	setProgram(sharedGLContext->getGlProgram2DFlat());
 	state->clipPath->drawPolygonsToContext(this, kEJPathPolygonTargetDepth);
@@ -762,4 +846,25 @@ void EJCanvasContext::resetClip()
 		glDepthMask(GL_FALSE);
 		glDepthFunc(GL_ALWAYS);
 	}
+}
+
+void EJCanvasContext::setFillObject(EJFillable* pFillObject)
+{
+	if(state)
+	{
+		if(state->fillObject)
+		{
+			state->fillObject->release();
+		}
+		if(pFillObject)
+		{
+			pFillObject->retain();
+		}
+		state->fillObject = pFillObject;
+	}
+}
+
+EJFillable* EJCanvasContext::getFillObject()
+{
+	return state->fillObject;
 }

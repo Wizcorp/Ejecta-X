@@ -147,10 +147,10 @@ public:
  	EJ_BIND_FUNCTION_DEFINE( strokeText, ctx, argc, argv );
  	EJ_BIND_FUNCTION_DEFINE( clip, ctx, argc, argv );
  	EJ_BIND_FUNCTION_DEFINE( resetClip, ctx, argc, argv );
+	EJ_BIND_FUNCTION_DEFINE( createPattern, ctx, argc, argv );
 
  	EJ_BIND_FUNCTION_NOT_IMPLEMENTED_DEFINE( createRadialGradient );
  	EJ_BIND_FUNCTION_NOT_IMPLEMENTED_DEFINE( createLinearGradient );
- 	EJ_BIND_FUNCTION_NOT_IMPLEMENTED_DEFINE( createPattern );
  	EJ_BIND_FUNCTION_NOT_IMPLEMENTED_DEFINE( isPointInPath );
 //end
 };

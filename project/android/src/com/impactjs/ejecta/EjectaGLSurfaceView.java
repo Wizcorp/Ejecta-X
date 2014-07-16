@@ -19,6 +19,7 @@ public class EjectaGLSurfaceView extends GLSurfaceView {
 		super(context);
 		//Sets OpenGLES 2.0 to be used
         setEGLContextClientVersion(2);
+        setEGLConfigChooser(5,6,5,0,16,8); // This is the minimally supported config for Android EGL devices
 		// TODO Auto-generated constructor stub
 		mRenderer = new EjectaRenderer(context, width, height);
         setRenderer(mRenderer);
