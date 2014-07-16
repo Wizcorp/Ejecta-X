@@ -71,7 +71,7 @@ self = window = this;
  HTMLElement = function( tagName ){
  this.tagName = tagName;
  this.children = [];
- this.style = { position : 'absolute', width : 1, height : 1, offsetWidth : 1, offsetHeight : 1};
+ this.style = {};
  };
  
  HTMLElement.prototype.appendChild = function( element ) {
