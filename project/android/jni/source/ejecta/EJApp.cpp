@@ -147,12 +147,12 @@ EJApp::~EJApp()
 
 void EJApp::init(JNIEnv *env, jobject jobj, jobject assetManager, const char* path, int w, int h)
 {
-        env->GetJavaVM(&jvm);
+    env->GetJavaVM(&jvm);
         
-        g_obj = jobj;
+    this->g_obj = env->NewGlobalRef(jobj);
 
-        // Set global pointer to Asset Manager in Java
-        this->aassetManager = AAssetManager_fromJava(env, assetManager);
+    // Set global pointer to Asset Manager in Java
+    this->aassetManager = AAssetManager_fromJava(env, assetManager);
         
 	if (dataBundle) {
 		free(dataBundle);
