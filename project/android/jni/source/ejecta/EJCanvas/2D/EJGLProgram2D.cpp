@@ -24,12 +24,11 @@ bool EJGLProgram2D::initWithVertexShader(NSString *vertexShaderFile, NSString *f
 	
 	linkProgram(program);
 
+
 	getUniforms();
 	
-	glDetachShader(program, vertexShader);
+	// Calling glDetachShader on some mobile devices/android versions causes problems, but delete will free memory and mark for deletion appropriately
 	glDeleteShader(vertexShader);
-	
-	glDetachShader(program, fragmentShader);
 	glDeleteShader(fragmentShader);
 
 	return true;
