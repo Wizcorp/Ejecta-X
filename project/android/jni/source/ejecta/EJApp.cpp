@@ -141,18 +141,22 @@ EJApp::~EJApp()
 		openGLContext->release();
 	}
 
+	JNIEnv *env = NULL;
+	EJApp::instance()->jvm->GetEnv((void**)&env, JNI_VERSION_1_6);
+	DeleteGlobalRef(env, jobj);
+
 	NSPoolManager::sharedPoolManager()->pop();
 	NSPoolManager::purgePoolManager();
 }
 
 void EJApp::init(JNIEnv *env, jobject jobj, jobject assetManager, const char* path, int w, int h)
 {
-        env->GetJavaVM(&jvm);
+    env->GetJavaVM(&jvm);
         
-        g_obj = jobj;
+    this->g_obj = env->NewGlobalRef(jobj);
 
-        // Set global pointer to Asset Manager in Java
-        this->aassetManager = AAssetManager_fromJava(env, assetManager);
+    // Set global pointer to Asset Manager in Java
+    this->aassetManager = AAssetManager_fromJava(env, assetManager);
         
 	if (dataBundle) {
 		free(dataBundle);

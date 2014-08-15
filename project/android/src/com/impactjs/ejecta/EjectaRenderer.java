@@ -6,6 +6,7 @@ import javax.microedition.khronos.opengles.GL10;
 import android.content.Context;
 import android.content.res.AssetManager;
 import android.opengl.GLSurfaceView.Renderer;
+import android.content.SharedPreferences;
 
 public class EjectaRenderer implements Renderer {
 
@@ -78,4 +79,33 @@ public class EjectaRenderer implements Renderer {
 		public abstract void onCanvasCreated();
 	}
 
+	public void setSharedPreferences (String key , String value) {
+		SharedPreferences settings = mContext.getSharedPreferences(mContext.getPackageName() + "ejectaLocalStorage", 0);
+		SharedPreferences.Editor editor = settings.edit();
+
+		editor.putString(key, value);
+		editor.commit();
+	}
+
+	public void resetSharedPreferences () {
+		SharedPreferences settings = mContext.getSharedPreferences(mContext.getPackageName() + "ejectaLocalStorage", 0);
+		SharedPreferences.Editor editor = settings.edit();
+
+		editor.clear();
+		editor.commit();
+	}
+
+	public void removeSharedPreferences (String key) {
+		SharedPreferences settings = mContext.getSharedPreferences(mContext.getPackageName() + "ejectaLocalStorage", 0);
+		SharedPreferences.Editor editor = settings.edit();
+		
+		editor.remove(key);
+		editor.commit();
+	}
+
+	public String getSharedPreferences (String key) {
+		SharedPreferences settings = mContext.getSharedPreferences(mContext.getPackageName() + "ejectaLocalStorage", 0);
+
+		return settings.getString(key, "");
+	}
 }

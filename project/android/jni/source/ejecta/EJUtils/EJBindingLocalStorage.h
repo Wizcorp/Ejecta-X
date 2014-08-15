@@ -5,6 +5,11 @@
 
 
 class EJBindingLocalStorage : public EJBindingBase {
+
+private:
+    jobject _g_obj;
+    JNIEnv *env;
+    jclass javaCallerClass;
 	
 public:
 
@@ -13,6 +18,7 @@ public:
 	REFECTION_CLASS_IMPLEMENT_DEFINE(EJBindingLocalStorage);
 
 	virtual string superclass(){ return EJBindingBase::toString();};
+    virtual void initWithContext(JSContextRef ctx, JSObjectRef obj, size_t argc, const JSValueRef argv[]);
 
 	EJ_BIND_FUNCTION_DEFINE(getItem, ctx, argc, argv );
 	EJ_BIND_FUNCTION_DEFINE(setItem, ctx, argc, argv );

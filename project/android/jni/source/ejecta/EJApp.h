@@ -49,9 +49,6 @@ class EJApp : public NSObject {
 private:
     BOOL paused;
 
-    JavaVM *jvm;
-    jobject g_obj;
-
     NSDictionary *jsClasses;
     EJTimerCollection *timers;
     long currentTime;
@@ -61,6 +58,8 @@ private:
     bool doesFileExist(const char *filename);
 
 public:
+    JavaVM *jvm;
+    jobject g_obj;
     jobject assetManager;
     BOOL landscapeMode;
     JSGlobalContextRef jsGlobalContext;
