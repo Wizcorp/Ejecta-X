@@ -120,6 +120,45 @@ EJ_BIND_FUNCTION(EJBindingEventedBase,removeEventListener, ctx, argc, argv) {
 	}
 	return NULL;
 }
+
+void EJBindingEventedBase::triggerEvent(NSString* eventType)
+{
+	triggerEvent(eventType, 0, (JSEventProperty*)NULL);
+}
+
+void EJBindingEventedBase::triggerEvent(NSString * eventType, int argc, JSEventProperty properties[])
+{
+	EJApp * ejecta = EJApp::instance();
+
+	NSArray * listeners = (NSArray *) eventListeners->objectForKey( eventType->getCString() );
+
+	// Build the event object
+	JSObjectRef jsEvent = EJBindingEvent::createJSObjectWithContext(EJApp::instance()->jsGlobalContext, eventType, jsObject);
+
+	// Attach all additional properties, if any
+
+	for( int i = 0; i<argc; i++ ) {
+		JSStringRef name = JSStringCreateWithUTF8CString(properties[i].name);
+		JSValueRef value = properties[i].value;
+		JSObjectSetProperty(EJApp::instance()->jsGlobalContext, jsEvent, name, value, kJSPropertyAttributeReadOnly, NULL);
+		JSStringRelease(name);
+	}
+
+	JSValueRef params[] = { jsEvent };
+	if( listeners )
+	{
+		for (unsigned int var = 0; var < listeners->count(); ++var) {
+			NSValue * callbackValue = (NSValue *) listeners->objectAtIndex(var);
+			ejecta->invokeCallback((JSObjectRef)callbackValue->pointerValue(), jsObject, 1, params);
+		}
+	}
+
+	NSValue * callbackValue = (NSValue *) onCallbacks->objectForKey(eventType->getCString());
+	if (callbackValue) {
+		ejecta->invokeCallback((JSObjectRef)callbackValue->pointerValue(), jsObject, 1, params);
+	}
+}
+
 //
 void EJBindingEventedBase::triggerEvent(NSString * name, int argc,
 		JSValueRef argv[]) {
@@ -145,3 +184,50 @@ void EJBindingEventedBase::triggerEvent(NSString * name, int argc,
 }
 
 REFECTION_CLASS_IMPLEMENT(EJBindingEventedBase);
+
+EJBindingEvent::EJBindingEvent()
+:type(NULL), jsTarget(NULL)
+{
+}
+
+EJBindingEvent::~EJBindingEvent()
+{
+	JSContextRef ctx = EJApp::instance()->jsGlobalContext;
+	if(type)
+	{
+		type->release();
+		JSValueUnprotect(ctx, jsTarget);
+	}
+}
+
+JSObjectRef EJBindingEvent::createJSObjectWithContext(JSContextRef ctx, NSString* pType, JSObjectRef target)
+{
+	EJBindingEvent* event = new EJBindingEvent();
+	event->initWithContext(ctx, NULL, 0, NULL);
+	JSValueProtect(ctx, target);
+	event->jsTarget = target;
+	pType->retain();
+	event->type = pType;
+
+	return EJBindingBase::createJSObjectWithContext(ctx, event);
+}
+
+
+EJ_BIND_GET(EJBindingEvent, target, ctx)
+{
+	return jsTarget;
+}
+
+EJ_BIND_GET(EJBindingEvent, currentTarget, ctx )
+{
+	return jsTarget;
+}
+
+EJ_BIND_GET(EJBindingEvent, type, ctx )
+{
+	return NSStringToJSValue(ctx, type);
+}
+
+
+REFECTION_CLASS_IMPLEMENT(EJBindingEvent);
+

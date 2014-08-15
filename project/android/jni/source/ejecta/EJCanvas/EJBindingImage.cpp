@@ -55,10 +55,10 @@ void EJBindingImage::endLoad(EJTexture * tex) {
 	texture = tex;
 
 	if( tex->textureId ) {
-		EJBindingEventedBase::triggerEvent(NSStringMake("load") ,0 ,NULL);
+		EJBindingEventedBase::triggerEvent(NSStringMake("load"));
 	}
 	else {
-		EJBindingEventedBase::triggerEvent(NSStringMake("error") ,0 ,NULL);
+		EJBindingEventedBase::triggerEvent(NSStringMake("error"));
 	}
 }
 

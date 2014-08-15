@@ -71,6 +71,7 @@ self = window = this;
  HTMLElement = function( tagName ){
  this.tagName = tagName;
  this.children = [];
+ this.style = {};
  };
  
  HTMLElement.prototype.appendChild = function( element ) {
