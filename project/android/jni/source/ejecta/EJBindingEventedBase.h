@@ -31,6 +31,11 @@
 	} \
 	__EJ_GET_POINTER_TO(_##CLASS##_set_on##NAME)
 
+typedef struct {
+	const char *name;
+	JSValueRef value;
+} JSEventProperty;
+
 class EJBindingEventedBase : public EJBindingBase {
 	NSDictionary * eventListeners; // for addEventListener
 	NSDictionary * onCallbacks; // for on* setters
@@ -44,13 +49,31 @@ public:
 	virtual string superclass(){return EJBindingBase::toString();};
 
 	JSObjectRef getCallbackWith(NSString * name, JSContextRef ctx);
-	void setCallbackWith(NSString * name, JSContextRef ctx,
-			JSValueRef callback);
-	void triggerEvent(NSString * name, int argc, JSValueRef argv[]);
+	void setCallbackWith(NSString * name, JSContextRef ctx,	JSValueRef callback);
+	void triggerEvent(NSString * eventType, int argc, JSValueRef argv[]);
+	void triggerEvent(NSString * eventType, int argc, JSEventProperty properties[]);
+	void triggerEvent(NSString* eventType);
 
 	EJ_BIND_FUNCTION_DEFINE( addEventListener, ctx, argc, argv );
 	EJ_BIND_FUNCTION_DEFINE(removeEventListener, ctx, argc, argv);
 };
 
+class EJBindingEvent : public EJBindingBase {
+	NSString *type;
+	JSObjectRef jsTarget;
+public:
+	EJBindingEvent();
+	~EJBindingEvent();
+	REFECTION_CLASS_IMPLEMENT_DEFINE(EJBindingEvent);
+	virtual string superclass(){return EJBindingBase::toString();};
+	static JSObjectRef createJSObjectWithContext(JSContextRef ctx, NSString* type, JSObjectRef target);
+
+	EJ_BIND_GET_DEFINE(target, ctx);
+	EJ_BIND_GET_DEFINE(currentTarget, ctx );
+	EJ_BIND_GET_DEFINE(type, ctx );
+
+	EJ_BIND_FUNCTION_DEFINE(preventDefault, ctx, argc, argv );
+	EJ_BIND_FUNCTION_DEFINE(stopPropagation, ctx, argc, argv);
+};
 
 #endif // __EJ_BINDING_EVENTED_BASE_H__

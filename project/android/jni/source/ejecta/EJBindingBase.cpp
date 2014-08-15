@@ -37,6 +37,18 @@ void EJBindingBase::initWithContext(JSContextRef ctxp, JSObjectRef obj, size_t a
 	jsObject = obj;
 }
 
+JSObjectRef EJBindingBase::createJSObjectWithContext(JSContextRef ctx, EJBindingBase* instance)
+{
+ 	JSClassRef bindingClass = EJApp::instance()->getJSClassForClass(instance);
+ 	JSObjectRef obj = JSObjectMake( ctx, bindingClass, NULL );
+ 	JSValueProtect(ctx, obj);
+ 	// Attach the native instance to the js object
+ 	JSObjectSetPrivate( obj, (void *)instance );
+ 	JSValueUnprotect(ctx, obj);
+
+ 	return obj;
+}
+
 JSClassRef EJBindingBase::getJSClass (EJBindingBase* ej_obj){
 	// Gather all class methods that return C callbacks for this class or it's parents
 	NSDictionary * methods = new NSDictionary();
