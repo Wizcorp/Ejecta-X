@@ -141,6 +141,10 @@ EJApp::~EJApp()
 		openGLContext->release();
 	}
 
+	JNIEnv *env = NULL;
+	EJApp::instance()->jvm->GetEnv((void**)&env, JNI_VERSION_1_6);
+	DeleteGlobalRef(env, jobj);
+
 	NSPoolManager::sharedPoolManager()->pop();
 	NSPoolManager::purgePoolManager();
 }

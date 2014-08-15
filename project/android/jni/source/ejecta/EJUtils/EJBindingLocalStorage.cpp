@@ -16,6 +16,9 @@ EJBindingLocalStorage::EJBindingLocalStorage() {
 }
 
 EJBindingLocalStorage::~EJBindingLocalStorage() {
+	JNIEnv *env = NULL;
+	EJApp::instance()->jvm->GetEnv((void**)&env, JNI_VERSION_1_6);
+	DeleteGlobalRef(env, javaCallerClass);
 }
 
 EJ_BIND_FUNCTION(EJBindingLocalStorage, getItem, ctx, argc, argv ) {
