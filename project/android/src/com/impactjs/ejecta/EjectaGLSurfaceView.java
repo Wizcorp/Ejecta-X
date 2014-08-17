@@ -27,16 +27,20 @@ public class EjectaGLSurfaceView extends GLSurfaceView {
         super.setOnTouchListener(new OnTouchListener() {
             @Override
             public boolean onTouch(View view, MotionEvent motionEvent) {
-            	int id = motionEvent.getPointerId(motionEvent.getActionIndex());
-                switch (motionEvent.getAction() & MotionEvent.ACTION_MASK) {
+                int pointerIndex = motionEvent.getActionIndex();
+                int id = motionEvent.getPointerId(pointerIndex);
+
+                switch (motionEvent.getActionMasked()) {
                     case MotionEvent.ACTION_DOWN:
-                        mRenderer.nativeTouch(motionEvent.getAction(), (int)motionEvent.getX(), (int)motionEvent.getY(), id);
+                    case MotionEvent.ACTION_POINTER_DOWN:
+                        mRenderer.nativeTouch(MotionEvent.ACTION_DOWN, (int)motionEvent.getX(pointerIndex), (int)motionEvent.getY(pointerIndex), id);
                         break;
                     case MotionEvent.ACTION_UP:
-                        mRenderer.nativeTouch(motionEvent.getAction(), (int)motionEvent.getX(), (int)motionEvent.getY(), id);
+                    case MotionEvent.ACTION_POINTER_UP:
+                        mRenderer.nativeTouch(MotionEvent.ACTION_UP, (int)motionEvent.getX(pointerIndex), (int)motionEvent.getY(pointerIndex), id);
                         break;
                     case MotionEvent.ACTION_MOVE:
-                        mRenderer.nativeTouch(motionEvent.getAction(), (int)motionEvent.getX(), (int)motionEvent.getY(), id);
+                        mRenderer.nativeTouch(MotionEvent.ACTION_MOVE, (int)motionEvent.getX(pointerIndex), (int)motionEvent.getY(pointerIndex), id);
                         break;
                 }
                 // Get all touches, return true
