@@ -13,7 +13,7 @@ EJFont::EJFont() : font_info(0), font_index(0), font_size(16)
 EJFont::EJFont(NSString* font, NSInteger size, BOOL usefill, float contentScale) : font_info(0), font_index(0), font_size(size.getValue())
 {
 	textures =new NSCache();
-	textures->setCountLimit(8);
+	textures->setCountLimit(20);
 
 	fontName = font ;	
 	fill = usefill;
@@ -88,8 +88,24 @@ void EJFont::drawString(NSString* string, EJCanvasContext* context, float x, flo
 {	
 	if(!font_info)return;
 	EJCanvasState * state = context->state;
-	font_size =  PT_TO_PX(state->font->pointSize);
-	height =font_size;
+	
+	height = PT_TO_PX(font_size);
+
+	switch( state->textBaseline ) {
+	    case kEJTextBaselineAlphabetic:
+	    case kEJTextBaselineIdeographic:
+	        break;
+	    case kEJTextBaselineTop:
+	    case kEJTextBaselineHanging:
+	        //y += PT_TO_PX(descent);
+	        break;
+	    case kEJTextBaselineMiddle:
+	        y -= abs(0.4 * height);
+	        break;
+	    case kEJTextBaselineBottom:
+	        y -= abs(0.75 * height);
+	        break;
+	}
 				
 	NSString * cacheKey = NSString::createWithFormat("%s_%.2f_%d_%.2f", string->getCString(), pointSize, fill, contentScale);
 	EJTexture * texture = (EJTexture *)textures->objectForKey(cacheKey->getCString());
