@@ -76,7 +76,7 @@ EJCanvasContext::EJCanvasContext(short widthp, short heightp) :
 	backingStoreRatio = 1;
 	
 	fontCache = new NSCache();
-	fontCache->setCountLimit(8);
+	fontCache->setCountLimit(20);
 	
 	imageSmoothingEnabled = true;
 	msaaEnabled = false;
@@ -779,11 +779,11 @@ void EJCanvasContext::arc(float x, float y, float radius, float startAngle, floa
 }
 
 EJFont* EJCanvasContext::acquireFont(NSString* fontName , float pointSize ,BOOL fill ,float contentScale) {	
-	//NSString * cacheKey = NSString::createWithFormat("%s_%.2f_%d_%.2f", fontName->getCString(), pointSize, fill, contentScale);
-	EJFont * font = (EJFont *)fontCache->objectForKey(fontName->getCString());	
+	NSString * cacheKey = NSString::createWithFormat("%s_%.2f_%.2f", fontName->getCString(), pointSize, contentScale);
+	EJFont * font = (EJFont *)fontCache->objectForKey(cacheKey->getCString());  
 	if( !font ) {
-		font =new EJFont(fontName,pointSize ,fill ,contentScale);		
-		fontCache->setObject(font,fontName->getCString());
+		font = new EJFont(fontName,pointSize ,fill ,contentScale);      
+		fontCache->setObject(font,cacheKey->getCString());
 		font->release();
 	}else{
 		font->setFill(fill);

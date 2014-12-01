@@ -173,9 +173,16 @@ EJ_BIND_SET( EJBindingCanvas,font, ctx, value) {
  	JSStringGetUTF8CString(jsString, string, 64);
 
  	// Yeah, oldschool!
- 	float size = 0;
- 	char name[64];
- 	sscanf( string, "%fp%*[tx] %63s", &size, name); // matches: 10.5p[tx] helvetica
+	float size = 0;
+	char name[64];
+	char ptx;
+	char *start = string;
+	while(*start != '\0' && !isdigit(*start)){ start++; } // skip to the first digit
+	sscanf( start, "%fp%1[tx]%*[\"' ]%63[^\"']", &size, &ptx, name); // matches: 10.5p[tx] 'some font'
+
+	if( ptx == 't' ) { // pt or px?
+		size = ceilf(size*4.0/3.0);
+	}
 	
  	UIFont * newFont = new UIFont(NSStringMake(name),size);
  	if( newFont ) {
