@@ -1,3 +1,8 @@
+# Important: This repository is no longer maintained
+Issues and pull requests will no longer be addressed. However, the doors are always open to add maintainers.
+
+Please have a look at alternatives such as [Crosswalk](https://crosswalk-project.org/) or [Cocoon](https://cocoon.io/).
+
 # Ejecta-X
 
 Ejecta is a fast, open source JavaScript, Canvas & Audio implementation for cross-platform. Think of it as a Browser that can only display a Canvas element.
